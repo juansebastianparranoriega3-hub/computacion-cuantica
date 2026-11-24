@@ -1,0 +1,1403 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Computación Cuántica</title>
+<meta name="description" content="Exposición interactiva: de los bits a los qubits, ciencia, historia y el chip Majorana de Microsoft.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2302050c'/%3E%3Cpath d='M16 2 L18.5 13.5 L30 16 L18.5 18.5 L16 30 L13.5 18.5 L2 16 L13.5 13.5 Z' fill='%233b8bff'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="css/estilos.css?v=2026-11-24">
+</head>
+<body data-tema="papel">
+
+<!-- Fondos globales: se funden según el tema de la lámina activa -->
+<div class="fondo fondo-papel" aria-hidden="true"></div>
+<div class="fondo fondo-hud" aria-hidden="true"><div class="estrellas"></div></div>
+
+<main id="escenario" class="escenario">
+
+<!-- ============================================================
+     0 · PORTADA
+     ============================================================ -->
+<section class="lamina portada" id="l-portada" data-tema="papel" data-seccion="0" data-titulo="Portada" data-sin-cabecera>
+  <div class="marco">
+    <header class="mancheta e">
+      <div class="mancheta-lado">Documento de apoyo<br>para exposición</div>
+      <div class="mancheta-centro">
+        <span class="mancheta-sobre">Edición especial</span>
+        <span class="mancheta-nombre"><span class="asterisco">✻</span> Gaceta Cuántica <span class="asterisco">✻</span></span>
+      </div>
+      <div class="mancheta-lado derecha">Noviembre<br>de 2026</div>
+    </header>
+    <div class="filete-doble e"></div>
+    <h1 class="titular-portada" id="titular-portada" aria-label="Computación cuántica"><span class="linea">COMPUTACIÓN</span><span class="linea">CUÁNTICA</span></h1>
+    <div class="filete-doble e"></div>
+    <div class="portada-rejilla">
+      <figure class="p-caja portada-figura e">
+        <figcaption class="portada-pie">De los bits a los qubits</figcaption>
+        <canvas id="cv-portada" aria-label="Grabado de un átomo en estilo de periódico"></canvas>
+      </figure>
+      <div class="portada-columna">
+        <div class="p-kicker e">Ciencia, historia y el chip Majorana</div>
+        <ol class="portada-indice e">
+          <li>¿Qué es la computación?</li>
+          <li>¿Qué son los bits?</li>
+          <li>La física cuántica detrás</li>
+          <li>Qubits: en qué se diferencian</li>
+          <li>Historia y línea de tiempo</li>
+          <li>Microsoft: Majorana 1 y 2</li>
+        </ol>
+      </div>
+      <div class="p-caja portada-lectura e">
+        <p><span class="capitular">D</span>e lo más simple a lo más complejo: qué es computar, los bits, la física cuántica que permite los qubits y, al final, el chip de Microsoft. Cada idea trae una analogía cotidiana, y se aclara dónde se queda corta.</p>
+      </div>
+    </div>
+    <p class="portada-ayuda e"><kbd>→</kbd> avanzar · <kbd>F</kbd> pantalla completa · <kbd>N</kbd> notas · <kbd>Esc</kbd> índice</p>
+  </div>
+  <div class="notas">
+    <h3>Portada</h3>
+    <p>Presentarse y anunciar el recorrido: computación clásica → física cuántica → qubits → historia → chip Majorana de Microsoft.</p>
+    <p>Idea del diseño: las primeras láminas son un periódico (lo clásico); al llegar a la física cuántica el papel se descompone y aparece una interfaz futurista (lo cuántico).</p>
+  </div>
+</section>
+
+<!-- ============================================================
+     1 · APERTURA
+     ============================================================ -->
+<section class="lamina" id="l-gancho" data-tema="papel" data-seccion="1" data-titulo="Pregunta gancho">
+  <div class="marco">
+    <div class="gancho">
+      <div class="p-kicker e">La pregunta del día</div>
+      <p class="gancho-texto" id="gancho-texto" aria-live="polite" data-texto="¿Qué pasaría si una computadora pudiera simular una molécula tal como lo hace la naturaleza?"></p>
+      <div class="gancho-pie" id="gancho-pie">
+        <div class="filete-doble"></div>
+        <p class="gancho-ruta">Hoy: <b>bits</b> → <b>física cuántica</b> → <b>qubits</b> → <b>historia</b> → <b>Majorana</b></p>
+      </div>
+    </div>
+  </div>
+  <div class="notas">
+    <h3>Apertura (1 min)</h3>
+    <p>Lanzar la pregunta y dejar unos segundos de silencio.</p>
+    <p>La naturaleza es cuántica: simular una molécula con un computador clásico se vuelve imposible porque el número de cálculos crece demasiado rápido. Ese es el problema que inspiró a Feynman (1981) y es uno de los usos principales que se esperan de la computación cuántica (nuevos medicamentos, baterías, fertilizantes).</p>
+    <p>Si la frase se está escribiendo, <b>→</b> la completa de golpe.</p>
+  </div>
+</section>
+
+<!-- ============================================================
+     2 · COMPUTACIÓN Y BITS
+     ============================================================ -->
+<section class="lamina" id="l-computar" data-tema="papel" data-seccion="2" data-titulo="¿Qué es la computación?">
+  <div class="marco">
+    <div class="encabezado e">
+      <span class="p-kicker">Capítulo 1</span>
+      <h2 class="p-titular">¿Qué es la computación?</h2>
+      <p class="p-entrada">Recibir información, <em>transformarla siguiendo reglas precisas</em> y entregar un resultado. Una computadora hace eso a una velocidad enorme y sin cansarse.</p>
+    </div>
+    <div class="receta e" id="receta">
+      <div class="receta-paso" data-paso="0">
+        <span class="receta-etq">Entrada</span>
+        <span class="receta-analogia">los ingredientes</span>
+        <span class="receta-valor" id="receta-entrada">14</span>
+      </div>
+      <span class="receta-flecha" aria-hidden="true">→</span>
+      <div class="receta-paso" data-paso="1">
+        <span class="receta-etq">Proceso</span>
+        <span class="receta-analogia">los pasos de la receta (el algoritmo)</span>
+        <span class="receta-valor" id="receta-proceso">÷ 2 → ¿residuo?</span>
+      </div>
+      <span class="receta-flecha" aria-hidden="true">→</span>
+      <div class="receta-paso" data-paso="2">
+        <span class="receta-etq">Salida</span>
+        <span class="receta-analogia">el plato terminado</span>
+        <span class="receta-valor" id="receta-salida">?</span>
+      </div>
+    </div>
+    <div class="computar-pie">
+      <div class="controles e">
+        <span class="control-etq">Algoritmo «¿es par?»</span>
+        <button class="btn" id="receta-menos" aria-label="Restar uno">−</button>
+        <button class="btn" id="receta-mas" aria-label="Sumar uno">+</button>
+        <button class="btn btn-primario" id="receta-ejecutar">Ejecutar receta</button>
+      </div>
+      <dl class="definiciones e">
+        <div><dt>Algoritmo</dt><dd>lista finita y ordenada de pasos.</dd></div>
+        <div><dt>Hardware</dt><dd>las partes físicas.</dd></div>
+        <div><dt>Software</dt><dd>algoritmos escritos para la máquina.</dd></div>
+      </dl>
+    </div>
+  </div>
+  <div class="notas">
+    <h3>Entrada, proceso y salida</h3>
+    <p>Todo sistema de cómputo, de una calculadora a un supercomputador, hace tres cosas: recibe datos, los procesa con instrucciones y entrega un resultado.</p>
+    <p><b>Analogía:</b> una receta de cocina es un programa. Quien sigue los pasos al pie de la letra, aunque no sepa de cocina, obtiene el plato: eso hace una computadora.</p>
+    <p><b>Demostración:</b> el ejemplo del documento para «algoritmo»: para saber si un número es par, divídelo entre 2; si el residuo es 0, es par. Cambia el número con − / + y pulsa «Ejecutar receta».</p>
+  </div>
+</section>
+
+<section class="lamina" id="l-fundamentos" data-tema="papel" data-seccion="2" data-titulo="Las ideas que fundaron la computación">
+  <div class="marco">
+    <div class="encabezado e">
+      <span class="p-kicker">1.3 · Teorías fundadoras</span>
+      <h2 class="p-titular">Cuatro ideas que fundaron la computación</h2>
+    </div>
+    <div class="columnas-4">
+      <article class="columna e"><span class="anio-grande">1936</span><h3>Máquina de Turing</h3><p>Alan Turing: una máquina que lee y escribe símbolos en una cinta siguiendo reglas puede calcular todo lo «calculable».</p></article>
+      <article class="columna e"><span class="anio-grande">1945</span><h3>Arquitectura de von Neumann</h3><p>Datos e instrucciones guardados en la misma memoria. Base de casi todos los computadores de hoy.</p></article>
+      <article class="columna e"><span class="anio-grande">1947</span><h3>El transistor</h3><p>Bardeen, Brattain y Shockley: un interruptor microscópico sin partes móviles. Reemplazó a los tubos de vacío.</p></article>
+      <article class="columna e"><span class="anio-grande">1948</span><h3>Teoría de la información</h3><p>Claude Shannon define matemáticamente la información y propone el <b>bit</b> como su unidad mínima.</p></article>
+    </div>
+    <div class="p-ejemplo e">
+      <span class="p-ejemplo-etq">Ejemplo sencillo</span>
+      <p><b>Un computador es una ciudad de interruptores.</b> Un teléfono tiene miles de millones de transistores; cada uno solo está encendido o apagado, pero combinados reproducen un video o una videollamada. A todo esto hoy se le llama <em>computación clásica</em>.</p>
+    </div>
+  </div>
+  <div class="notas">
+    <h3>Las ideas fundadoras</h3>
+    <p>Todas las computadoras actuales son, en teoría, equivalentes a la máquina de Turing.</p>
+    <p>El transistor reemplazó a los tubos de vacío (grandes, calientes y poco fiables) y permitió miniaturizar todo.</p>
+    <p><b>Computación clásica:</b> funciona con las leyes de la física clásica (circuitos en un estado definido: encendido o apagado) y su unidad de información es el bit. El nombre sirve para distinguirla de la cuántica.</p>
+  </div>
+</section>
+
+<section class="lamina" id="l-bit" data-tema="papel" data-seccion="2" data-titulo="¿Qué es un bit?">
+  <div class="marco">
+    <div class="encabezado e">
+      <span class="p-kicker">Capítulo 2</span>
+      <h2 class="p-titular">¿Qué es un bit?</h2>
+      <p class="p-entrada"><em>Binary digit</em>: la unidad mínima de información. Solo vale <b>0</b> o <b>1</b>, como el interruptor de la luz: apagado o encendido, sin punto medio.</p>
+    </div>
+    <div class="bits-rejilla">
+      <div class="p-caja bits-caja e">
+        <div class="interruptores" id="interruptores" role="group" aria-label="Ocho interruptores, uno por bit"></div>
+        <div class="bits-lectura">
+          <div><span class="lectura-etq">Binario</span><span class="lectura-valor mono" id="bits-binario">00000000</span></div>
+          <div><span class="lectura-etq">Decimal</span><span class="lectura-valor" id="bits-decimal">0</span></div>
+          <div><span class="lectura-etq">Letra (ASCII)</span><span class="lectura-valor" id="bits-letra">—</span></div>
+        </div>
+        <p class="bits-suma" id="bits-suma">Enciende interruptores: cada posición vale el doble que la anterior.</p>
+        <div class="controles">
+          <span class="control-etq">Probar</span>
+          <button class="btn" data-bits="13">13</button>
+          <button class="btn" data-bits="72">H</button>
+          <button class="btn" data-bits="111">o</button>
+          <button class="btn" data-bits="108">l</button>
+          <button class="btn" data-bits="97">a</button>
+          <button class="btn" data-bits="0">Apagar</button>
+        </div>
+      </div>
+      <table class="p-tabla e">
+        <caption>Con <i>n</i> bits hay 2<sup>n</sup> combinaciones</caption>
+        <thead><tr><th>Bits</th><th>Combinaciones</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>2 <small>(0, 1)</small></td></tr>
+          <tr><td>2</td><td>4 <small>(00, 01, 10, 11)</small></td></tr>
+          <tr><td>3</td><td>8</td></tr>
+          <tr><td>8 <small>(1 byte)</small></td><td>256 <small>una letra o un número 0–255</small></td></tr>
+          <tr><td>24</td><td>16.777.216 <small>colores RGB</small></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="notas">
+    <h3>Bits</h3>
+    <p>Físicamente, el 0 y el 1 se representan con algo que se distinga con claridad: voltaje bajo o alto, interruptor apagado o encendido, un punto magnetizado hacia un lado u otro.</p>
+    <p><b>Del decimal al binario:</b> nosotros contamos en base 10; los computadores en base 2. Cada posición vale el doble: 1, 2, 4, 8, 16… Ejemplo: 13 = 8 + 4 + 1 → 1101 (botón «13»).</p>
+    <p><b>«Hola» en bits</b> (ASCII, 8 bits por letra): H = 01001000, o = 01101111, l = 01101100, a = 01100001. Pulsa H, o, l, a en orden.</p>
+  </div>
+</section>
+
+<section class="lamina" id="l-compuertas" data-tema="papel" data-seccion="2" data-titulo="Compuertas lógicas">
+  <div class="marco">
+    <div class="encabezado e">
+      <span class="p-kicker">2.3 · Compuertas lógicas</span>
+      <h2 class="p-titular">Cómo «piensa» un computador</h2>
+    </div>
+    <div class="compuertas-rejilla">
+      <div class="p-caja compuerta-caja e">
+        <div class="pestanas" role="tablist" aria-label="Tipo de compuerta">
+          <button class="pestana" role="tab" data-compuerta="NOT">NOT (NO)</button>
+          <button class="pestana" role="tab" data-compuerta="AND" aria-selected="true">AND (Y)</button>
+          <button class="pestana" role="tab" data-compuerta="OR">OR (O)</button>
+        </div>
+        <div class="compuerta-circuito">
+          <div class="compuerta-entradas">
+            <button class="bit-boton" id="puerta-a" aria-pressed="false" aria-label="Entrada A"><span class="bit-nombre">A</span><span class="bit-valor">0</span></button>
+            <button class="bit-boton" id="puerta-b" aria-pressed="false" aria-label="Entrada B"><span class="bit-nombre">B</span><span class="bit-valor">0</span></button>
+          </div>
+          <svg class="compuerta-svg" id="puerta-svg" viewBox="-40 0 480 140" aria-hidden="true"></svg>
+          <div class="compuerta-salida">
+            <span class="bombillo" id="puerta-bombillo"></span>
+            <span class="bit-valor grande" id="puerta-salida">0</span>
+          </div>
+        </div>
+        <p class="compuerta-regla" id="puerta-regla"></p>
+        <p class="compuerta-ejemplo" id="puerta-ejemplo"></p>
+      </div>
+      <aside class="p-columna-lateral e">
+        <div class="p-kicker">El bit clásico</div>
+        <ul class="lista-propiedades">
+          <li><b>Siempre tiene valor definido</b>, aunque no lo mires.</li>
+          <li><b>Se lee sin alterarlo.</b></li>
+          <li><b>Se copia sin límite.</b></li>
+          <li><b>Es robusto</b> ante pequeños temblores de voltaje.</li>
+        </ul>
+        <p class="nota-tinta">Parecen obvias… y son justo las que cambian con los qubits.</p>
+      </aside>
+    </div>
+  </div>
+  <div class="notas">
+    <h3>Compuertas lógicas</h3>
+    <p>Pequeños circuitos que reciben bits y entregan un bit según una regla. NOT invierte; AND da 1 solo si ambas entradas son 1; OR da 1 si al menos una es 1.</p>
+    <p>Combinando millones de compuertas se construyen sumadores, memorias y procesadores completos. Todo lo que hace tu computador es una enorme cadena de operaciones así.</p>
+    <p>Clic en A y B para cambiar las entradas.</p>
+  </div>
+</section>
+
+<section class="lamina" id="l-moore" data-tema="papel" data-seccion="2" data-titulo="Ley de Moore y su límite">
+  <div class="marco">
+    <div class="encabezado e">
+      <span class="p-kicker">2.5 · El límite de los bits</span>
+      <h2 class="p-titular">Ley de Moore: hasta chocar con el átomo</h2>
+    </div>
+    <div class="moore-rejilla">
+      <div class="p-caja moore-grafica e">
+        <canvas id="cv-moore" aria-label="Gráfica: el número de transistores se duplica cada dos años desde 1965 hasta llegar a la escala atómica"></canvas>
+        <div class="controles"><button class="btn" id="moore-repetir">↻ Dibujar de nuevo</button></div>
+      </div>
+      <div class="moore-texto">
+        <p class="e"><b>1965.</b> Gordon Moore observa que los transistores de un chip se duplican cada ~2 años. Por eso los computadores fueron más rápidos y baratos.</p>
+        <p class="e"><b>Hoy</b> miden pocos nanómetros: unas decenas de átomos. Ahí aparece el <b>efecto túnel</b>: los electrones atraviesan barreras y el interruptor «se filtra».</p>
+        <div class="dato-clave e">
+          <span class="p-kicker">Dato clave</span>
+          <p>Para simular moléculas o factorizar números enormes, ni todos los supercomputadores juntos bastarían. La física que estorba a lo clásico es la que la computación cuántica aprovecha.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="notas">
+    <h3>Ley de Moore</h3>
+    <p>La curva es ilustrativa: muestra una duplicación cada dos años en escala logarítmica (×2, ×4… hasta ~×1.000 millones en 60 años). No son conteos reales de chips concretos.</p>
+    <p>Efecto túnel (panel derecho): según la física clásica el electrón no debería cruzar la barrera, pero a escala atómica a veces la atraviesa. Por eso el transistor deja de ser un interruptor fiable.</p>
+    <p>Frase puente: «Un computador clásico solo manipula bits que valen 0 o 1. Ahora cambiamos de reglas.»</p>
+  </div>
+</section>
+
+<!-- ============================================================
+     3 · FÍSICA CUÁNTICA (transición a HUD)
+     ============================================================ -->
+<section class="lamina" id="l-transicion" data-tema="hud" data-seccion="3" data-titulo="¿Qué es la computación cuántica?">
+  <div class="marco">
+    <div class="encabezado e">
+      <span class="h-kicker">Capítulo 3 // Cambio de reglas</span>
+      <h2 class="h-titulo">¿Qué es la computación <em>cuántica</em>?</h2>
+      <p class="h-entrada">Procesar información usando directamente las leyes de la mecánica cuántica: la física de átomos, electrones y fotones. En lugar de bits usa <b>qubits</b>.</p>
+    </div>
+    <div class="cuatro-ideas">
+      <div class="h-panel e"><span class="h-num">01</span><h3>Cuantización</h3><p>La energía viene en paquetes.</p></div>
+      <div class="h-panel e"><span class="h-num">02</span><h3>Superposición</h3><p>Varias posibilidades a la vez.</p></div>
+      <div class="h-panel e"><span class="h-num">03</span><h3>Interferencia</h3><p>Ondas que se suman o se cancelan.</p></div>
+      <div class="h-panel e"><span class="h-num">04</span><h3>Entrelazamiento</h3><p>Partículas conectadas.</p></div>
+      <div class="h-panel h-panel-alerta e"><span class="h-num">!!</span><h3>Medición y decoherencia</h3><p>Por qué es tan difícil de construir.</p></div>
+    </div>
+    <div class="controles controles-esquina"><button class="btn" id="transicion-repetir">↻ Repetir transición</button></div>
+  </div>
+  <canvas class="cv-transicion" id="cv-transicion" aria-hidden="true"></canvas>
+  <div class="notas">
+    <h3>Del papel al holograma</h3>
+    <p>El periódico se descompone en píxeles: dejamos la física clásica (estados definidos) y entramos en la cuántica.</p>
+    <p>Cuatro ideas: cuantización, superposición, interferencia y entrelazamiento; más medición y decoherencia, que explican por qué es tan difícil de construir.</p>
+  </div>
+</section>
+
+<section class="lamina" id="l-cuantizacion" data-tema="hud" data-seccion="3" data-titulo="Cuantización">
+  <div class="marco">
+    <div class="encabezado e">
+      <span class="h-kicker">3.1 // Cuantización</span>
+      <h2 class="h-titulo">La energía viene en <em>paquetes</em></h2>
+    </div>
+    <div class="rejilla-texto-visual">
+      <div class="hitos-verticales">
+        <div class="h-hito e"><span class="h-anio">1900</span><p><b>Max Planck:</b> la energía se emite en paquetes llamados <em>cuantos</em>.</p></div>
+        <div class="h-hito e"><span class="h-anio">1905</span><p><b>Einstein:</b> efecto fotoeléctrico; la luz es una lluvia de partículas, los <em>fotones</em>.</p></div>
+        <div class="h-hito e"><span class="h-anio">1913</span><p><b>Niels Bohr:</b> el electrón solo puede tener ciertos niveles de energía.</p></div>
+      </div>
+      <div class="h-panel visual e">
+        <canvas id="cv-cuantizacion" aria-label="Rampa contra escalera: en la rampa la bola puede estar a cualquier altura; en la escalera solo en escalones"></canvas>
+        <p class="pie-visual">Los primeros qubits usaron dos de esos escalones como «0» y «1».</p>
+      </div>
+    </div>
+  </div>
+  <div class="notas">
+    <h3>Rampa contra escalera</h3>
+    <p>Una rampa permite estar a cualquier altura; una escalera solo en escalones concretos. Los electrones de un átomo «viven» en una escalera: solo pueden ocupar ciertos niveles.</p>
+    <p>La lectura numérica de la izquierda cambia de forma continua; la de la derecha salta de nivel en nivel.</p>
+  </div>
+</section>
+
+<section class="lamina" id="l-rendija" data-tema="hud" data-seccion="3" data-titulo="Doble rendija">
+  <div class="marco">
+    <div class="encabezado e">
+      <span class="h-kicker">3.2 // Dualidad onda-partícula</span>
+      <h2 class="h-titulo">La doble <em>rendija</em></h2>
+    </div>
+    <div class="rejilla-texto-visual ancho">
+      <div class="texto-lateral">
+        <p class="e"><b>1801.</b> Thomas Young: la luz que pasa por dos rendijas forma franjas claras y oscuras. Es una onda.</p>
+        <p class="e"><b>Desde los años 20.</b> Los electrones también forman franjas, <em>incluso enviados de uno en uno</em>. De Broglie (1924): toda la materia tiene propiedades de onda.</p>
+        <p class="e destacado">La partícula no sigue un único camino: su onda de probabilidad pasa por las dos rendijas a la vez.</p>
+      </div>
+      <div class="h-panel visual e">
+        <canvas id="cv-rendija" aria-label="Simulación: electrones que llegan de uno en uno a una pantalla y forman franjas de interferencia"></canvas>
+        <div class="controles">
+          <button class="btn btn-primario" id="rendija-lanzar" aria-pressed="true">Pausa</button>
+          <button class="btn" id="rendija-rafaga" aria-pressed="false">Ráfaga ×20</button>
+          <button class="btn" id="rendija-modo" aria-pressed="false">Tapar una rendija</button>
+          <button class="btn" id="rendija-reiniciar">Reiniciar</button>
+          <span class="contador" id="rendija-contador">0 electrones</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="notas">
+    <h3>Doble rendija</h3>
+    <p>Cada punto es un electrón que llega a la pantalla. Al principio parecen caer al azar; con cientos de impactos aparecen las franjas de interferencia (el histograma de la derecha).</p>
+    <p>«Tapar una rendija» muestra la comparación: con un solo camino no hay franjas, solo una mancha. Las franjas solo aparecen cuando la onda pasa por las dos rendijas.</p>
+    <p>Lección: el comportamiento cuántico se describe con una onda de probabilidad. Es la base de la superposición.</p>
+  </div>
+</section>
+
+<section class="lamina" id="l-moneda" data-tema="hud" data-seccion="3" data-titulo="Superposición y medición">
+  <div class="marco">
+    <div class="encabezado e">
+      <span class="h-kicker">3.3 – 3.4 // Superposición y medición</span>
+      <h2 class="h-titulo">La moneda <em>girando</em></h2>
+    </div>
+    <div class="rejilla-texto-visual ancho">
+      <div class="texto-lateral">
+        <p class="e"><b>1926.</b> Schrödinger: el estado puede ser una <em>superposición</em>, una combinación de posibilidades, cada una con su probabilidad.</p>
+        <p class="e"><b>1927.</b> Heisenberg: medir cambia el sistema. Al medir, la superposición <em>colapsa</em> a un solo resultado.</p>
+        <div class="h-aviso e"><span class="h-etq">Dónde se queda corta</span><p>La moneda real siempre es cara o sello; solo no lo sabemos. En un qubit la superposición es real y produce interferencia.</p></div>
+      </div>
+      <div class="h-panel visual e">
+        <canvas id="cv-moneda" aria-label="Moneda girando que cae en cara o sello al medirla"></canvas>
+        <div class="controles">
+          <button class="btn btn-primario" id="moneda-medir">Medir (atrapar)</button>
+          <button class="btn" id="moneda-lanzar">Lanzar otra vez</button>
+          <button class="btn" id="moneda-cien">Medir 100 veces</button>
+          <label class="deslizador"><span>Prob. de cara <b id="moneda-p-txt">50 %</b></span><input type="range" id="moneda-p" min="0" max="100" value="50"></label>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="notas">
+    <h3>Superposición y medición</h3>
+    <p>Moneda sobre la mesa = bit (cara o sello). Moneda girando = qubit: tiene cierta probabilidad de caer en cada lado. Al atraparla (medir) cae en uno.</p>
+    <p><b>Abrir la caja:</b> al medir, la moneda se detiene de golpe y nunca más puedes ver cómo giraba. Por eso de un qubit al final solo se obtiene 0 o 1.</p>
+    <p><b>Gato de Schrödinger (1935):</b> experimento mental, no real, para preguntar dónde termina lo cuántico y empieza lo cotidiano.</p>
+    <p>«Medir 100 veces» muestra que cada resultado es aleatorio, pero las frecuencias siguen la probabilidad elegida.</p>
+  </div>
+</section>
+
+<section class="lamina" id="l-interferencia" data-tema="hud" data-seccion="3" data-titulo="Interferencia">
+  <div class="marco">
+    <div class="encabezado e">
+      <span class="h-kicker">3.5 // Interferencia</span>
+      <h2 class="h-titulo">Sumar y <em>cancelar</em> probabilidades</h2>
+    </div>
+    <div class="rejilla-texto-visual ancho">
+      <div class="texto-lateral">
+        <p class="e">Las ondas pueden <b>sumarse</b> (interferencia constructiva) o <b>cancelarse</b> (destructiva).</p>
+        <p class="e destacado">Un algoritmo cuántico se diseña para que las ondas de las respuestas incorrectas se cancelen y la correcta se refuerce.</p>
+        <div class="h-aviso e"><span class="h-etq">Ejemplo sencillo</span><p>Los audífonos con cancelación de ruido emiten la onda opuesta al ruido: al sumarse, silencio.</p></div>
+      </div>
+      <div class="h-panel visual e">
+        <canvas id="cv-interferencia" aria-label="Dos ondas y su suma; un deslizador cambia el desfase entre ellas"></canvas>
+        <div class="controles">
+          <label class="deslizador ancho"><span>Desfase de la onda B <b id="fase-txt">0°</b></span><input type="range" id="fase" min="0" max="360" value="0"></label>
+          <button class="btn" data-fase="0">0° suma</button>
+          <button class="btn" data-fase="180">180° cancela</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="notas">
+    <h3>Interferencia</h3>
+    <p>Arrastra el desfase: en 0° las crestas coinciden y la onda resultante es el doble; en 180° la cresta de una cae sobre el valle de la otra y se anulan.</p>
+    <p>Esto es lo que hace útil a un computador cuántico: no «probar todo a la vez», sino organizar la interferencia.</p>
+  </div>
+</section>
+
+<section class="lamina" id="l-entrelazamiento" data-tema="hud" data-seccion="3" data-titulo="Entrelazamiento">
+  <div class="marco">
+    <div class="encabezado e">
+      <span class="h-kicker">3.6 // Entrelazamiento</span>
+      <h2 class="h-titulo">Partículas <em>conectadas</em></h2>
+    </div>
+    <div class="rejilla-texto-visual ancho">
+      <div class="texto-lateral">
+        <p class="e"><b>1935.</b> Paradoja EPR (Einstein, Podolsky, Rosen). Einstein: «acción fantasmal a distancia».</p>
+        <p class="e"><b>1964.</b> John Bell: un criterio para comprobarlo con experimentos.</p>
+        <p class="e"><b>1982 →</b> Aspect, Clauser y Zeilinger lo confirman. <b>Nobel de Física 2022.</b></p>
+        <div class="h-aviso h-aviso-alerta e"><span class="h-etq">Ojo con el mito</span><p>No sirve para enviar mensajes más rápido que la luz: cada resultado, solo, parece aleatorio.</p></div>
+      </div>
+      <div class="h-panel visual e">
+        <canvas id="cv-entrelazamiento" aria-label="Par de partículas entrelazadas: al medir una, la otra muestra el resultado opuesto"></canvas>
+        <div class="controles">
+          <button class="btn btn-primario" id="entre-medir">Medir el par</button>
+          <button class="btn" id="entre-veinte">Medir 20 pares</button>
+          <button class="btn" id="entre-reiniciar">Reiniciar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="notas">
+    <h3>El par de guantes</h3>
+    <p>Guardas un guante izquierdo y uno derecho en dos cajas y envías cada una a un extremo del mundo. Al abrir la tuya sabes qué hay en la otra.</p>
+    <p><b>Diferencia profunda:</b> en lo cuántico los resultados no estaban decididos de antemano (eso lo demostró Bell). La analogía es solo una primera aproximación.</p>
+    <p>En la animación: cada lado por separado sale ↑ o ↓ al 50 %; solo al comparar ambas columnas se ve que siempre son opuestos.</p>
+  </div>
+</section>
+
+<section class="lamina" id="l-decoherencia" data-tema="hud" data-seccion="3" data-titulo="Decoherencia">
+  <div class="marco">
+    <div class="encabezado e">
+      <span class="h-kicker">3.7 // El enemigo</span>
+      <h2 class="h-titulo"><em>Decoherencia</em></h2>
+    </div>
+    <div class="rejilla-texto-visual ancho">
+      <div class="texto-lateral">
+        <p class="e">La superposición solo dura mientras el sistema está <b>aislado</b>. Calor, vibraciones, campos o un átomo cercano lo «miden» sin querer.</p>
+        <p class="e destacado">Por eso los computadores cuánticos necesitan temperaturas cercanas al cero absoluto y aislamiento extremo.</p>
+        <div class="h-aviso e"><span class="h-etq">Ejemplo sencillo</span><p>Un secreto susurrado en una biblioteca vacía se entiende; en medio de un concierto, el ruido lo arruina.</p></div>
+      </div>
+      <div class="h-panel visual e">
+        <canvas id="cv-decoherencia" aria-label="Onda cuántica que se degrada cuando aumenta el ruido del entorno"></canvas>
+        <div class="controles">
+          <label class="deslizador ancho"><span>Ruido del entorno <b id="ruido-txt">0 %</b></span><input type="range" id="ruido" min="0" max="100" value="0"></label>
+          <button class="btn" id="deco-reiniciar">Preparar qubit nuevo</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="notas">
+    <h3>Decoherencia</h3>
+    <p>Sube el ruido del entorno: las partículas del entorno chocan con el qubit, la onda pierde su forma y el medidor de coherencia cae. Con ruido 0 la onda se mantiene.</p>
+    <p>Una vez perdida, la coherencia no vuelve sola: hay que preparar un qubit nuevo.</p>
+  </div>
+</section>
+
+<section class="lamina" id="l-sintesis" data-tema="hud" data-seccion="3" data-titulo="Entonces, ¿qué es la computación cuántica?">
+  <div class="marco">
+    <div class="encabezado e">
+      <span class="h-kicker">3.8 // Juntando todo</span>
+      <h2 class="h-titulo">Un computador <em>distinto</em>, no uno más rápido</h2>
+    </div>
+    <ol class="tuberia">
+      <li class="h-panel e"><span class="h-num">01</span><span class="tuberia-glifo" aria-hidden="true">|0⟩+|1⟩</span><h3>Preparar</h3><p>qubits en superposición</p></li>
+      <li class="h-panel e"><span class="h-num">02</span><span class="tuberia-glifo" aria-hidden="true">q₀ ⟷ q₁</span><h3>Entrelazar</h3><p>conectarlos entre sí</p></li>
+      <li class="h-panel e"><span class="h-num">03</span><span class="tuberia-glifo" aria-hidden="true">∿ + ∿</span><h3>Interferir</h3><p>cancelar lo incorrecto, reforzar lo correcto</p></li>
+      <li class="h-panel e"><span class="h-num">04</span><span class="tuberia-glifo" aria-hidden="true">→ 0 | 1</span><h3>Medir</h3><p>obtener el resultado</p></li>
+    </ol>
+    <div class="mitos">
+      <div class="h-aviso h-aviso-alerta e"><span class="h-etq">Mito</span><p>«Prueba todas las respuestas a la vez». Al medir solo sale un resultado; la ventaja viene de organizar la interferencia.</p></div>
+      <div class="h-aviso h-aviso-alerta e"><span class="h-etq">Mito</span><p>«Reemplazará a tu laptop». No: será un acelerador especializado, como una GPU para ciertos cálculos.</p></div>
+    </div>
+  </div>
+  <div class="notas">
+    <h3>Síntesis</h3>
+    <p>Un computador cuántico prepara qubits en superposición, los entrelaza, aplica operaciones que hacen que las respuestas incorrectas se cancelen por interferencia y las correctas se refuercen, y al final mide.</p>
+    <p>Sirve para ciertos problemas: simulación de moléculas, optimización y criptografía.</p>
+  </div>
+</section>
+
+<!-- ============================================================
+     4 · QUBITS
+     ============================================================ -->
+<section class="lamina" id="l-qubit" data-tema="hud" data-seccion="4" data-titulo="¿Qué es un qubit?">
+  <div class="marco">
+    <div class="encabezado e">
+      <span class="h-kicker">Capítulo 4 // Quantum bit</span>
+      <h2 class="h-titulo">¿Qué es un <em>qubit</em>?</h2>
+      <p class="h-entrada">Al medirlo siempre da 0 o 1; antes de medirlo puede estar en superposición de ambos. Término acuñado por Benjamin Schumacher en 1995.</p>
+    </div>
+    <div class="qubit-rejilla">
+      <div class="h-panel e">
+        <p class="formula" aria-label="psi igual a alfa por cero más beta por uno">|ψ⟩ = <span class="azul">α</span>|0⟩ + <span class="azul">β</span>|1⟩</p>
+        <p class="formula-pie">α y β son <b>amplitudes</b>. Probabilidad de 0 = α², de 1 = β², y siempre α² + β² = 1.</p>
+      </div>
+      <div class="h-panel e">
+        <div class="barras-prob">
+          <div class="barra-prob"><span>P(0) = α²</span><div class="prob-pista"><div class="prob-relleno" id="qb-barra0"></div></div><b id="qb-p0">50 %</b></div>
+          <div class="barra-prob"><span>P(1) = β²</span><div class="prob-pista"><div class="prob-relleno b" id="qb-barra1"></div></div><b id="qb-p1">50 %</b></div>
+        </div>
+        <label class="deslizador ancho"><span>α²</span><input type="range" id="qb-alfa" min="0" max="100" value="50"></label>
+        <div class="controles">
+          <button class="btn" data-alfa="50">0,5 / 0,5</button>
+          <button class="btn" data-alfa="75">0,75 / 0,25</button>
+          <button class="btn" data-alfa="100">1 / 0</button>
+        </div>
+        <p class="pie-visual" id="qb-pie">Superposición «justa»: 50 % de obtener 0 y 50 % de obtener 1.</p>
+      </div>
+    </div>
+  </div>
+  <div class="notas">
+    <h3>Cómo se describe un qubit</h3>
+    <p>Ejemplos del documento: α² = 0,5 y β² = 0,5 → 50/50. α² = 0,75 y β² = 0,25 → sale 0 el 75 % de las veces. α² = 1 → es justo un bit clásico en 0: el bit clásico es un caso particular del qubit.</p>
+    <p>En general las amplitudes pueden ser números complejos; por eso se usan sus módulos al cuadrado.</p>
+  </div>
+</section>
+
+<section class="lamina" id="l-bloch" data-tema="hud" data-seccion="4" data-titulo="La esfera de Bloch">
+  <div class="marco">
+    <div class="encabezado e">
+      <span class="h-kicker">4.2 // Ver un qubit</span>
+      <h2 class="h-titulo">La esfera de <em>Bloch</em></h2>
+    </div>
+    <div class="bloch-rejilla">
+      <div class="texto-lateral">
+        <p class="e">Un bit solo vive en los polos: norte = <b>0</b>, sur = <b>1</b>. Un qubit puede apuntar a <b>cualquier punto</b> de la superficie.</p>
+        <p class="e">Cerca del norte, más probable medir 0; en el ecuador, 50-50. Girar alrededor del ecuador cambia la <b>fase</b>: información que el bit no tiene.</p>
+        <div class="h-panel lecturas e" id="bloch-lecturas">
+          <div><span class="h-etq">θ</span><b id="bloch-theta">0°</b></div>
+          <div><span class="h-etq">φ (fase)</span><b id="bloch-phi">0°</b></div>
+          <div><span class="h-etq">P(0)</span><b id="bloch-p0">100 %</b></div>
+          <div><span class="h-etq">P(1)</span><b id="bloch-p1">0 %</b></div>
+        </div>
+      </div>
+      <div class="h-panel visual bloch-visual e">
+        <canvas id="cv-bloch" aria-label="Esfera de Bloch en 3D; arrastra para girarla"></canvas>
+        <p class="pista-arrastre">Arrastra para girar la esfera</p>
+        <div class="controles">
+          <button class="btn btn-puerta" data-puerta="X">X</button>
+          <button class="btn btn-puerta" data-puerta="H">H</button>
+          <button class="btn btn-puerta" data-puerta="Z">Z</button>
+          <button class="btn" id="bloch-medir">Medir</button>
+          <button class="btn" data-estado="0">|0⟩</button>
+          <button class="btn" data-estado="1">|1⟩</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="notas">
+    <h3>Esfera de Bloch</h3>
+    <p><b>X</b>: gira media vuelta alrededor del eje x (0 ↔ 1, como el NOT). <b>H</b> (Hadamard): lleva |0⟩ al ecuador, superposición 50-50, «lanzar la moneda». <b>Z</b>: media vuelta alrededor del eje vertical; no cambia las probabilidades, cambia la fase.</p>
+    <p>Demostración sugerida: |0⟩ → H (ecuador) → Z (la fase cambia, P sigue 50-50) → H (llega a |1⟩). La fase importó: eso es interferencia.</p>
+    <p><b>Analogía:</b> un bit es un interruptor; un qubit, un regulador con perilla que además tiene dirección. Pero al mirar la lámpara solo ves encendido o apagado.</p>
+  </div>
+</section>
+
+<section class="lamina" id="l-potencia" data-tema="hud" data-seccion="4" data-titulo="2ⁿ amplitudes">
+  <div class="marco">
+    <div class="encabezado e">
+      <span class="h-kicker">4.3 // Muchos qubits</span>
+      <h2 class="h-titulo">n qubits → 2<sup>n</sup> <em>amplitudes</em></h2>
+    </div>
+    <div class="potencia-rejilla">
+      <div class="h-panel potencia-control e">
+        <label class="deslizador ancho grande"><span>Qubits <b id="pot-n">3</b></span><input type="range" id="pot-rango" min="1" max="300" value="3"></label>
+        <div class="controles">
+          <button class="btn" data-n="3">3</button>
+          <button class="btn" data-n="10">10</button>
+          <button class="btn" data-n="50">50</button>
+          <button class="btn" data-n="300">300</button>
+        </div>
+        <div class="potencia-comparacion">
+          <div><span class="h-etq">Computador clásico</span><b>1 valor</b><small id="pot-clasico">de 8 posibles</small></div>
+          <div><span class="h-etq">Sistema cuántico</span><b id="pot-numero" class="numero-grande">8</b><small id="pot-texto">amplitudes a la vez</small></div>
+        </div>
+      </div>
+      <div class="h-panel visual e">
+        <canvas id="cv-potencia" aria-label="Cuadrícula que muestra cuántas amplitudes describe el sistema según el número de qubits"></canvas>
+      </div>
+    </div>
+    <p class="pie-visual e">Analogía: un libro con todas las páginas «a la vez»; la interferencia amplifica la página de la respuesta. Al medir, solo se obtiene un resultado.</p>
+  </div>
+  <div class="notas">
+    <h3>Crecimiento 2ⁿ</h3>
+    <p>Datos del documento: 3 qubits → 8 amplitudes; 10 → 1.024; 50 → más de 1,1 × 10¹⁵ (unos 1.100 billones); 300 → cerca de 2 × 10⁹⁰, más que átomos en el universo observable (~10⁸⁰).</p>
+    <p>Con n bits clásicos el computador guarda un valor de los 2ⁿ posibles; con n qubits entrelazados el estado se describe con 2ⁿ amplitudes y las operaciones actúan sobre todas.</p>
+  </div>
+</section>
+
+<section class="lamina" id="l-puertas" data-tema="hud" data-seccion="4" data-titulo="Puertas cuánticas">
+  <div class="marco">
+    <div class="encabezado e">
+      <span class="h-kicker">4.4 // Puertas cuánticas</span>
+      <h2 class="h-titulo">H + CNOT = <em>entrelazamiento</em></h2>
+    </div>
+    <div class="puertas-rejilla">
+      <div class="texto-lateral">
+        <div class="h-panel e"><h3><span class="azul">H</span> · Hadamard</h3><p>Pone un qubit en 0 o en 1 en superposición 50-50: «lanzar la moneda».</p></div>
+        <div class="h-panel e"><h3><span class="azul">CNOT</span></h3><p>Actúa sobre dos qubits: invierte el segundo solo si el primero es 1.</p></div>
+        <p class="e">Las puertas cuánticas son <b>reversibles</b> y se representan con matrices que <b>rotan</b> el estado en la esfera de Bloch.</p>
+      </div>
+      <div class="h-panel visual e">
+        <svg class="circuito" id="circuito" viewBox="0 0 640 260" role="img" aria-label="Circuito: Hadamard en el primer qubit y luego CNOT">
+          <text x="18" y="84" class="circ-txt">q₀ |0⟩</text>
+          <text x="18" y="194" class="circ-txt">q₁ |0⟩</text>
+          <line x1="110" y1="78" x2="520" y2="78" class="circ-linea"/>
+          <line x1="110" y1="188" x2="520" y2="188" class="circ-linea"/>
+          <rect x="190" y="48" width="64" height="60" class="circ-caja"/>
+          <text x="222" y="90" class="circ-puerta">H</text>
+          <line x1="360" y1="78" x2="360" y2="208" class="circ-linea"/>
+          <circle cx="360" cy="78" r="10" class="circ-punto"/>
+          <circle cx="360" cy="188" r="20" class="circ-xor"/>
+          <line x1="340" y1="188" x2="380" y2="188" class="circ-linea"/>
+          <rect x="460" y="50" width="56" height="56" class="circ-medidor"/>
+          <rect x="460" y="160" width="56" height="56" class="circ-medidor"/>
+          <path d="M470 94 Q488 66 506 94 M488 94 L500 68" class="circ-linea"/>
+          <path d="M470 204 Q488 176 506 204 M488 204 L500 178" class="circ-linea"/>
+          <circle cx="110" cy="78" r="7" class="circ-pulso" id="pulso-0"/>
+          <circle cx="110" cy="188" r="7" class="circ-pulso" id="pulso-1"/>
+        </svg>
+        <div class="bell-resultados" id="bell-resultados">
+          <div class="bell-col"><span class="bell-etq">00</span><div class="bell-pista"><div class="bell-barra" id="bell-00"></div></div><b id="bell-00-n">0</b></div>
+          <div class="bell-col"><span class="bell-etq">01</span><div class="bell-pista"><div class="bell-barra" id="bell-01"></div></div><b id="bell-01-n">0</b></div>
+          <div class="bell-col"><span class="bell-etq">10</span><div class="bell-pista"><div class="bell-barra" id="bell-10"></div></div><b id="bell-10-n">0</b></div>
+          <div class="bell-col"><span class="bell-etq">11</span><div class="bell-pista"><div class="bell-barra" id="bell-11"></div></div><b id="bell-11-n">0</b></div>
+        </div>
+        <div class="controles">
+          <button class="btn btn-primario" id="bell-uno">Ejecutar y medir</button>
+          <button class="btn" id="bell-cien">Medir 100 veces</button>
+          <button class="btn" id="bell-reiniciar">Reiniciar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="notas">
+    <h3>Puertas cuánticas</h3>
+    <p>El circuito: H pone a q₀ en superposición; CNOT invierte q₁ solo si q₀ es 1. Resultado: los dos qubits quedan entrelazados.</p>
+    <p>Al medir salen solo 00 o 11 (cada uno ~50 %), nunca 01 ni 10: los resultados están correlacionados.</p>
+  </div>
+</section>
+
+<section class="lamina" id="l-tabla" data-tema="hud" data-seccion="4" data-titulo="Bit contra qubit">
+  <div class="marco">
+    <div class="encabezado e">
+      <span class="h-kicker">4.5 // Comparación</span>
+      <h2 class="h-titulo">Bit <em>vs.</em> qubit</h2>
+    </div>
+    <table class="h-tabla e">
+      <thead><tr><th></th><th>Bit clásico</th><th>Qubit</th></tr></thead>
+      <tbody>
+        <tr><th>Al medir</th><td>0 o 1</td><td>0 o 1 (nunca algo intermedio)</td></tr>
+        <tr><th>Antes de medir</th><td>Siempre definido</td><td>Superposición α|0⟩ + β|1⟩</td></tr>
+        <tr><th>Al medirlo</th><td>No cambia</td><td>Colapsa y pierde la superposición</td></tr>
+        <tr><th>Entre varios</th><td>Independientes</td><td>Pueden estar entrelazados</td></tr>
+        <tr><th>Copiarlo</th><td>Sin límite</td><td>No se puede clonar un estado desconocido</td></tr>
+        <tr><th>Al juntar n</th><td>n valores</td><td>2<sup>n</sup> amplitudes</td></tr>
+        <tr><th>Soporte físico</th><td>Transistor</td><td>Átomo, ion, fotón, circuito superconductor…</td></tr>
+        <tr><th>Fragilidad</th><td>Muy robusto</td><td>Muy frágil: aislamiento y corrección de errores</td></tr>
+        <tr><th>Temperatura</th><td>Ambiente</td><td>Muchas tecnologías: ≈ −273 °C</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="notas">
+    <h3>Bit contra qubit</h3>
+    <p>Fila «información que guarda»: el bit guarda un valor de dos; el qubit, dos amplitudes con fase (un punto en la esfera de Bloch).</p>
+    <p>Teorema de no clonación: no se puede copiar un estado cuántico desconocido. Por eso la corrección de errores cuántica es más difícil que la clásica.</p>
+  </div>
+</section>
+
+<section class="lamina" id="l-tipos" data-tema="hud" data-seccion="4" data-titulo="Tipos de qubits">
+  <div class="marco">
+    <div class="encabezado e">
+      <span class="h-kicker">4.6 // ¿De qué están hechos?</span>
+      <h2 class="h-titulo">Seis formas de construir un <em>qubit</em></h2>
+    </div>
+    <div class="tipos">
+      <article class="h-panel e"><svg class="tipo-icono" viewBox="0 0 48 48" aria-hidden="true"><path d="M8 34 V18 H18 V30 H30 V18 H40 V34"/><circle cx="24" cy="12" r="4"/></svg><h3>Superconductores</h3><p>Circuitos a ~0,015 K: el «átomo artificial» transmon.</p><span class="actores">IBM · Google</span></article>
+      <article class="h-panel e"><svg class="tipo-icono" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="6"/><path d="M4 10 H44 M4 38 H44"/><path d="M14 24 H18 M30 24 H34"/></svg><h3>Iones atrapados</h3><p>Átomos con carga suspendidos con campos y manipulados con láseres.</p><span class="actores">IonQ · Quantinuum</span></article>
+      <article class="h-panel e"><svg class="tipo-icono" viewBox="0 0 48 48" aria-hidden="true"><circle cx="12" cy="24" r="4"/><circle cx="24" cy="24" r="4"/><circle cx="36" cy="24" r="4"/><path d="M12 4 V18 M24 4 V18 M36 4 V18"/></svg><h3>Átomos neutros</h3><p>Átomos sostenidos con «pinzas ópticas» de láser.</p><span class="actores">QuEra · Atom Computing · Pasqal</span></article>
+      <article class="h-panel e"><svg class="tipo-icono" viewBox="0 0 48 48" aria-hidden="true"><path d="M4 24 Q10 12 16 24 T28 24 T40 24"/><path d="M38 18 L44 24 L38 30"/></svg><h3>Fotónicos</h3><p>Fotones (partículas de luz) y componentes ópticos.</p><span class="actores">PsiQuantum · Xanadu · USTC</span></article>
+      <article class="h-panel e"><svg class="tipo-icono" viewBox="0 0 48 48" aria-hidden="true"><rect x="6" y="30" width="36" height="12"/><circle cx="24" cy="20" r="6"/><path d="M24 4 V12 M20 8 L24 4 L28 8"/></svg><h3>Espín en semiconductores</h3><p>El espín de un electrón atrapado en silicio.</p><span class="actores">Intel y centros de investigación</span></article>
+      <article class="h-panel h-panel-destacado e"><svg class="tipo-icono" viewBox="0 0 48 48" aria-hidden="true"><path d="M24 8 C40 8 40 30 24 30 C8 30 8 8 24 8 Z M14 24 C14 44 34 44 34 24"/></svg><h3>Topológicos <small>(en desarrollo)</small></h3><p>Información en propiedades «globales», buscando protección natural contra errores.</p><span class="actores">Microsoft (chip Majorana)</span></article>
+    </div>
+  </div>
+  <div class="notas">
+    <h3>Tipos de qubits</h3>
+    <p>Un qubit puede construirse con cualquier sistema cuántico que tenga dos estados bien definidos.</p>
+    <p>Los topológicos son la apuesta de Microsoft: los veremos en detalle en la sección 6.</p>
+  </div>
+</section>
+
+<section class="lamina" id="l-errores" data-tema="hud" data-seccion="4" data-titulo="Corrección de errores">
+  <div class="marco">
+    <div class="encabezado e">
+      <span class="h-kicker">4.7 // El gran reto</span>
+      <h2 class="h-titulo">Errores y <em>corrección</em> cuántica</h2>
+    </div>
+    <div class="rejilla-texto-visual ancho">
+      <div class="texto-lateral">
+        <p class="e">Los qubits actuales se equivocan con frecuencia. Solución: repartir un <b>qubit lógico</b> (confiable) entre muchos <b>qubits físicos</b> (imperfectos).</p>
+        <p class="e destacado">Podrían hacer falta cientos o miles de físicos por cada lógico, según la tecnología.</p>
+        <p class="e"><b>2018.</b> John Preskill llama a esta etapa <b>NISQ</b>: cuántica ruidosa de escala intermedia. La meta: máquinas tolerantes a fallos.</p>
+      </div>
+      <div class="h-panel visual e">
+        <p class="h-etq">Ejemplo: enviar el mensaje tres veces · clic en un bit para meter ruido</p>
+        <div class="repeticion">
+          <div class="rep-bloque"><span class="h-etq">Mensaje</span><b class="rep-grande" id="rep-mensaje">1</b></div>
+          <span class="rep-flecha">→</span>
+          <div class="rep-bloque"><span class="h-etq">Canal con ruido</span><div class="rep-bits" id="rep-bits"></div></div>
+          <span class="rep-flecha">→</span>
+          <div class="rep-bloque"><span class="h-etq">Por mayoría</span><b class="rep-grande" id="rep-resultado">1</b><small id="rep-estado">correcto</small></div>
+        </div>
+        <div class="controles">
+          <button class="btn" id="rep-cambiar">Enviar «0» / «1»</button>
+          <button class="btn" id="rep-ruido">Ruido al azar</button>
+          <button class="btn" id="rep-limpiar">Limpiar</button>
+        </div>
+        <p class="pie-visual">La versión cuántica es más sofisticada: no se puede copiar un qubit ni mirarlo sin destruirlo.</p>
+      </div>
+    </div>
+  </div>
+  <div class="notas">
+    <h3>Corrección de errores</h3>
+    <p>Si quieres enviar «1» por un canal con ruido, envías «111». Si llega «101», por mayoría deduces que era «1». Con un error se corrige; con dos, falla: por eso se necesitan muchos qubits físicos.</p>
+    <p>NISQ: Noisy Intermediate-Scale Quantum, máquinas con decenas o cientos de qubits que aún cometen muchos errores.</p>
+  </div>
+</section>
+
+<section class="lamina" id="l-usos" data-tema="hud" data-seccion="4" data-titulo="¿Para qué servirá?">
+  <div class="marco">
+    <div class="encabezado e">
+      <span class="h-kicker">4.8 // Aplicaciones</span>
+      <h2 class="h-titulo">¿Para qué <em>servirá</em>?</h2>
+    </div>
+    <div class="usos">
+      <article class="h-panel e"><span class="h-num">01</span><h3>Simular moléculas y materiales</h3><p>La naturaleza es cuántica: medicamentos, baterías, fertilizantes, superconductores.</p></article>
+      <article class="h-panel e"><span class="h-num">02</span><h3>Criptografía</h3><p>El algoritmo de Shor (1994) permitiría romper RSA. En 2024 el NIST publicó los primeros estándares post-cuánticos.</p></article>
+      <article class="h-panel e"><span class="h-num">03</span><h3>Búsqueda</h3><p>Algoritmo de Grover (1996): aceleración «cuadrática», no mágica.</p></article>
+      <article class="h-panel e"><span class="h-num">04</span><h3>Optimización y aprendizaje automático</h3><p>Investigación activa; beneficios aún en estudio.</p></article>
+    </div>
+  </div>
+  <div class="notas">
+    <h3>¿Para qué servirá?</h3>
+    <p>RSA protege buena parte de las comunicaciones actuales. La criptografía post-cuántica está diseñada para resistir ataques cuánticos.</p>
+    <p>Recalcar: ventaja en problemas específicos, no en todo.</p>
+  </div>
+</section>
+
+<!-- ============================================================
+     5 · HISTORIA
+     ============================================================ -->
+<section class="lamina" id="l-camino" data-tema="papel" data-seccion="5" data-titulo="¿Cómo se llegó a la computación cuántica?">
+  <div class="marco">
+    <div class="encabezado e">
+      <span class="p-kicker">Capítulo 5 · Archivo</span>
+      <h2 class="p-titular">Dos ramas que se encontraron</h2>
+    </div>
+    <div class="ramas e">
+      <svg class="ramas-svg" viewBox="0 0 1000 300" aria-hidden="true" preserveAspectRatio="none">
+        <path d="M0 60 C 260 60, 300 150, 430 150" class="rama"/>
+        <path d="M0 240 C 260 240, 300 150, 430 150" class="rama"/>
+        <path d="M430 150 L 1000 150" class="rama gruesa"/>
+      </svg>
+      <div class="rama-etq r1"><b>1900–1935 · Física cuántica</b>Planck, Einstein, Bohr, de Broglie, Heisenberg, Schrödinger, Dirac. Trae el transistor y el láser.</div>
+      <div class="rama-etq r2"><b>1936–1960s · Computación</b>Turing, von Neumann, transistor (1947), circuito integrado (1958), Shannon.</div>
+      <div class="rama-hitos">
+        <div><b>1961–1982</b>«La información es física»: Landauer, Bennett, Benioff, Feynman.</div>
+        <div><b>1985–1997</b>Algoritmos: Deutsch, Shor, Grover, Kitaev.</div>
+        <div><b>1995–2010</b>Primeros experimentos.</div>
+        <div><b>2011 →</b>Etapa industrial.</div>
+      </div>
+    </div>
+    <div class="camino-pie">
+      <blockquote class="p-cita e">«Construyamos computadores que sean ellos mismos cuánticos.»<cite>— Idea de Richard Feynman (1981-1982)</cite></blockquote>
+      <div class="p-caja nobel e">
+        <span class="p-kicker">Nobel de Física</span>
+        <p><b>2012</b> Haroche y Wineland · <b>2022</b> Aspect, Clauser y Zeilinger · <b>2025</b> Clarke, Devoret y Martinis</p>
+      </div>
+    </div>
+  </div>
+  <div class="notas">
+    <h3>Cómo se llegó</h3>
+    <p>Landauer (1961): borrar un bit disipa calor mínimo; «la información es física». Bennett (1973): computación reversible. Benioff (1980): primer modelo de computador cuántico. Feynman (1981-82): simular sistemas cuánticos en un computador clásico es exponencialmente costoso; muchos consideran su propuesta el nacimiento de la computación cuántica.</p>
+    <p><b>Simular el mar con un balde:</b> representar cada gota del océano es casi imposible; Feynman propuso usar «otro mar pequeño» controlable.</p>
+    <p>Algoritmos: Deutsch (1985) computador cuántico universal; Deutsch–Jozsa (1992); Shor (1994) factorización, convirtió el tema en prioridad estratégica; Schumacher (1995) «qubit»; Shor (1995) y Steane (1996) corrección de errores; Grover (1996); Kitaev (1997) computación topológica.</p>
+    <p>Experimentos: 1995 Cirac y Zoller proponen puertas con iones; equipo de Wineland, primera puerta de dos qubits. 1998 primeros computadores de 2 qubits (RMN). 1999 primer qubit superconductor. 2001 IBM y Stanford factorizan 15 = 3 × 5 con 7 qubits. 2007 transmon.</p>
+    <p>Nobel: 2012 manipular sistemas cuánticos individuales; 2022 fotones entrelazados; 2025 efecto túnel cuántico macroscópico en circuitos (base de los qubits superconductores).</p>
+  </div>
+</section>
+
+<section class="lamina" id="l-linea" data-tema="hud" data-seccion="5" data-titulo="Línea de tiempo 1900 → 2026">
+  <div class="marco">
+    <div class="encabezado linea-encabezado e">
+      <div>
+        <span class="h-kicker">Capítulo 6 // Línea de evolución</span>
+        <h2 class="h-titulo">1900 <em>→</em> 2026</h2>
+      </div>
+      <div class="linea-regla" aria-hidden="true">
+        <div class="linea-regla-pista"><div class="linea-regla-ventana" id="linea-ventana"></div></div>
+        <div class="linea-regla-anios"><span>1900</span><span>1950</span><span>2000</span><span>2026</span></div>
+      </div>
+    </div>
+    <div class="linea-contenedor e" id="linea-contenedor" tabindex="0" aria-label="Línea de tiempo con desplazamiento horizontal">
+      <ol class="linea-pista" id="linea-pista">
+        <li class="ficha papel" data-anio="1900"><span class="ficha-anio">1900</span><p class="ficha-hito">Max Planck propone los «cuantos» de energía.</p><p class="ficha-porque">Nace la física cuántica.</p></li>
+        <li class="ficha papel" data-anio="1905"><span class="ficha-anio">1905</span><p class="ficha-hito">Einstein explica el efecto fotoeléctrico con fotones.</p><p class="ficha-porque">La luz se comporta como partículas y ondas.</p></li>
+        <li class="ficha papel" data-anio="1926"><span class="ficha-anio">1926-27</span><p class="ficha-hito">Ecuación de Schrödinger; principio de incertidumbre de Heisenberg.</p><p class="ficha-porque">Se completa el marco matemático.</p></li>
+        <li class="ficha papel" data-anio="1935"><span class="ficha-anio">1935</span><p class="ficha-hito">Paradoja EPR y gato de Schrödinger.</p><p class="ficha-porque">Entrelazamiento y superposición como problemas conceptuales.</p></li>
+        <li class="ficha papel" data-anio="1936"><span class="ficha-anio">1936</span><p class="ficha-hito">Alan Turing define la máquina de Turing.</p><p class="ficha-porque">Se define qué es computar.</p></li>
+        <li class="ficha papel" data-anio="1947"><span class="ficha-anio">1947</span><p class="ficha-hito">Se inventa el transistor.</p><p class="ficha-porque">Base física de la computación clásica.</p></li>
+        <li class="ficha papel" data-anio="1948"><span class="ficha-anio">1948</span><p class="ficha-hito">Claude Shannon define el bit.</p><p class="ficha-porque">Nace la teoría de la información.</p></li>
+        <li class="ficha papel" data-anio="1961"><span class="ficha-anio">1961</span><p class="ficha-hito">Rolf Landauer: «la información es física».</p><p class="ficha-porque">Se conectan computación y termodinámica.</p></li>
+        <li class="ficha papel" data-anio="1964"><span class="ficha-anio">1964</span><p class="ficha-hito">John Bell publica sus desigualdades.</p><p class="ficha-porque">Permiten comprobar el entrelazamiento.</p></li>
+        <li class="ficha papel" data-anio="1965"><span class="ficha-anio">1965</span><p class="ficha-hito">Gordon Moore formula su ley.</p><p class="ficha-porque">Marca el ritmo de miniaturización.</p></li>
+        <li class="ficha hud" data-anio="1980"><span class="ficha-anio">1980-82</span><p class="ficha-hito">Benioff: modelo cuántico de computación. Feynman: simular la naturaleza con computadores cuánticos.</p><p class="ficha-porque">Nace la idea de la computación cuántica.</p></li>
+        <li class="ficha hud" data-anio="1985"><span class="ficha-anio">1985</span><p class="ficha-hito">David Deutsch define el computador cuántico universal.</p><p class="ficha-porque">Base teórica formal.</p></li>
+        <li class="ficha hud" data-anio="1994"><span class="ficha-anio">1994</span><p class="ficha-hito">Peter Shor publica su algoritmo de factorización.</p><p class="ficha-porque">Ventaja importante; amenaza la criptografía actual.</p></li>
+        <li class="ficha hud" data-anio="1995"><span class="ficha-anio">1995</span><p class="ficha-hito">Se acuña «qubit»; primera puerta con iones; primer código de corrección.</p><p class="ficha-porque">Los ladrillos básicos.</p></li>
+        <li class="ficha hud" data-anio="1996"><span class="ficha-anio">1996</span><p class="ficha-hito">Lov Grover publica su algoritmo de búsqueda.</p><p class="ficha-porque">Segundo gran algoritmo cuántico.</p></li>
+        <li class="ficha hud" data-anio="1997"><span class="ficha-anio">1997</span><p class="ficha-hito">Kitaev propone la computación cuántica topológica.</p><p class="ficha-porque">Idea teórica de los qubits topológicos.</p></li>
+        <li class="ficha hud" data-anio="1998"><span class="ficha-anio">1998-2001</span><p class="ficha-hito">Computadores de 2 qubits (RMN); se factoriza el 15 con Shor.</p><p class="ficha-porque">Primeras demostraciones experimentales.</p></li>
+        <li class="ficha hud" data-anio="2007"><span class="ficha-anio">2007</span><p class="ficha-hito">Se diseña el qubit transmon.</p><p class="ficha-porque">Qubit superconductor más usado hoy.</p></li>
+        <li class="ficha hud" data-anio="2011"><span class="ficha-anio">2011</span><p class="ficha-hito">D-Wave vende el primer «computador cuántico» comercial (recocido cuántico).</p><p class="ficha-porque">Producto especializado y debatido.</p></li>
+        <li class="ficha hud" data-anio="2016"><span class="ficha-anio">2016</span><p class="ficha-hito">IBM abre un computador de 5 qubits en la nube.</p><p class="ficha-porque">Cualquiera puede programar uno.</p></li>
+        <li class="ficha hud" data-anio="2019"><span class="ficha-anio">2019</span><p class="ficha-hito">Google anuncia la «supremacía cuántica» con Sycamore (53 qubits).</p><p class="ficha-porque">Según Google, supera a los supercomputadores (IBM objetó la magnitud).</p></li>
+        <li class="ficha hud" data-anio="2021"><span class="ficha-anio">2021-23</span><p class="ficha-hito">IBM: Eagle (127), Osprey (433) y Condor (1.121 qubits).</p><p class="ficha-porque">Se escala; la calidad sigue siendo el reto.</p></li>
+        <li class="ficha hud" data-anio="2022"><span class="ficha-anio">2022</span><p class="ficha-hito">Nobel a Aspect, Clauser y Zeilinger.</p><p class="ficha-porque">Reconoce el entrelazamiento.</p></li>
+        <li class="ficha hud" data-anio="2024"><span class="ficha-anio">Dic. 2024</span><p class="ficha-hito">Google presenta Willow (105 qubits).</p><p class="ficha-porque">Más qubits pueden reducir los errores.</p></li>
+        <li class="ficha hud" data-anio="2025"><span class="ficha-anio">Feb. 2025</span><p class="ficha-hito">Microsoft presenta Majorana 1.</p><p class="ficha-porque">Primer chip anunciado con «núcleo topológico».</p></li>
+        <li class="ficha hud" data-anio="2025.8"><span class="ficha-anio">Oct. 2025</span><p class="ficha-hito">Nobel a Clarke, Devoret y Martinis.</p><p class="ficha-porque">Base de los qubits superconductores.</p></li>
+        <li class="ficha hud destacada" data-anio="2026"><span class="ficha-anio">Jun. 2026</span><p class="ficha-hito">Microsoft presenta Majorana 2; meta de 2029 para un sistema escalable.</p><p class="ficha-porque">Mejora anunciada de 1.000 veces en fiabilidad.</p></li>
+      </ol>
+    </div>
+    <p class="pie-visual linea-pie e"><kbd>→</kbd> recorre la línea · los hitos de empresas son anuncios de ellas mismas; algunos han sido debatidos</p>
+  </div>
+  <div class="notas">
+    <h3>Línea de tiempo</h3>
+    <p>Con <b>→</b> la línea avanza por tramos; al llegar al final, <b>→</b> pasa a la siguiente lámina. También se puede arrastrar o usar la rueda del ratón.</p>
+    <p>Hitos que la guía sugiere destacar: Feynman 1981, Shor 1994, Google 2019, Willow 2024.</p>
+    <p>Las fichas antiguas van en estilo periódico; desde 1980 (la idea de computación cuántica) pasan a estilo HUD.</p>
+  </div>
+</section>
+
+<!-- ============================================================
+     6 · MICROSOFT MAJORANA
+     ============================================================ -->
+<section class="lamina" id="l-majorana1" data-tema="hud" data-seccion="6" data-titulo="Microsoft Majorana 1">
+  <div class="marco">
+    <div class="chip-rejilla">
+      <div class="texto-lateral">
+        <span class="h-kicker e">Capítulo 7 // Microsoft</span>
+        <h2 class="h-titulo e">Majorana <em>1</em></h2>
+        <p class="e">Procesador del tamaño de la palma de una mano con un tipo especial de qubit: el <b>qubit topológico</b>. Presentado en <b>febrero de 2025</b>.</p>
+        <div class="h-panel e"><span class="h-etq">El problema</span><p>Otros qubits son tan frágiles que necesitan miles de qubits físicos de apoyo por cada qubit confiable.</p></div>
+        <div class="h-panel e"><span class="h-etq">La apuesta (hace casi 20 años)</span><p>Un qubit <b>estable por diseño</b>, que necesite menos corrección de errores.</p></div>
+      </div>
+      <div class="chip-escena e" data-inclinar>
+        <div class="chip-tarjeta">
+          <img src="img/majorana-1.jpg?v=2026-11-24" alt="Chip Majorana 1 de Microsoft montado en su placa" draggable="false">
+          <div class="chip-brillo" aria-hidden="true"></div>
+          <div class="chip-marca" style="--x:46%;--y:52%"><span class="chip-anillo"></span><span class="chip-etq">Chip Majorana 1<small>8 qubits topológicos · según Microsoft</small></span></div>
+        </div>
+        <p class="pista-arrastre">Mueve el ratón sobre la foto</p>
+      </div>
+    </div>
+  </div>
+  <div class="notas">
+    <h3>Majorana 1</h3>
+    <p>Cuando se habla de las «micro tarjetas de qubits de Microsoft» se refiere a los chips Majorana. Majorana 1: febrero de 2025; Majorana 2: junio de 2026.</p>
+    <p>Los qubits superconductores de IBM y Google son muy frágiles; Microsoft apostó por un enfoque diferente: un qubit estable por diseño.</p>
+    <p>Las etiquetas de la foto son orientativas.</p>
+  </div>
+</section>
+
+<section class="lamina" id="l-topologia" data-tema="hud" data-seccion="6" data-titulo="Topología: el nudo">
+  <div class="marco">
+    <div class="encabezado e">
+      <span class="h-kicker">7.2 // Topología</span>
+      <h2 class="h-titulo">Información guardada en un <em>nudo</em></h2>
+    </div>
+    <div class="rejilla-texto-visual ancho">
+      <div class="texto-lateral">
+        <p class="e">La <b>topología</b> estudia lo que no cambia al deformar una forma sin romperla. Para ella, una taza y una dona son lo mismo: un agujero.</p>
+        <p class="e destacado">Un qubit topológico guarda la información en una propiedad <b>global</b>, como un nudo, no en un punto concreto.</p>
+        <p class="e">Idea teórica de <b>Alexei Kitaev y Michael Freedman (1997)</b>: base del proyecto de Microsoft.</p>
+      </div>
+      <div class="h-panel visual e">
+        <canvas id="cv-nudo" aria-label="Comparación: un dato local se pierde con el ruido; un nudo se deforma pero sigue siendo nudo"></canvas>
+        <div class="controles">
+          <label class="deslizador ancho"><span>Ruido / sacudidas <b id="nudo-txt">30 %</b></span><input type="range" id="nudo-ruido" min="0" max="100" value="30"></label>
+          <button class="btn" id="nudo-reiniciar">Reiniciar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="notas">
+    <h3>El nudo en una cuerda</h3>
+    <p>Si haces un nudo y sacudes, estiras o arrugas la cuerda, el nudo sigue ahí. Para deshacerlo hay que hacer algo drástico. El ruido local no borra fácilmente la información.</p>
+    <p><b>Dividir un secreto:</b> la mitad de la contraseña en cada extremo de una cuerda larga; el ruido en un extremo no basta, porque la información depende de la relación entre ambos.</p>
+    <p>Izquierda: un dato guardado en un punto, que el ruido voltea. Derecha: el nudo se deforma, pero su topología no cambia.</p>
+  </div>
+</section>
+
+<section class="lamina" id="l-particulas" data-tema="hud" data-seccion="6" data-titulo="Partículas de Majorana">
+  <div class="marco">
+    <div class="encabezado e">
+      <span class="h-kicker">7.3 // Partículas de Majorana</span>
+      <h2 class="h-titulo">Una partícula que es su propia <em>antipartícula</em></h2>
+    </div>
+    <div class="rejilla-texto-visual ancho">
+      <div class="texto-lateral">
+        <p class="e"><b>1937.</b> Ettore Majorana propone que podría existir. En <b>1938</b> desaparece misteriosamente.</p>
+        <p class="e">En materiales muy especiales, grupos de electrones se comportan <b>colectivamente</b> como esa partícula: son <b>cuasipartículas</b>, los <b>modos cero de Majorana (MZM)</b>.</p>
+      </div>
+      <div class="h-panel visual e">
+        <canvas id="cv-ola" aria-label="La ola en el estadio: personas que se levantan y se sientan crean algo que parece un objeto que viaja"></canvas>
+        <p class="pie-visual">La ola del estadio parece un objeto que viaja, pero son personas que se levantan y se sientan en orden. Así es una cuasipartícula.</p>
+      </div>
+    </div>
+  </div>
+  <div class="notas">
+    <h3>Cuasipartículas</h3>
+    <p>La «ola» no es un objeto nuevo sino un comportamiento colectivo. Las cuasipartículas son un comportamiento colectivo de muchos electrones que se comporta como una partícula.</p>
+    <p>Fíjense en un punto: solo sube y baja; lo que viaja es el patrón (marcado con el corchete).</p>
+  </div>
+</section>
+
+<section class="lamina" id="l-topoconductor" data-tema="hud" data-seccion="6" data-titulo="Topoconductor y paridad">
+  <div class="marco">
+    <div class="encabezado e">
+      <span class="h-kicker">7.4 – 7.5 // Topoconductor y paridad</span>
+      <h2 class="h-titulo">Un 0 o un 1 según los <em>pares de baile</em></h2>
+    </div>
+    <div class="topo-rejilla">
+      <div class="texto-lateral">
+        <div class="capas e" aria-label="Capas del topoconductor">
+          <div class="capa al">Aluminio (Al) · superconductor</div>
+          <div class="capa inas">Arseniuro de indio (InAs) · semiconductor</div>
+        </div>
+        <p class="e">Capas diseñadas casi átomo por átomo. Enfriado cerca del cero absoluto y con campo magnético forma <b>nanohilos</b> con modos de Majorana en sus extremos.</p>
+        <p class="e destacado">El qubit guarda la información en la <b>paridad</b>: número de electrones par → 0, impar → 1.</p>
+      </div>
+      <div class="h-panel visual e">
+        <canvas id="cv-paridad" aria-label="Electrones bailando en parejas; un electrón suelto cambia la paridad"></canvas>
+        <div class="controles">
+          <button class="btn btn-primario" id="paridad-agregar">Llega un electrón solo</button>
+          <button class="btn" id="paridad-ruido">Golpe de ruido</button>
+          <span class="contador" id="paridad-estado">PAR → qubit = 0</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="notas">
+    <h3>Topoconductor y paridad</h3>
+    <p>Topoconductor: término de Microsoft para un superconductor topológico. En un superconductor los electrones se agrupan en parejas: pares de Cooper.</p>
+    <p><b>Pares de baile:</b> si todos bailan en pareja, nadie sobra (par). Si llega alguien solo, sobra una persona (impar). Romper una pareja cuesta energía, así que el cambio no ocurre fácilmente por ruido: ahí está la protección.</p>
+    <p>Microsoft explicó que el ruido externo (por ejemplo radiación electromagnética) puede romper pares y voltear el qubit, pero sus diseños buscan que esos eventos sean raros. El botón «Golpe de ruido» casi siempre no logra romper una pareja.</p>
+  </div>
+</section>
+
+<section class="lamina" id="l-medicion" data-tema="hud" data-seccion="6" data-titulo="Medición digital">
+  <div class="marco">
+    <div class="encabezado e">
+      <span class="h-kicker">7.6 // Medir y controlar</span>
+      <h2 class="h-titulo"><em>Digital</em> en lugar de analógico</h2>
+      <p class="h-entrada">En muchas tecnologías cada qubit necesita señales analógicas ajustadas una por una: muy difícil de escalar a un millón.</p>
+    </div>
+    <svg class="esquema-medicion e" id="esquema-medicion" viewBox="0 0 1200 150" role="img" aria-label="Esquema: nanohilo, interruptores, punto cuántico y lectura por microondas">
+      <g class="nodo" data-nodo="0">
+        <rect x="20" y="60" width="240" height="16" rx="8" class="esq-caja"/>
+        <circle cx="28" cy="68" r="10" class="esq-mzm"/><circle cx="252" cy="68" r="10" class="esq-mzm"/>
+        <text x="140" y="120" class="esq-txt">NANOHILO (PARIDAD)</text>
+      </g>
+      <g class="nodo" data-nodo="0">
+        <path d="M262 68 H330 L370 44 M380 68 H450" class="esq-linea"/>
+        <text x="355" y="120" class="esq-txt">INTERRUPTOR</text>
+      </g>
+      <g class="nodo" data-nodo="1">
+        <circle cx="520" cy="68" r="44" class="esq-caja"/>
+        <text x="520" y="76" class="esq-txt" style="font-size:22px;fill:#fff">C</text>
+        <text x="520" y="138" class="esq-txt">PUNTO CUÁNTICO</text>
+      </g>
+      <g class="nodo" data-nodo="2">
+        <path d="M570 68 Q590 38 610 68 T650 68 T690 68 T730 68 T770 68" class="esq-linea"/>
+        <rect x="790" y="34" width="120" height="68" class="esq-caja"/>
+        <text x="850" y="76" class="esq-txt" style="fill:#fff">0 / 1</text>
+        <text x="680" y="120" class="esq-txt">MICROONDAS</text>
+      </g>
+      <g class="nodo" data-nodo="3">
+        <path d="M930 68 H990 V30 H1030 V68 H1070 V30 H1110 V68 H1180" class="esq-linea"/>
+        <text x="1055" y="120" class="esq-txt">PULSOS DE VOLTAJE</text>
+      </g>
+    </svg>
+    <ol class="pasos-medicion" id="pasos-medicion">
+      <li class="h-panel e" data-paso="0"><span class="h-num">01</span><h3>Interruptores digitales</h3><p>Conectan los extremos del nanohilo a un <b>punto cuántico</b>, controlados por voltaje.</p></li>
+      <li class="h-panel e" data-paso="1"><span class="h-num">02</span><h3>La paridad cambia la capacitancia</h3><p>Par o impar modifica una propiedad eléctrica del punto cuántico.</p></li>
+      <li class="h-panel e" data-paso="2"><span class="h-num">03</span><h3>Lectura por microondas</h3><p>Se detecta el cambio en <b>una sola medición</b>.</p></li>
+      <li class="h-panel e" data-paso="3"><span class="h-num">04</span><h3>Operar midiendo</h3><p>Secuencias de mediciones con pulsos de voltaje: el «control digital».</p></li>
+    </ol>
+    <div class="medicion-pie e">
+      <div class="controles"><button class="btn btn-primario" id="medicion-siguiente">Siguiente paso</button><button class="btn" id="medicion-auto">Recorrer todo</button></div>
+      <p class="pie-visual">Según Microsoft, las mediciones iniciales tuvieron ~1 % de probabilidad de error, con caminos para reducirla.</p>
+    </div>
+  </div>
+  <div class="notas">
+    <h3>Medición digital</h3>
+    <p>Un punto cuántico es un dispositivo semiconductor minúsculo que puede almacenar carga eléctrica.</p>
+    <p>Pulsa «Siguiente paso» para resaltar cada etapa mientras la explicas.</p>
+  </div>
+</section>
+
+<section class="lamina" id="l-tetron" data-tema="hud" data-seccion="6" data-titulo="El tetron y la hoja de ruta">
+  <div class="marco">
+    <div class="encabezado e">
+      <span class="h-kicker">7.7 // Tetron y hoja de ruta</span>
+      <h2 class="h-titulo">Del <em>tetron</em> al millón de qubits</h2>
+    </div>
+    <div class="tetron-rejilla">
+      <div class="h-panel visual e">
+        <svg class="tetron-svg" viewBox="0 0 520 300" role="img" aria-label="Esquema de un tetron: nanohilos con cuatro modos de Majorana en sus extremos, y una matriz de tetrones">
+          <g class="tetron-uno">
+            <rect x="40" y="70" width="200" height="14" rx="7" class="hilo"/>
+            <rect x="40" y="186" width="200" height="14" rx="7" class="hilo"/>
+            <rect x="133" y="84" width="14" height="102" class="hilo puente"/>
+            <circle cx="40" cy="77" r="13" class="mzm"/><circle cx="240" cy="77" r="13" class="mzm"/>
+            <circle cx="40" cy="193" r="13" class="mzm"/><circle cx="240" cy="193" r="13" class="mzm"/>
+            <text x="140" y="250" class="tetron-txt">1 tetron = 4 modos de Majorana</text>
+          </g>
+          <g class="tetron-matriz" id="tetron-matriz"></g>
+          <text x="410" y="250" class="tetron-txt">matriz 4×2</text>
+        </svg>
+      </div>
+      <div class="ruta">
+        <div class="ruta-paso e"><span class="h-etq">Presentado</span><p>Majorana 1: <b>8 qubits topológicos</b> en un chip diseñado para escalar a <b>un millón</b>.</p></div>
+        <div class="ruta-paso e"><span class="h-etq">Siguiente paso descrito</span><p>Matriz de <b>4×2 tetrones</b>: entrelazamiento y operaciones por medición.</p></div>
+        <div class="ruta-paso e"><span class="h-etq">Después</span><p>Detección de errores en <b>dos qubits lógicos</b>.</p></div>
+        <div class="h-aviso e"><span class="h-etq">Dato clave · meta, no logro</span><p>Un millón de qubits: umbral para problemas industriales (catalizadores contra microplásticos, materiales autorreparables). Invitada a la fase final del programa US2QC de DARPA. Majorana 1 no se ofrece por Azure: es plataforma de investigación.</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="notas">
+    <h3>Tetron</h3>
+    <p>La unidad básica del diseño es un dispositivo de un solo qubit llamado tetron, formado por nanohilos topológicos con cuatro modos de Majorana. Los tetrones se organizan en matrices.</p>
+    <p>Todo lo de esta lámina es «según Microsoft»: hoja de ruta, no resultados confirmados.</p>
+  </div>
+</section>
+
+<section class="lamina" id="l-majorana2" data-tema="hud" data-seccion="6" data-titulo="Majorana 2 (junio de 2026)">
+  <div class="marco">
+    <div class="chip-rejilla invertida">
+      <div class="chip-escena e" data-inclinar>
+        <div class="chip-tarjeta">
+          <img src="img/majorana-2.jpg?v=2026-11-24" alt="Chip Majorana 2 de Microsoft" draggable="false">
+          <div class="chip-brillo" aria-hidden="true"></div>
+          <div class="chip-marca" style="--x:41%;--y:57%"><span class="chip-anillo"></span><span class="chip-etq">Chip Majorana 2<small>plomo en lugar de aluminio · según Microsoft</small></span></div>
+        </div>
+        <p class="pista-arrastre">Mueve el ratón sobre la foto</p>
+      </div>
+      <div class="texto-lateral">
+        <span class="h-kicker e">7.8 // Build · 2 de junio de 2026</span>
+        <h2 class="h-titulo e">Majorana <em>2</em></h2>
+        <p class="e etiqueta-fuente">Según Microsoft y los medios que cubrieron el anuncio:</p>
+        <ul class="h-lista">
+          <li class="e"><b>Plomo</b> en lugar de aluminio (reto: el plomo es soluble en agua).</li>
+          <li class="e"><b>1.000 veces</b> más fiabilidad: vida media de ~20 s, hasta un minuto.</li>
+          <li class="e">Material diseñado con ayuda de IA (Microsoft Discovery).</li>
+          <li class="e">Meta adelantada a <b>2029</b> (antes 2033), un millón de qubits en un solo chip.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="notas">
+    <h3>Majorana 2</h3>
+    <p>Presentado el 2 de junio de 2026 en la conferencia Build. La vida media de ~20 s (casos de hasta un minuto) se compara con microsegundos o milisegundos en otras tecnologías o en la primera generación.</p>
+    <p>Reafirmó la apuesta por un millón de qubits en un solo chip, sin arquitecturas modulares de varios chips.</p>
+    <p>Repetir: son afirmaciones de la empresa.</p>
+  </div>
+</section>
+
+<section class="lamina" id="l-comparacion" data-tema="hud" data-seccion="6" data-titulo="Superconductores vs. topológicos">
+  <div class="marco">
+    <div class="encabezado e">
+      <span class="h-kicker">7.9 // Comparación</span>
+      <h2 class="h-titulo">Superconductores <em>vs.</em> topológicos</h2>
+    </div>
+    <table class="h-tabla grande e">
+      <thead><tr><th></th><th>Superconductores <small>IBM, Google</small></th><th>Topológicos <small>Microsoft</small></th></tr></thead>
+      <tbody>
+        <tr><th>Guardan la información</th><td>Estados de energía de un circuito</td><td>Paridad de nanohilos con modos de Majorana</td></tr>
+        <tr><th>Protección contra errores</th><td>Casi toda por software, con muchos qubits de apoyo</td><td>Parte se busca en el propio hardware</td></tr>
+        <tr><th>Madurez</th><td>Chips de cientos de qubits ya fabricados</td><td>Pocos qubits; etapa temprana</td></tr>
+        <tr><th>Principal riesgo</th><td>Necesitar enormes cantidades de qubits</td><td>Demostrar la física de Majorana y escalar</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="notas">
+    <h3>Comparación</h3>
+    <p>Es una apuesta de alto riesgo y alta recompensa: si la protección topológica funciona, se necesitarían muchos menos qubits de apoyo.</p>
+  </div>
+</section>
+
+<section class="lamina" id="l-controversia" data-tema="hud" data-seccion="6" data-titulo="La controversia, con honestidad">
+  <div class="marco">
+    <div class="encabezado e">
+      <span class="h-kicker h-kicker-alerta">7.10 // Decirlo con honestidad</span>
+      <h2 class="h-titulo">La <em>controversia</em> científica</h2>
+    </div>
+    <div class="controversia">
+      <ul class="h-lista grande">
+        <li class="e">Los modos de Majorana son <b>difíciles de distinguir</b> de otros fenómenos con señales parecidas.</li>
+        <li class="e">Parte de la comunidad pide <b>evidencia adicional e independiente</b> de estados topológicos, en 2025 y con Majorana 2.</li>
+        <li class="e">Un artículo de 2018 sobre señales de Majorana fue <b>retractado en 2021</b>: la comunidad es especialmente cautelosa.</li>
+      </ul>
+      <div class="h-panel h-panel-alerta frase-precisa e">
+        <span class="h-etq">Lo más preciso es decir</span>
+        <p>Microsoft <b>afirma</b> haber demostrado qubits topológicos y presentó un chip que sigue una hoja de ruta hacia ellos; la comunidad científica <b>espera más evidencia independiente</b>.</p>
+        <p class="tachado">«Microsoft ya creó un qubit topológico perfecto»</p>
+      </div>
+    </div>
+  </div>
+  <div class="notas">
+    <h3>Controversia</h3>
+    <p>Un buen expositor señala que el trabajo de Microsoft ha sido debatido. La prensa especializada recogió las críticas en 2025 y con el anuncio de Majorana 2.</p>
+    <p>Decir que Microsoft «ya creó un qubit topológico perfecto» sería exagerar.</p>
+  </div>
+</section>
+
+<!-- ============================================================
+     7 · VIDEOS
+     ============================================================ -->
+<section class="lamina" id="l-videos" data-tema="hud" data-seccion="7" data-titulo="Videos recomendados">
+  <div class="marco">
+    <div class="encabezado e">
+      <span class="h-kicker">Material audiovisual</span>
+      <h2 class="h-titulo">Para ver <em>después</em> (o ahora)</h2>
+    </div>
+    <div class="videos">
+      <button class="tarjeta-video e" data-video="fEr-DTZw8_8" data-titulo-video="Los 4 tipos de Computación Cuántica (y las 3 startups a la cabeza)">
+        <span class="miniatura miniatura-a" aria-hidden="true">
+          <svg viewBox="0 0 320 180"><g class="mini-trazo"><rect x="40" y="40" width="44" height="44"/><circle cx="130" cy="62" r="22"/><path d="M178 84 L200 40 L222 84 Z"/><path d="M250 62 l12 -22 l12 22 l-12 22 Z"/></g><text x="160" y="140" class="mini-txt">4 TIPOS</text></svg>
+          <span class="mini-play"></span>
+        </span>
+        <span class="video-titulo">Los 4 tipos de Computación Cuántica (y las 3 startups a la cabeza)</span>
+        <span class="video-canal">NovaGea</span>
+      </button>
+      <button class="tarjeta-video e" data-video="-GUgBeg9Lpo" data-titulo-video="La Computación Cuántica Explicada">
+        <span class="miniatura miniatura-b" aria-hidden="true">
+          <svg viewBox="0 0 320 180"><g class="mini-trazo"><circle cx="160" cy="80" r="52"/><ellipse cx="160" cy="80" rx="52" ry="16"/><line x1="160" y1="28" x2="160" y2="132"/><line x1="160" y1="80" x2="196" y2="46" class="mini-vector"/></g><text x="160" y="160" class="mini-txt">|ψ⟩</text></svg>
+          <span class="mini-play"></span>
+        </span>
+        <span class="video-titulo">La Computación Cuántica Explicada</span>
+        <span class="video-canal">El Robot de Platón</span>
+      </button>
+    </div>
+    <p class="pie-visual e" id="aviso-conexion">Los videos se cargan desde YouTube: necesitan conexión a internet.</p>
+  </div>
+  <div class="notas">
+    <h3>Videos</h3>
+    <p>Clic en una tarjeta para abrir el video. <b>Esc</b> o el botón «Cerrar» lo cierra.</p>
+    <p>Sin internet aparece un aviso; el resto de la presentación funciona igual.</p>
+  </div>
+</section>
+
+<!-- ============================================================
+     8 · CIERRE
+     ============================================================ -->
+<section class="lamina" id="l-ideas" data-tema="hud" data-seccion="8" data-titulo="Ideas fuerza">
+  <div class="marco">
+    <div class="encabezado e">
+      <span class="h-kicker">8.2 // Para recordar</span>
+      <h2 class="h-titulo">Cinco ideas <em>fuerza</em></h2>
+    </div>
+    <ol class="ideas">
+      <li class="e"><span class="h-num">01</span><p>Un bit es 0 o 1. Un qubit puede estar en <b>superposición</b> y, al medirlo, da 0 o 1.</p></li>
+      <li class="e"><span class="h-num">02</span><p>La potencia no es «probar todo a la vez»: es <b>interferencia</b>, cancelar lo malo y reforzar lo bueno.</p></li>
+      <li class="e"><span class="h-num">03</span><p>El mayor enemigo es el <b>ruido</b> (decoherencia): hace falta corrección de errores.</p></li>
+      <li class="e"><span class="h-num">04</span><p>Nació de una idea de <b>Feynman (1981)</b> y cobró urgencia con <b>Shor (1994)</b>.</p></li>
+      <li class="e"><span class="h-num">05</span><p>Microsoft apuesta por qubits <b>topológicos</b> (Majorana 1 y 2); sus afirmaciones aún requieren <b>confirmación independiente</b>.</p></li>
+    </ol>
+  </div>
+  <div class="notas">
+    <h3>Ideas fuerza</h3>
+    <p>Leer las cinco ideas despacio. Son el resumen de toda la exposición.</p>
+  </div>
+</section>
+
+<section class="lamina" id="l-futuro" data-tema="hud" data-seccion="8" data-titulo="2029: objetivos anunciados">
+  <div class="marco">
+    <div class="futuro">
+      <div class="futuro-izq">
+        <span class="h-kicker e">Cierre // Qué esperar y qué no</span>
+        <div class="h-panel e"><span class="h-etq">No esperar</span><p>Que reemplace tu laptop: será un acelerador especializado.</p></div>
+        <div class="h-panel e"><span class="h-etq">Sí esperar</span><p>Criptografía post-cuántica: ya hay estándares (NIST, 2024) para estar preparados.</p></div>
+        <div class="h-panel e"><span class="h-etq">Las empresas dicen</span><p>IBM, Google, Microsoft y otras hablan de utilidad práctica hacia 2029-2030.</p></div>
+      </div>
+      <div class="h-panel futuro-grande e">
+        <span class="estrella grande" aria-hidden="true"></span>
+        <div class="futuro-anio">2029<sup>+</sup></div>
+        <p class="futuro-lema">Objetivos <em>anunciados</em>,<br>no garantías.</p>
+        <div class="carga">
+          <span class="h-etq">Hoja de ruta en progreso…</span>
+          <div class="carga-pista"><div class="carga-relleno"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="notas">
+    <h3>Cierre (1 min)</h3>
+    <p>Son metas de las propias compañías, no garantías. Microsoft adelantó la suya a 2029 (antes 2033).</p>
+    <p>Recomendación final del documento: verificar los datos más recientes antes de exponer y distinguir siempre entre lo que las empresas anuncian y lo que la comunidad científica ha confirmado.</p>
+    <p>Cerrar con la pregunta inicial: «¿Qué pasaría si una computadora pudiera simular una molécula tal como lo hace la naturaleza?» y abrir preguntas.</p>
+  </div>
+</section>
+
+<!-- ============================================================
+     9 · EXTRA
+     ============================================================ -->
+<section class="lamina" id="l-preguntas" data-tema="papel" data-seccion="9" data-titulo="Preguntas frecuentes">
+  <div class="marco">
+    <div class="encabezado e">
+      <span class="p-kicker">8.3 · Correo de los lectores</span>
+      <h2 class="p-titular">Preguntas frecuentes</h2>
+    </div>
+    <div class="acordeon e" id="acordeon">
+      <div class="acordeon-item"><button class="acordeon-boton" aria-expanded="false">¿Un computador cuántico es más rápido que uno normal?</button><div class="acordeon-panel" hidden><p>Solo en ciertos problemas específicos. Para navegar, editar texto o jugar no aporta ventaja.</p></div></div>
+      <div class="acordeon-item"><button class="acordeon-boton" aria-expanded="false">¿Ya existen computadores cuánticos?</button><div class="acordeon-panel" hidden><p>Sí, con cientos de qubits y acceso por la nube, pero aún son ruidosos y no resuelven problemas útiles que los clásicos no puedan. La meta actual: máquinas tolerantes a fallos.</p></div></div>
+      <div class="acordeon-item"><button class="acordeon-boton" aria-expanded="false">¿Pueden romper mis contraseñas y mi banco?</button><div class="acordeon-panel" hidden><p>Uno suficientemente grande podría romper algunos cifrados (como RSA), pero esa máquina aún no existe. Ya se adoptan estándares de criptografía post-cuántica.</p></div></div>
+      <div class="acordeon-item"><button class="acordeon-boton" aria-expanded="false">¿Por qué necesitan estar tan fríos?</button><div class="acordeon-panel" hidden><p>El calor genera vibraciones que perturban a los qubits (decoherencia). Los superconductores se enfrían a unos 15 milikelvin, más frío que el espacio exterior.</p></div></div>
+      <div class="acordeon-item"><button class="acordeon-boton" aria-expanded="false">¿Qué diferencia hay entre «supremacía» y «utilidad»?</button><div class="acordeon-panel" hidden><p>Supremacía: resolver algún problema (aunque sea inútil) más rápido que cualquier clásico; se ha alegado (Google, 2019). Utilidad: resolver problemas que importan; es el objetivo actual.</p></div></div>
+      <div class="acordeon-item"><button class="acordeon-boton" aria-expanded="false">¿Qué es un qubit lógico?</button><div class="acordeon-panel" hidden><p>Un qubit confiable construido con muchos qubits físicos imperfectos mediante corrección de errores.</p></div></div>
+      <div class="acordeon-item"><button class="acordeon-boton" aria-expanded="false">¿Por qué Microsoft usa un enfoque distinto?</button><div class="acordeon-panel" hidden><p>Apostó por qubits con protección incorporada en el hardware, que reduciría los qubits de apoyo. Alto riesgo, alta recompensa.</p></div></div>
+    </div>
+  </div>
+  <div class="notas">
+    <h3>Preguntas frecuentes</h3>
+    <p>Abrir solo la pregunta que haga el público. Clic de nuevo para cerrarla.</p>
+  </div>
+</section>
+
+<section class="lamina" id="l-glosario" data-tema="papel" data-seccion="9" data-titulo="Glosario">
+  <div class="marco">
+    <div class="encabezado e">
+      <span class="p-kicker">8.4 · Glosario</span>
+      <h2 class="p-titular">Glosario</h2>
+    </div>
+    <dl class="glosario e">
+      <div><dt>Algoritmo</dt><dd>Lista de pasos ordenados para resolver un problema.</dd></div>
+      <div><dt>Bit</dt><dd>Unidad mínima de información clásica: 0 o 1.</dd></div>
+      <div><dt>Byte</dt><dd>Grupo de 8 bits.</dd></div>
+      <div><dt>Qubit</dt><dd>Unidad de información cuántica; puede estar en superposición de 0 y 1.</dd></div>
+      <div><dt>Superposición</dt><dd>Combinación de varios estados posibles con ciertas probabilidades.</dd></div>
+      <div><dt>Entrelazamiento</dt><dd>Correlación cuántica que no se explica con valores predefinidos.</dd></div>
+      <div><dt>Interferencia</dt><dd>Suma o cancelación de ondas de probabilidad.</dd></div>
+      <div><dt>Medición</dt><dd>Leer un sistema cuántico; lo hace colapsar a un valor definido.</dd></div>
+      <div><dt>Decoherencia</dt><dd>Pérdida de las propiedades cuánticas por el entorno.</dd></div>
+      <div><dt>Puerta cuántica</dt><dd>Operación que transforma el estado de uno o varios qubits.</dd></div>
+      <div><dt>Esfera de Bloch</dt><dd>Representación geométrica del estado de un qubit.</dd></div>
+      <div><dt>Corrección de errores</dt><dd>Proteger la información repartiéndola entre muchos qubits.</dd></div>
+      <div><dt>Qubit lógico / físico</dt><dd>Lógico: confiable. Físico: el real, imperfecto, que forma parte de él.</dd></div>
+      <div><dt>NISQ</dt><dd>Era actual: máquinas ruidosas de escala intermedia.</dd></div>
+      <div><dt>Supremacía cuántica</dt><dd>Resolver un problema (aunque sea artificial) más rápido que cualquier clásico.</dd></div>
+      <div><dt>Topología</dt><dd>Propiedades que no cambian al deformar una forma.</dd></div>
+      <div><dt>Modo cero de Majorana</dt><dd>Cuasipartícula que actúa como su propia antipartícula.</dd></div>
+      <div><dt>Topoconductor</dt><dd>Término de Microsoft: superconductor topológico.</dd></div>
+      <div><dt>Tetron</dt><dd>Qubit del diseño de Microsoft, con cuatro modos de Majorana.</dd></div>
+      <div><dt>Cero absoluto</dt><dd>−273,15 °C (0 kelvin), la mínima temperatura posible.</dd></div>
+    </dl>
+  </div>
+  <div class="notas">
+    <h3>Glosario</h3>
+    <p>Lámina de consulta; no hace falta leerla en voz alta.</p>
+  </div>
+</section>
+
+<section class="lamina" id="l-fuentes" data-tema="papel" data-seccion="9" data-titulo="Fuentes">
+  <div class="marco">
+    <div class="encabezado e">
+      <span class="p-kicker">Capítulo 9 · Fuentes</span>
+      <h2 class="p-titular">Fuentes y lecturas</h2>
+    </div>
+    <div class="fuentes">
+      <div class="e">
+        <h3 class="fuentes-titulo">Majorana 1 y Majorana 2</h3>
+        <ul>
+          <li>Microsoft Azure Quantum Blog, «Microsoft unveils Majorana 1…» (19-feb-2025).</li>
+          <li>Microsoft News, «Microsoft’s Majorana 1 chip carves new path…» (feb-2025).</li>
+          <li>Aghaee, M. et al., artículo en <i>Nature</i> sobre medición interferométrica de paridad en InAs-Al (2025).</li>
+          <li>CNBC / NBC News, «Microsoft reveals its first quantum computing chip…» (feb-2025).</li>
+          <li>Reuters, «Microsoft reveals new quantum chip made with AI…» (2-jun-2026).</li>
+          <li>HPCwire, «Microsoft Unveils Majorana 2 Quantum Chip…» (2-jun-2026).</li>
+          <li>Constellation Research, análisis de Majorana 2 (jun-2026).</li>
+        </ul>
+      </div>
+      <div class="e">
+        <h3 class="fuentes-titulo">Historia y fundamentos</h3>
+        <ul>
+          <li>Feynman (1982), «Simulating Physics with Computers».</li>
+          <li>Shor (1994), «Algorithms for quantum computation…».</li>
+          <li>Grover (1996), «A fast quantum mechanical algorithm for database search».</li>
+          <li>Arute et al. (2019), «Quantum supremacy…», <i>Nature</i>.</li>
+          <li>Preskill (2018), «Quantum Computing in the NISQ era and beyond».</li>
+          <li>Nielsen y Chuang, <i>Quantum Computation and Quantum Information</i>.</li>
+          <li>Kitaev (1997/2003), «Fault-tolerant quantum computation by anyons».</li>
+        </ul>
+      </div>
+      <div class="p-caja fuentes-final e">
+        <span class="p-kicker">Recomendación final</span>
+        <p>Verifica los datos más recientes antes de exponer y distingue siempre entre lo que las empresas <b>anuncian</b> y lo que la comunidad científica ha <b>confirmado</b>.</p>
+        <p class="gracias">Gracias.</p>
+      </div>
+    </div>
+  </div>
+  <div class="notas">
+    <h3>Fuentes</h3>
+    <p>Los datos de los chips de Microsoft provienen de comunicados y reportes de prensa. El tema avanza rápido: conviene revisar las fuentes antes de exponer.</p>
+  </div>
+</section>
+
+</main>
+
+<!-- Barra inferior de progreso -->
+<nav class="barra" id="barra" aria-label="Navegación de la presentación">
+  <div class="barra-izq">
+    <span class="barra-seccion" id="barra-seccion">Portada</span>
+    <span class="barra-min" id="barra-min"></span>
+  </div>
+  <div class="barra-centro">
+    <span class="barra-estado" id="barra-estado">Progreso</span>
+    <div class="barra-pista"><div class="barra-relleno" id="barra-relleno"></div></div>
+    <span class="barra-porcentaje" id="barra-porcentaje">0%</span>
+  </div>
+  <div class="barra-der">
+    <span class="barra-num" id="barra-num">1 / 40</span>
+    <button class="barra-btn" id="btn-anterior" aria-label="Lámina anterior">‹</button>
+    <button class="barra-btn" id="btn-siguiente" aria-label="Lámina siguiente">›</button>
+    <button class="barra-btn texto" id="btn-notas" aria-label="Notas del expositor (N)">N</button>
+    <button class="barra-btn texto" id="btn-indice" aria-label="Índice (Esc)">☰</button>
+    <button class="barra-btn texto" id="btn-pantalla" aria-label="Pantalla completa (F)">⛶</button>
+  </div>
+</nav>
+
+<!-- Notas del expositor -->
+<aside class="panel-notas" id="panel-notas" aria-label="Notas del expositor" aria-hidden="true">
+  <div class="panel-notas-cab"><span>Notas del expositor</span><button class="barra-btn texto" id="cerrar-notas" aria-label="Cerrar notas">×</button></div>
+  <div class="panel-notas-cuerpo" id="panel-notas-cuerpo"></div>
+</aside>
+
+<!-- Índice general -->
+<div class="indice" id="indice" aria-hidden="true" role="dialog" aria-label="Índice general">
+  <div class="indice-caja">
+    <div class="indice-cab"><span>Índice general</span><button class="barra-btn texto" id="cerrar-indice" aria-label="Cerrar índice">×</button></div>
+    <div class="indice-rejilla" id="indice-rejilla"></div>
+  </div>
+</div>
+
+<!-- Modal de video -->
+<div class="modal-video" id="modal-video" aria-hidden="true" role="dialog" aria-label="Reproductor de video">
+  <div class="modal-caja">
+    <div class="modal-cab"><span id="modal-titulo">Video</span><button class="btn" id="modal-cerrar">Cerrar</button></div>
+    <div class="modal-marco" id="modal-marco"></div>
+    <p class="modal-aviso" id="modal-aviso" hidden>No hay conexión a internet: el video no puede cargarse. Puedes verlo después en YouTube.</p>
+  </div>
+</div>
+
+<script src="js/01-nucleo.js?v=2026-11-24"></script>
+<script src="js/02-clasico.js?v=2026-11-24"></script>
+<script src="js/03-cuantico.js?v=2026-11-24"></script>
+<script src="js/04-bloch.js?v=2026-11-24"></script>
+<script src="js/05-majorana.js?v=2026-11-24"></script>
+</body>
+</html>

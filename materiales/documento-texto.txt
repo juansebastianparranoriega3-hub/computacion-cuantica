@@ -1,0 +1,535 @@
+COMPUTACIÓN CUÁNTICA
+De los bits a los qubits: ciencia, historia y el chip Majorana de Microsoft
+Documento de apoyo para exposición
+Con explicaciones paso a paso y ejemplos sencillos
+Noviembre de 2026
+Contenido
+1.  ¿Qué es la computación?
+2.  ¿Qué son los bits?
+3.  ¿Qué es la computación cuántica? Las teorías científicas detrás
+4.  ¿Qué son los qubits y en qué se diferencian de los bits?
+5.  ¿Cómo se llegó a la computación cuántica?
+6.  Línea de evolución de la computación cuántica
+7.  El chip cuántico de Microsoft: Majorana 1 y Majorana 2
+8.  Guía para la exposición, preguntas frecuentes y glosario
+9.  Fuentes y lecturas recomendadas
+Cómo leer este documento
+Este documento va de lo más simple a lo más complejo: primero qué es computar, luego los bits, después la física cuántica que permite los qubits, y al final el chip de Microsoft. Cada concepto trae una analogía cotidiana. Las analogías ayudan a entender, pero ninguna es perfecta; por eso, en cada caso se aclara dónde se queda corta.
+1. ¿Qué es la computación?
+Computación es el proceso de recibir información, transformarla siguiendo reglas precisas y entregar un resultado. La palabra viene de computar (calcular). Una computadora es, en esencia, una máquina que ejecuta ese proceso a una velocidad enorme y sin cansarse.
+1.1 Entrada, proceso y salida
+Todo sistema de cómputo, desde una calculadora hasta un supercomputador, hace tres cosas:
+Entrada: los datos que le damos (números, texto, una foto, un clic).
+Proceso: las operaciones que se aplican a esos datos, siguiendo instrucciones.
+Salida: el resultado que obtenemos (una suma, una imagen en pantalla, una respuesta).
+Ejemplo sencillo
+Una receta de cocina es un programa. Los ingredientes son la entrada, los pasos de la receta son el proceso (el algoritmo) y el plato terminado es la salida. Si alguien sigue los pasos al pie de la letra sin entender de cocina, igual obtiene el plato: eso es exactamente lo que hace una computadora.
+1.2 Algoritmo, hardware y software
+Algoritmo: lista finita y ordenada de pasos para resolver un problema. Ejemplo: para saber si un número es par, divídelo entre 2; si el residuo es 0, es par.
+Hardware: las partes físicas (procesador, memoria, pantalla, circuitos).
+Software: los programas, es decir, algoritmos escritos en un lenguaje que la máquina puede ejecutar.
+1.3 Las ideas científicas que fundaron la computación
+La computación moderna se apoya en teorías matemáticas y de ingeniería muy concretas:
+Máquina de Turing (Alan Turing, 1936): un modelo matemático de una máquina que lee y escribe símbolos en una cinta infinita siguiendo reglas. Turing demostró que una máquina así puede calcular cualquier cosa que sea “calculable”. Todas las computadoras actuales son, en teoría, equivalentes a esta máquina.
+Arquitectura de von Neumann (1945): propone guardar en la misma memoria los datos y las instrucciones del programa. Es la base del diseño de casi todos los computadores que usamos hoy.
+Transistor (1947, Bardeen, Brattain y Shockley): un interruptor microscópico sin partes móviles, controlado por electricidad. Reemplazó a los tubos de vacío (grandes, calientes y poco fiables) y permitió miniaturizar todo.
+Teoría de la información (Claude Shannon, 1948): define matemáticamente qué es la información y propone el bit como su unidad mínima.
+Ejemplo sencillo
+Un computador es una ciudad de interruptores. Un teléfono actual contiene miles de millones de transistores (interruptores diminutos). Cada uno solo sabe estar “encendido” o “apagado”, pero al combinar miles de millones de ellos siguiendo reglas lógicas se puede reproducir un video, hacer una videollamada o correr un videojuego.
+1.4 Un detalle importante: computación clásica
+A todo lo anterior se le llama hoy computación clásica, para distinguirla de la computación cuántica. Es “clásica” porque funciona con las leyes de la física clásica (circuitos eléctricos que están en un estado definido: encendido o apagado) y su unidad de información es el bit.
+2. ¿Qué son los bits?
+Un bit (del inglés binary digit, “dígito binario”) es la unidad mínima de información. Solo puede tomar uno de dos valores: 0 o 1. Físicamente, esos dos valores se representan con algo que pueda distinguirse con claridad: voltaje bajo o alto, un interruptor apagado o encendido, un punto magnetizado hacia un lado o hacia el otro.
+Ejemplo sencillo
+El interruptor de la luz. Está apagado (0) o encendido (1); no hay un punto medio. Un bit es exactamente eso. Con un solo interruptor solo puedes “decir” dos cosas. Con más interruptores puedes decir muchísimas más.
+2.1 Cómo se combinan los bits
+Con n bits se pueden formar 2ⁿ combinaciones distintas. Cada bit nuevo duplica las posibilidades:
+Cantidad de bits
+Combinaciones posibles
+Ejemplo de combinaciones
+1 bit
+2
+0, 1
+2 bits
+4
+00, 01, 10, 11
+3 bits
+8
+000, 001, 010, 011, 100, 101, 110, 111
+8 bits (1 byte)
+256
+Alcanza para representar una letra o un número del 0 al 255
+24 bits
+16.777.216
+Los colores que puede mostrar una pantalla con color RGB estándar
+2.2 Del sistema decimal al binario
+Nosotros contamos en base 10 (diez dígitos: 0 al 9). Los computadores cuentan en base 2 (dos dígitos: 0 y 1). Cada posición vale el doble que la anterior: 1, 2, 4, 8, 16…
+Ejemplo sencillo
+El número 13 en binario. 13 = 8 + 4 + 1. Marcamos con 1 las posiciones que usamos (8, 4, 1) y con 0 la que no (2): 1101.
+La palabra “Hola” en bits. Cada letra tiene un código numérico (estándar ASCII) que se guarda en 8 bits: H = 01001000, o = 01101111, l = 01101100, a = 01100001. Cuando escribes en tu teléfono, la máquina guarda secuencias de ceros y unos como estas.
+2.3 Cómo “piensa” un computador con bits: compuertas lógicas
+Un computador procesa bits mediante compuertas lógicas, pequeños circuitos que reciben bits y entregan un bit de salida según una regla. Las tres básicas son:
+Compuerta
+Regla
+Ejemplo cotidiano
+NOT (NO)
+Invierte el bit: 0 pasa a 1 y 1 pasa a 0.
+Un botón que cambia “encendido” por “apagado”.
+AND (Y)
+Da 1 solo si las dos entradas son 1.
+Para arrancar una máquina hay que girar la llave y pisar el freno.
+OR (O)
+Da 1 si al menos una entrada es 1.
+La alarma suena si se abre la puerta o la ventana.
+Combinando millones de estas compuertas se construyen sumadores, memorias y procesadores completos. Todo lo que hace tu computador, por complejo que parezca, es una enorme cadena de operaciones de este tipo.
+2.4 Propiedades importantes del bit clásico
+Siempre tiene un valor definido: es 0 o es 1, aunque no lo estés mirando.
+Se puede leer sin alterarlo: mirar un bit no lo cambia.
+Se puede copiar sin límite: puedes duplicar un archivo todas las veces que quieras.
+Es robusto: si el voltaje tiembla un poco, sigue interpretándose como el mismo valor.
+Estas propiedades parecen obvias, pero justamente son las que cambian con los qubits.
+2.5 El límite de los bits: la Ley de Moore y la física cuántica
+En 1965 Gordon Moore observó que el número de transistores en un chip se duplicaba aproximadamente cada dos años. Durante décadas, los transistores se hicieron cada vez más pequeños, y por eso los computadores fueron más rápidos y baratos. Pero hoy los transistores miden apenas unos pocos nanómetros, es decir, unas decenas de átomos de ancho.
+A esa escala aparece un problema: la física cuántica. Los electrones pueden “atravesar” barreras que, según la física clásica, no deberían poder cruzar (efecto túnel), lo que hace que los transistores se “filtren” y dejen de comportarse como interruptores fiables. Esa misma física que estorba a la computación clásica es la que la computación cuántica decide aprovechar.
+Dato clave
+Un computador clásico, por potente que sea, solo manipula bits que valen 0 o 1. Para ciertos problemas (como simular moléculas o descomponer números enormes en factores) el número de cálculos crece tan rápido que ni todos los supercomputadores del mundo juntos podrían resolverlos en un tiempo razonable.
+3. ¿Qué es la computación cuántica? Las teorías científicas detrás
+La computación cuántica es una forma de procesar información que usa directamente las leyes de la mecánica cuántica, la teoría física que describe el comportamiento de átomos, electrones y fotones. En lugar de bits que valen 0 o 1, usa qubits, que pueden estar en combinaciones de ambos valores y conectarse entre sí de maneras que no existen en el mundo clásico.
+Para entenderla hay que conocer cuatro ideas de la física cuántica: la cuantización, la superposición, la interferencia y el entrelazamiento, más un cuarto concepto que explica por qué es tan difícil de construir: la medición y la decoherencia.
+3.1 Cuantización: la energía viene en “paquetes”
+En 1900, Max Planck propuso que la energía no se emite de forma continua, sino en pequeños paquetes llamados cuantos. En 1905, Albert Einstein usó esa idea para explicar el efecto fotoeléctrico: la luz se comporta como una lluvia de partículas (los fotones). En 1913, Niels Bohr mostró que los electrones en un átomo solo pueden tener ciertos niveles de energía, no cualquiera.
+Ejemplo sencillo
+Rampa contra escalera. Una rampa permite estar a cualquier altura; una escalera solo permite estar en escalones concretos. Los electrones de un átomo “viven” en una escalera: solo pueden ocupar ciertos niveles. Los primeros qubits se construyeron usando justamente dos de esos niveles como “0” y “1”.
+3.2 Dualidad onda-partícula y el experimento de la doble rendija
+En 1801, Thomas Young demostró que la luz se comporta como una onda al pasar por dos rendijas: se forma un patrón de franjas claras y oscuras (interferencia). Más tarde, en la década de 1920 y en experimentos posteriores, se comprobó que los electrones, que creemos partículas, también producen ese patrón de interferencia, incluso cuando se envían de uno en uno. Louis de Broglie (1924) había propuesto que toda la materia tiene propiedades de onda.
+La lección es que una partícula cuántica no sigue un único camino: su comportamiento se describe con una onda de probabilidad, y esa onda puede “pasar por las dos rendijas a la vez”. Esto es la base de la superposición.
+3.3 Superposición: estar en varias posibilidades a la vez
+En 1926, Erwin Schrödinger formuló la ecuación que describe cómo evoluciona el estado de un sistema cuántico. Ese estado puede ser una superposición: una combinación de varios estados posibles, cada uno con cierta probabilidad. Mientras no se mide, el sistema no está “en uno u otro” sino en una combinación de ambos.
+Ejemplo sencillo
+La moneda girando. Una moneda sobre la mesa está en cara o en sello (como un bit). Una moneda girando en el aire no está en cara ni en sello: tiene cierta probabilidad de caer en cada lado. Al atraparla (medirla), cae en uno de los dos. Un qubit se parece a la moneda girando.
+Dónde se queda corta la analogía: la moneda girando sigue siendo, en realidad, cara o sello en cada instante; solo nosotros no lo sabemos. En un qubit no es ignorancia: la superposición es real y puede producir efectos medibles (interferencia) que una simple “incertidumbre” no explicaría.
+En 1935, Schrödinger propuso su famoso gato de Schrödinger como experimento mental, precisamente para mostrar lo extraña que resulta la superposición si se aplica a objetos grandes: un gato “vivo y muerto a la vez”. No es un experimento real, sino una forma de plantear la pregunta de dónde termina lo cuántico y empieza lo cotidiano.
+3.4 Principio de incertidumbre y medición
+En 1927, Werner Heisenberg estableció que hay pares de propiedades (como posición y velocidad) que no pueden conocerse con precisión total al mismo tiempo. Además, en mecánica cuántica medir cambia el sistema: al medir un sistema en superposición, este “colapsa” a uno solo de los resultados posibles, con la probabilidad que le correspondía.
+Ejemplo sencillo
+Abrir la caja. Es como si al abrir una caja con una moneda girando, la moneda se detuviera de golpe en cara o sello y nunca más pudieras ver cómo giraba. Por eso, de un qubit solo se obtiene un 0 o un 1 al final, aunque durante el cálculo tuviera una superposición.
+3.5 Interferencia: sumar y cancelar probabilidades
+Como las partículas se describen con ondas, esas ondas pueden sumarse (interferencia constructiva) o cancelarse (interferencia destructiva). Los algoritmos cuánticos están diseñados para que las ondas de las respuestas incorrectas se cancelen y las de la respuesta correcta se refuercen.
+Ejemplo sencillo
+Los audífonos con cancelación de ruido. Producen una onda de sonido opuesta al ruido exterior; al sumarse, se anulan y se hace silencio. Un algoritmo cuántico hace algo parecido con las “ondas de probabilidad” de las respuestas equivocadas.
+3.6 Entrelazamiento: partículas conectadas
+En 1935, Einstein, Podolsky y Rosen (paradoja EPR) señalaron una consecuencia extraña de la teoría: dos partículas pueden quedar entrelazadas, de modo que el resultado de medir una está relacionado con el de la otra, sin importar la distancia. Einstein lo describió como una “acción fantasmal a distancia”. En 1964, John Bell formuló un criterio matemático (las desigualdades de Bell) para comprobar con experimentos si la naturaleza realmente se comporta así. Los experimentos de Alain Aspect (1982), John Clauser y Anton Zeilinger confirmaron que sí; por ello recibieron el Premio Nobel de Física en 2022.
+Ejemplo sencillo
+El par de guantes. Imagina que guardas un guante izquierdo y uno derecho en dos cajas cerradas y envías una caja a cada extremo del mundo. Al abrir tu caja y ver el guante izquierdo, sabes instantáneamente que la otra tiene el derecho. En lo cuántico pasa algo parecido en la correlación, pero con una diferencia profunda: en el caso cuántico los resultados no estaban decididos de antemano (eso lo demostró Bell). Por eso la analogía de los guantes es solo una primera aproximación.
+Ojo con el mito
+El entrelazamiento no permite enviar mensajes más rápido que la luz: cada resultado, por separado, parece aleatorio, y solo al comparar ambos se nota la correlación.
+3.7 Decoherencia: el enemigo de la computación cuántica
+Un sistema cuántico solo mantiene su superposición mientras está aislado del entorno. Cualquier interacción con el exterior (calor, vibraciones, campos electromagnéticos, un átomo cercano) “lo mide” sin querer y destruye la superposición. A esto se le llama decoherencia, y es la razón por la cual los computadores cuánticos necesitan temperaturas cercanas al cero absoluto y un aislamiento extremo.
+Ejemplo sencillo
+La conversación en una sala ruidosa. Si susurras un secreto en una biblioteca vacía, se entiende perfecto. Si lo susurras en medio de un concierto, el ruido lo arruina. El “ruido” del entorno arruina la información cuántica frágil de los qubits.
+3.8 ¿Qué es entonces la computación cuántica?
+Juntando todo: un computador cuántico prepara qubits en superposición, los entrelaza, aplica operaciones que hacen que las respuestas incorrectas se cancelen por interferencia y las correctas se refuercen, y finalmente mide para obtener el resultado. No es un computador “más rápido en todo”: es un computador distinto que aprovecha la física cuántica para ciertos tipos de problemas.
+Ojo con el mito
+“Un computador cuántico prueba todas las respuestas a la vez y elige la correcta.” Es una simplificación engañosa. Al medir, solo se obtiene un resultado y, si el algoritmo no se diseña con cuidado, sería aleatorio. La ventaja viene de organizar la interferencia para que la respuesta correcta sea la más probable.
+“Reemplazará a tu laptop.” No. Será un acelerador especializado, similar a como una GPU ayuda a ciertos cálculos, para tareas como simulación de moléculas, optimización y criptografía.
+4. ¿Qué son los qubits y en qué se diferencian de los bits?
+Un qubit (del inglés quantum bit, “bit cuántico”) es la unidad básica de información cuántica. El término fue acuñado por Benjamin Schumacher en 1995. Igual que un bit, al medirlo siempre da 0 o 1; pero antes de medirlo puede estar en una superposición de ambos.
+4.1 Cómo se describe un qubit
+Matemáticamente, el estado de un qubit se escribe como una combinación de los dos estados básicos |0⟩ y |1⟩:
+|ψ⟩ = α |0⟩ + β |1⟩
+Los números α y β se llaman amplitudes. Al medir, la probabilidad de obtener 0 es α² y la de obtener 1 es β², y siempre se cumple que α² + β² = 1 (en general, las amplitudes pueden ser números complejos, por lo que se usan sus módulos al cuadrado).
+Ejemplo sencillo
+Si α² = 0,5 y β² = 0,5, el qubit está en una superposición “justa”: al medirlo hay 50 % de probabilidad de obtener 0 y 50 % de obtener 1.
+Si α² = 0,75 y β² = 0,25, al medirlo saldrá 0 el 75 % de las veces y 1 el 25 %.
+Si α² = 1 y β² = 0, es justo un bit clásico en 0. El bit clásico es un caso particular del qubit.
+4.2 La esfera de Bloch: ver un qubit
+Un truco visual para imaginar un qubit es la esfera de Bloch. Un bit solo puede estar en dos puntos: el polo norte (0) o el polo sur (1). Un qubit puede apuntar a cualquier punto de la superficie de la esfera: cuanto más cerca del polo norte, más probable es medir 0; cuanto más cerca del sur, más probable es medir 1; en el ecuador, la probabilidad es 50-50. Además, la posición alrededor del ecuador representa la fase, una información extra que no existe en los bits y que es clave para la interferencia.
+Figura 1. Esfera de Bloch: un bit solo ocupa los polos; un qubit puede apuntar a cualquier punto.
+Ejemplo sencillo
+Interruptor vs. regulador de intensidad. Un bit es un interruptor (solo encendido o apagado). Un qubit se parece más a un regulador de luz con una “perilla” que además tiene dirección: puede apuntar a muchas posiciones intermedias. Al final, sin embargo, cuando “mides” (miras la lámpara), solo ves encendido o apagado.
+4.3 Qué puede hacer un conjunto de qubits
+La verdadera potencia aparece al combinar qubits. Con n bits clásicos, en un momento dado el computador guarda un valor de las 2ⁿ combinaciones posibles. Con n qubits entrelazados, el estado se describe con 2ⁿ amplitudes a la vez, y las operaciones actúan sobre todas ellas simultáneamente.
+Cantidad
+Valores que guarda un computador clásico
+Amplitudes que describe un sistema cuántico
+3
+1 valor (de 8 posibles)
+8 amplitudes a la vez
+10
+1 valor (de 1.024 posibles)
+1.024 amplitudes
+50
+1 valor
+Más de 1,1 × 10¹⁵ amplitudes (unos 1.100 billones)
+300
+1 valor
+Cerca de 2 × 10⁹⁰ amplitudes, más que átomos en el universo observable (estimados en ~10⁸⁰)
+Ejemplo sencillo
+Un libro con todas las páginas a la vez. Un computador clásico lee una página por vez para encontrar algo. Un sistema cuántico puede “sostener” el efecto de muchas páginas al mismo tiempo, y con interferencia amplifica la página que contiene la respuesta. Es una analogía, no una descripción literal: recuerda que al final solo se obtiene un resultado al medir.
+4.4 Puertas cuánticas
+Así como los bits se procesan con compuertas lógicas (AND, OR, NOT), los qubits se procesan con puertas cuánticas. Dos son especialmente importantes:
+Puerta Hadamard (H): toma un qubit en 0 o en 1 y lo pone en una superposición 50-50. Es la forma de “lanzar la moneda al aire”.
+Puerta CNOT: actúa sobre dos qubits; invierte el segundo solo si el primero es 1. Combinada con la Hadamard, genera entrelazamiento.
+A diferencia de las compuertas clásicas, las puertas cuánticas son reversibles (siempre se puede deshacer la operación) y se representan con matrices que rotan el estado del qubit en la esfera de Bloch.
+4.5 Diferencias entre bit y qubit
+Característica
+Bit clásico
+Qubit
+Valores posibles al medir
+0 o 1
+0 o 1 (nunca algo intermedio)
+Estado antes de medir
+Siempre definido: 0 o 1
+Superposición: α|0⟩ + β|1⟩
+Información que guarda
+Un valor de dos
+Dos amplitudes con fase (se ve como un punto en la esfera de Bloch)
+Al medirlo
+No cambia
+Colapsa a 0 o 1 y pierde la superposición
+Relación entre varios
+Independientes
+Pueden estar entrelazados
+Copiarlo
+Se puede copiar sin límite
+No se puede clonar un estado desconocido (teorema de no clonación)
+Crecimiento al juntar n
+n valores de información
+2ⁿ amplitudes en el estado conjunto
+Soporte físico
+Transistor (voltaje alto o bajo)
+Átomo, ion, fotón, circuito superconductor, etc.
+Fragilidad
+Muy robusto
+Muy frágil (decoherencia): requiere aislamiento y corrección de errores
+Temperatura de trabajo
+Ambiente
+Muchas tecnologías: cercana al cero absoluto (≈ −273 °C)
+4.6 ¿De qué están hechos los qubits? Tipos principales
+Un qubit puede construirse con cualquier sistema cuántico que tenga dos estados bien definidos. Las tecnologías principales son:
+Tecnología
+Cómo funciona
+Ejemplos de actores
+Circuitos superconductores
+Circuitos eléctricos enfriados a ~0,015 K en los que la corriente sin resistencia forma niveles de energía discretos (el “átomo artificial” llamado transmon).
+IBM, Google
+Iones atrapados
+Átomos con carga eléctrica suspendidos con campos electromagnéticos y manipulados con láseres.
+IonQ, Quantinuum
+Átomos neutros
+Átomos individuales sostenidos con “pinzas ópticas” de láser.
+QuEra, Atom Computing, Pasqal
+Fotónicos
+Usan fotones (partículas de luz) y componentes ópticos.
+PsiQuantum, Xanadu, USTC (China)
+Espín en semiconductores
+Usan el espín (orientación magnética) de un electrón atrapado en silicio.
+Intel y centros de investigación
+Topológicos (en desarrollo)
+Guardan información en propiedades “globales” del sistema, buscando protección natural contra errores.
+Microsoft (chip Majorana)
+4.7 El gran reto: errores y corrección cuántica
+Los qubits actuales son muy sensibles al ruido y cometen errores con frecuencia. Para lograr computadores útiles se necesita corrección de errores cuántica, que consiste en repartir la información de un qubit lógico (confiable) entre muchos qubits físicos (imperfectos). Se estima que podrían hacer falta cientos o miles de qubits físicos por cada qubit lógico, según la tecnología.
+Ejemplo sencillo
+Enviar el mensaje tres veces. Si quieres enviar “1” por un canal con ruido, envías “111”. Si llega “101”, por mayoría deduces que era “1”. La corrección cuántica usa una idea parecida, pero más sofisticada porque no se puede copiar un qubit ni mirarlo directamente sin destruirlo.
+En 2018, el físico John Preskill llamó a la etapa actual era NISQ (Noisy Intermediate-Scale Quantum: cuántica ruidosa de escala intermedia): máquinas con decenas o cientos de qubits que aún cometen muchos errores. El objetivo es pasar a máquinas tolerantes a fallos.
+4.8 ¿Para qué servirá?
+Simular moléculas y materiales: la naturaleza es cuántica, así que un computador cuántico es la herramienta natural para simularla (nuevos medicamentos, baterías, fertilizantes, superconductores).
+Criptografía: el algoritmo de Shor (1994) permitiría romper sistemas como RSA, que protegen buena parte de las comunicaciones actuales. Por eso el NIST (EE. UU.) publicó en 2024 los primeros estándares de criptografía post-cuántica, diseñados para resistir ataques cuánticos.
+Búsqueda y optimización: el algoritmo de Grover (1996) acelera la búsqueda en datos no ordenados (una aceleración “cuadrática”, no mágica).
+Optimización y aprendizaje automático: áreas de investigación activa, con beneficios aún en estudio.
+5. ¿Cómo se llegó a la computación cuántica?
+La computación cuántica no apareció de repente: es el punto de encuentro de dos grandes ramas de la ciencia que se desarrollaron por separado durante medio siglo, la física cuántica y la ciencia de la computación.
+5.1 Primera rama: nace la física cuántica (1900-1935)
+Entre 1900 y 1935, Planck, Einstein, Bohr, de Broglie, Heisenberg, Schrödinger, Dirac y otros construyeron la teoría que describe el mundo atómico. Esa teoría explicó fenómenos como la estabilidad de los átomos y la luz, y permitió la invención del transistor y el láser, dos tecnologías clave para la computación (a veces llamadas la “primera revolución cuántica”).
+5.2 Segunda rama: nace la computación (1936-1960s)
+Turing (1936) definió qué significa “calcular”; von Neumann (1945) diseñó la arquitectura de los computadores; el transistor (1947) y el circuito integrado (1958) permitieron fabricarlos en masa; y Shannon (1948) definió el bit como unidad de información.
+5.3 El encuentro: “la información es física” (1961-1982)
+Algunos científicos empezaron a preguntarse cuáles son los límites físicos de la computación:
+Rolf Landauer (1961) mostró que borrar un bit de información disipa una cantidad mínima de calor. Su lema fue: “la información es física”: guardar y procesar información requiere sistemas físicos y obedece sus leyes.
+Charles Bennett (1973) demostró que la computación puede hacerse de forma reversible, sin disipar energía por principio.
+Paul Benioff (1980) describió por primera vez un modelo de computador que funciona según la mecánica cuántica.
+Richard Feynman (1981-1982) planteó el problema clave: simular sistemas cuánticos en un computador clásico es extremadamente costoso, porque el número de variables crece exponencialmente. Su propuesta fue: “construyamos computadores que sean ellos mismos cuánticos”. Muchos consideran esta idea el nacimiento de la computación cuántica.
+Ejemplo sencillo
+Simular el mar con un balde. Si quieres predecir cómo se comportará el océano, representar cada gota en un computador clásico es casi imposible. Feynman propuso usar “otro mar pequeño” (un sistema cuántico controlable) para imitar al sistema que queremos estudiar.
+5.4 La teoría: aparecen los algoritmos (1985-1996)
+David Deutsch (1985): formuló el computador cuántico universal, análogo cuántico de la máquina de Turing, y mostró que un computador cuántico podía hacer, en principio, algo que uno clásico no. Con Richard Jozsa (1992) diseñó el primer algoritmo que demuestra una ventaja cuántica, aunque es un problema artificial.
+Peter Shor (1994): presentó un algoritmo cuántico que factoriza números enteros grandes en tiempo muy inferior a cualquier método clásico conocido. Esto llamó la atención de gobiernos y empresas, porque amenaza la criptografía RSA. Antes del algoritmo de Shor, la computación cuántica era sobre todo curiosidad académica; después, se volvió una prioridad estratégica.
+Benjamin Schumacher (1995): acuñó el término qubit.
+Peter Shor (1995) y Andrew Steane (1996): idearon los primeros códigos de corrección cuántica de errores, mostrando que es posible proteger la información cuántica pese al ruido.
+Lov Grover (1996): algoritmo de búsqueda con aceleración cuadrática.
+Alexei Kitaev (1997): propuso la idea de la computación cuántica topológica, la base teórica del enfoque de Microsoft (ver capítulo 7).
+5.5 Los primeros experimentos (1995-2010)
+Con la teoría lista, empezó la ingeniería. En 1995, Cirac y Zoller propusieron cómo construir puertas cuánticas con iones atrapados, y el equipo de David Wineland realizó la primera puerta cuántica de dos qubits con iones. En 1998 se construyeron los primeros computadores cuánticos de 2 qubits con resonancia magnética nuclear (RMN), y en 2001 un equipo de IBM y Stanford ejecutó el algoritmo de Shor para factorizar el número 15 (3 × 5) con 7 qubits. Parece poco, pero fue una prueba de concepto. En 1999 se creó el primer qubit con un circuito superconductor, y en 2007 se diseñó el transmon, el tipo de qubit que hoy usan IBM y Google.
+Dato clave
+Premios Nobel de Física relacionados: 2012, Serge Haroche y David Wineland (manipular sistemas cuánticos individuales); 2022, Alain Aspect, John Clauser y Anton Zeilinger (experimentos con fotones entrelazados); 2025, John Clarke, Michel Devoret y John Martinis (efecto túnel cuántico macroscópico en circuitos eléctricos, base de los qubits superconductores).
+5.6 La etapa industrial (2011 hasta hoy)
+Desde 2011 las empresas lideran el desarrollo: aparecen computadores cuánticos comerciales, acceso en la nube, competencias entre tecnologías y gobiernos invirtiendo miles de millones. La siguiente sección resume los hitos.
+6. Línea de evolución de la computación cuántica
+La siguiente tabla resume los hitos más importantes, en orden cronológico. Los hitos de las empresas son anuncios de ellas mismas; algunos han sido debatidos por la comunidad científica.
+Año
+Hito
+Por qué importa
+1900
+Max Planck propone los “cuantos” de energía.
+Nace la física cuántica.
+1905
+Einstein explica el efecto fotoeléctrico con fotones.
+La luz se comporta como partículas y ondas.
+1926-27
+Schrödinger formula su ecuación; Heisenberg, el principio de incertidumbre.
+Se completa el marco matemático de la mecánica cuántica.
+1935
+Paradoja EPR y gato de Schrödinger.
+Se plantean entrelazamiento y superposición como problemas conceptuales.
+1936
+Alan Turing define la máquina de Turing.
+Se define formalmente qué es computar.
+1947
+Se inventa el transistor.
+Base física de la computación clásica.
+1948
+Claude Shannon define el bit.
+Nace la teoría de la información.
+1961
+Rolf Landauer: “la información es física”.
+Se conectan computación y termodinámica.
+1964
+John Bell publica sus desigualdades.
+Permiten comprobar experimentalmente el entrelazamiento.
+1965
+Gordon Moore formula su ley.
+Marca el ritmo de miniaturización de los chips.
+1980-82
+Benioff propone un modelo cuántico de computación; Feynman propone simular la naturaleza con computadores cuánticos.
+Nace la idea de la computación cuántica.
+1985
+David Deutsch define el computador cuántico universal.
+Base teórica formal.
+1994
+Peter Shor publica su algoritmo de factorización.
+Demuestra una ventaja importante y amenaza la criptografía actual.
+1995
+Se acuña la palabra “qubit”; primera puerta cuántica con iones; primer código de corrección de errores cuánticos.
+Se muestran los ladrillos básicos.
+1996
+Lov Grover publica su algoritmo de búsqueda.
+Segundo gran algoritmo cuántico.
+1997
+Kitaev propone la computación cuántica topológica.
+Idea teórica de los qubits topológicos.
+1998-2001
+Primeros computadores de 2 qubits (RMN); se factoriza el 15 con el algoritmo de Shor.
+Primeras demostraciones experimentales.
+2007
+Se diseña el qubit transmon.
+Qubit superconductor más estable y usado hoy.
+2011
+D-Wave vende el primer “computador cuántico” comercial (recocido cuántico).
+Primer producto comercial, aunque de un tipo especializado y debatido.
+2016
+IBM abre un computador cuántico de 5 qubits al público en la nube.
+Cualquier persona puede programar un computador cuántico.
+2019
+Google anuncia la “supremacía cuántica” con el chip Sycamore (53 qubits).
+Primer cálculo en que un chip cuántico supera, según Google, a los supercomputadores clásicos (IBM objetó la magnitud).
+2021-2023
+IBM presenta chips de 127 (Eagle), 433 (Osprey) y 1.121 qubits (Condor).
+Se escala el número de qubits; la calidad sigue siendo el reto.
+2022
+Nobel de Física a Aspect, Clauser y Zeilinger.
+Reconoce el entrelazamiento como base de la tecnología cuántica.
+Dic. 2024
+Google presenta el chip Willow (105 qubits).
+Demuestra que agregar qubits puede reducir los errores, un hito de corrección cuántica.
+Feb. 2025
+Microsoft presenta Majorana 1.
+Primer chip anunciado con “núcleo topológico” (ver capítulo 7).
+Oct. 2025
+Nobel de Física a Clarke, Devoret y Martinis.
+Reconoce la base de los qubits superconductores.
+Jun. 2026
+Microsoft presenta Majorana 2 y fija la meta de 2029 para un sistema escalable.
+Segunda generación; mejora anunciada de 1.000 veces en fiabilidad.
+Cómo presentar el futuro en la exposición
+Las empresas grandes (IBM, Google, Microsoft y otras) hablan de tener computadores cuánticos de utilidad práctica hacia 2029-2030. Son metas de las propias compañías, no garantías. Conviene presentarlas como “objetivos anunciados”.
+7. El chip cuántico de Microsoft: Majorana 1 y Majorana 2
+Cuando se habla de las “micro tarjetas de qubits de Microsoft”, se hace referencia a los chips cuánticos Majorana: procesadores del tamaño de la palma de una mano, que usan un tipo especial de qubit llamado qubit topológico. Microsoft presentó Majorana 1 en febrero de 2025 y Majorana 2 en junio de 2026.
+7.1 El problema que quiere resolver
+Los qubits de otras tecnologías (como los superconductores de IBM y Google) son muy frágiles: cualquier perturbación del entorno los daña, y por eso necesitan miles de qubits físicos de apoyo para obtener un solo qubit confiable. Microsoft apostó, hace casi veinte años, por un enfoque diferente: crear un qubit que sea estable por diseño, de modo que se necesite menos corrección de errores.
+7.2 La idea: información protegida por la topología
+La topología es una rama de las matemáticas que estudia las propiedades de una forma que no cambian aunque la deformemos (sin romperla). Para la topología, una taza y una dona son lo mismo, porque ambas tienen un solo agujero. Pero una esfera es distinta, porque no tiene agujero.
+Ejemplo sencillo
+El nudo en una cuerda. Si haces un nudo en una cuerda y la sacudes, la estiras o la arrugas, el nudo sigue ahí. Para deshacerlo tendrías que hacer algo drástico. Un qubit topológico guarda la información en una propiedad “global” del sistema (como el nudo), no en un punto concreto. Por eso los pequeños golpes o el ruido local no la borran fácilmente.
+Dividir un secreto. Es como escribir la mitad de una contraseña en cada extremo de una cuerda larga: un pequeño ruido en un extremo no basta para perder la información, porque esta depende de la relación entre ambos extremos.
+Esta idea fue propuesta teóricamente en 1997 por Alexei Kitaev y Michael Freedman, y es la base del proyecto de Microsoft.
+7.3 Las partículas de Majorana
+El físico italiano Ettore Majorana propuso en 1937 que podía existir una partícula que fuera su propia antipartícula. Poco después, en 1938, desapareció misteriosamente, lo que añadió leyenda a su nombre. En materiales muy especiales, ciertos grupos de electrones pueden comportarse colectivamente como si fueran esa partícula; a estas “partículas aparentes” se les llama cuasipartículas y, en este caso, modos cero de Majorana (MZM).
+Ejemplo sencillo
+La ola en el estadio. La “ola” que recorre un estadio parece un objeto que se mueve, pero en realidad son personas que se levantan y se sientan en orden. No es un objeto nuevo, sino un comportamiento colectivo. Las cuasipartículas son así: un comportamiento colectivo de muchos electrones que se comporta como una partícula.
+7.4 Cómo está construido el chip: el “topoconductor”
+Microsoft desarrolló un material nuevo que llama topoconductor (superconductor topológico). Está hecho de capas ultradelgadas, diseñadas casi átomo por átomo, de:
+Arseniuro de indio (InAs): un semiconductor.
+Aluminio (Al): un superconductor, un material por el que la corriente fluye sin resistencia a muy bajas temperaturas.
+Cuando este material se enfría a una temperatura cercana al cero absoluto y se aplica un campo magnético, se forman nanohilos topológicos superconductores. En los dos extremos de cada nanohilo aparecen los modos de Majorana, y es ahí donde se codifica la información.
+7.5 Cómo guarda la información: la paridad
+En un superconductor, los electrones se agrupan en parejas (llamadas pares de Cooper). El qubit de Microsoft almacena la información en la paridad del nanohilo: si el número total de electrones es par o impar. Esos dos casos corresponden al 0 y al 1 del qubit.
+Ejemplo sencillo
+Pares de baile. Imagina una pista de baile en la que todos bailan en pareja. Si hay un número par de personas, nadie sobra (paridad par). Si llega alguien solo, queda una persona sin pareja (paridad impar). Cambiar el “0” por “1” en el qubit equivale a que aparezca un electrón suelto. Romper una pareja cuesta energía, por eso ese cambio no ocurre fácilmente por ruido: ahí está la protección.
+Microsoft explicó que el ruido externo (por ejemplo, radiación electromagnética) puede romper pares de Cooper y generar electrones sueltos que voltean el qubit, pero sus diseños buscan que esos eventos sean raros.
+7.6 Cómo se mide y se controla: digital en lugar de analógico
+Otro problema de la computación cuántica es el control: en muchas tecnologías cada qubit necesita señales analógicas muy precisas, ajustadas una por una. Eso es muy difícil de escalar a un millón de qubits. Microsoft propone un método de medición digital:
+Los dos extremos del nanohilo se conectan, mediante interruptores digitales controlados por voltaje, a un punto cuántico: un dispositivo semiconductor minúsculo que puede almacenar carga eléctrica.
+Según la paridad del hilo (par o impar), cambia una propiedad eléctrica del punto cuántico (su capacitancia).
+Ese cambio se detecta con señales de microondas, lo que permite leer el estado del qubit en una sola medición.
+Las operaciones del computador se realizan mediante secuencias de estas mediciones controladas por pulsos de voltaje, lo que Microsoft describe como control digital.
+Según Microsoft, sus mediciones iniciales tuvieron una probabilidad de error de alrededor del 1 %, con caminos identificados para reducirla.
+7.7 El “tetron” y la hoja de ruta
+La unidad básica del diseño es un dispositivo de un solo qubit llamado tetron, formado por nanohilos topológicos con cuatro modos de Majorana. Los tetrones se organizan en matrices. Según Microsoft, Majorana 1 se presentó con ocho qubits topológicos en un chip diseñado para poder escalarse a un millón. Los siguientes pasos que la propia empresa describió fueron una matriz de 4×2 tetrones para demostrar entrelazamiento y operaciones por medición, y luego la detección de errores en dos qubits lógicos.
+Dato clave
+Microsoft planteó que un millón de qubits es el umbral necesario para resolver problemas industriales relevantes, por ejemplo, diseñar catalizadores que descompongan microplásticos o desarrollar materiales autorreparables. Es una meta, no un logro actual.
+Microsoft fue invitada a la fase final del programa US2QC de la agencia estadounidense DARPA, que busca el primer computador cuántico tolerante a fallos de utilidad práctica.
+Microsoft indicó que Majorana 1 no se ofrecería a clientes por Azure; es una plataforma de investigación hacia sistemas mayores.
+7.8 Majorana 2 (junio de 2026)
+El 2 de junio de 2026, durante su conferencia Build, Microsoft presentó Majorana 2. Según la empresa y los medios que cubrieron el anuncio:
+Usa una nueva combinación de materiales: cambia el aluminio por plomo como superconductor. Un reto fue usar plomo, que es soluble en agua, sin que se “lavara” durante la fabricación.
+Microsoft afirma una mejora de 1.000 veces en la fiabilidad de sus qubits, con una vida media de unos 20 segundos y casos de hasta un minuto, frente a microsegundos o milisegundos en otras tecnologías o en la primera generación.
+Usó inteligencia artificial (la plataforma Microsoft Discovery) para ayudar a diseñar el material y optimizar la fabricación.
+Adelantó su meta de un computador cuántico escalable a 2029 (antes se hablaba de 2033).
+Reafirmó su apuesta por un millón de qubits en un solo chip, sin arquitecturas modulares de varios chips.
+7.9 Comparación con otros enfoques
+Aspecto
+Qubits superconductores (IBM, Google)
+Qubits topológicos (Microsoft)
+Cómo guardan la información
+Estados de energía de un circuito superconductor.
+Paridad de nanohilos con modos de Majorana.
+Protección contra errores
+Casi toda se logra por software, con muchos qubits de apoyo.
+Parte se busca en el propio hardware (protección topológica).
+Madurez
+Chips de cientos de qubits ya fabricados.
+Primeros dispositivos de pocos qubits; tecnología en etapa temprana.
+Principal riesgo
+Necesitar enormes cantidades de qubits para corregir errores.
+Demostrar de forma convincente la física de Majorana y escalar.
+7.10 La parte que conviene decir con honestidad: la controversia científica
+Un buen expositor debe señalar que el trabajo de Microsoft ha sido debatido. Los modos de Majorana son difíciles de distinguir de otros fenómenos que producen señales parecidas. Parte de la comunidad científica ha pedido evidencia adicional e independiente de que los dispositivos realmente alojan estados topológicos, y la prensa especializada ha recogido esas críticas tanto en 2025 como con el anuncio de Majorana 2. Además, un artículo de 2018 sobre señales de Majorana, relacionado con este campo, fue retractado en 2021, lo que hizo que la comunidad sea especialmente cautelosa.
+Para no exagerar en la exposición
+Decir que Microsoft “ya creó un qubit topológico perfecto” sería exagerar. Lo más preciso es: Microsoft afirma haber demostrado qubits topológicos y presentó un chip que sigue una hoja de ruta hacia ellos; la comunidad científica espera más evidencia independiente.
+8. Guía para la exposición, preguntas frecuentes y glosario
+8.1 Estructura sugerida (unos 15 a 20 minutos)
+Bloque
+Contenido
+Tiempo
+1. Apertura
+Pregunta gancho: “¿Qué pasaría si una computadora pudiera simular una molécula tal como la hace la naturaleza?”
+1 min
+2. Computación y bits
+Receta = algoritmo; interruptor = bit; “Hola” en binario.
+3 min
+3. Física cuántica
+Moneda girando, doble rendija, guantes entrelazados.
+4 min
+4. Qubits
+Esfera de Bloch; tabla bit vs. qubit; el problema del ruido.
+4 min
+5. Historia
+Feynman 1981, Shor 1994, Google 2019, Willow 2024.
+3 min
+6. Microsoft
+Nudo en la cuerda, pares de baile, Majorana 1 y 2, cautelas.
+4 min
+7. Cierre
+Qué esperar y qué no: no reemplazará tu laptop; criptografía post-cuántica.
+1 min
+8.2 Ideas fuerza para recordar
+Un bit es 0 o 1. Un qubit puede estar en una superposición de ambos y, al medirlo, da 0 o 1.
+La potencia no viene de “probar todo a la vez”, sino de interferencia: cancelar respuestas malas y reforzar la buena.
+El mayor enemigo es el ruido (decoherencia); por eso hace falta corrección de errores.
+La computación cuántica nació de una idea de Feynman (1981) y cobró urgencia con el algoritmo de Shor (1994).
+Microsoft apuesta por qubits topológicos (protegidos como un nudo) y presentó Majorana 1 (2025) y Majorana 2 (2026); sus afirmaciones aún requieren confirmación independiente.
+8.3 Preguntas frecuentes (para el momento de preguntas)
+¿Un computador cuántico es más rápido que uno normal?
+Solo en ciertos problemas específicos. Para la mayoría de las tareas cotidianas (navegar, editar texto, jugar) no aporta ventaja.
+¿Ya existen computadores cuánticos?
+Sí, hay máquinas con cientos de qubits y acceso por la nube, pero todavía son ruidosas y no resuelven problemas útiles que los computadores clásicos no puedan resolver. El objetivo actual es construir máquinas tolerantes a fallos.
+¿Pueden romper mis contraseñas y mi banco?
+Un computador cuántico lo suficientemente grande podría romper algunos sistemas de cifrado actuales (como RSA), pero esa máquina aún no existe. Mientras tanto, se están adoptando estándares de criptografía post-cuántica para estar preparados.
+¿Por qué necesitan estar tan fríos?
+Porque el calor genera vibraciones que perturban a los qubits (decoherencia). Los circuitos superconductores se enfrían a unos 15 milikelvin, mucho más fríos que el espacio exterior.
+¿Qué diferencia hay entre “supremacía” y “utilidad”?
+La supremacía cuántica es demostrar que un computador cuántico resuelve algún problema (aunque sea inútil) más rápido que cualquier computador clásico. La utilidad es resolver problemas que importan en la vida real. Lo primero se ha alegado (Google, 2019); lo segundo es el objetivo actual.
+¿Qué es un qubit lógico?
+Un qubit confiable construido a partir de muchos qubits físicos imperfectos mediante corrección de errores.
+¿Por qué Microsoft usa un enfoque distinto?
+Porque apostó por qubits con protección incorporada en el hardware, lo que reduciría la cantidad de qubits de apoyo necesarios. Es una apuesta de alto riesgo y alta recompensa.
+8.4 Glosario
+Término
+Significado sencillo
+Algoritmo
+Lista de pasos ordenados para resolver un problema.
+Bit
+Unidad mínima de información clásica: 0 o 1.
+Byte
+Grupo de 8 bits.
+Qubit
+Unidad de información cuántica; puede estar en superposición de 0 y 1.
+Superposición
+Combinación de varios estados posibles con ciertas probabilidades.
+Entrelazamiento
+Correlación cuántica entre partículas que no puede explicarse con valores predefinidos.
+Interferencia
+Suma o cancelación de ondas de probabilidad.
+Medición
+Acto de leer un sistema cuántico; lo hace colapsar a un valor definido.
+Decoherencia
+Pérdida de las propiedades cuánticas por interacción con el entorno.
+Compuerta / puerta cuántica
+Operación que transforma el estado de uno o varios qubits.
+Esfera de Bloch
+Representación geométrica del estado de un qubit.
+Corrección de errores
+Técnicas para proteger la información repartiéndola entre muchos qubits.
+Qubit lógico / físico
+Lógico: confiable; físico: el qubit real, imperfecto, que forma parte de él.
+NISQ
+Era actual: máquinas cuánticas ruidosas de escala intermedia.
+Supremacía cuántica
+Resolver un problema (aunque sea artificial) más rápido que cualquier computador clásico.
+Topología
+Rama de las matemáticas sobre propiedades que no cambian al deformar una forma.
+Modo cero de Majorana
+Cuasipartícula que se comporta como una partícula que es su propia antipartícula.
+Topoconductor
+Término de Microsoft para un superconductor topológico.
+Tetron
+Dispositivo de qubit del diseño de Microsoft, con cuatro modos de Majorana.
+Cero absoluto
+Temperatura mínima posible, −273,15 °C (0 kelvin).
+9. Fuentes y lecturas recomendadas
+Los datos sobre los chips de Microsoft provienen de los comunicados y reportes de prensa citados abajo. Como el tema avanza rápido, conviene revisar las fuentes antes de exponer.
+Sobre Majorana 1 y Majorana 2
+Microsoft Azure Quantum Blog, “Microsoft unveils Majorana 1, the world’s first quantum processor powered by topological qubits” (19 de febrero de 2025).
+Microsoft News, “Microsoft’s Majorana 1 chip carves new path for quantum computing” (febrero de 2025).
+Aghaee, M. et al. (Microsoft Azure Quantum), artículo en Nature sobre la medición interferométrica de paridad en dispositivos híbridos InAs-Al (2025).
+CNBC / NBC News, “Microsoft reveals its first quantum computing chip, the Majorana 1” (febrero de 2025).
+Reuters, “Microsoft reveals new quantum chip made with AI, says it will have systems by 2029” (2 de junio de 2026).
+HPCwire, “Microsoft Unveils Majorana 2 Quantum Chip, Targets Commercial-Scale Quantum Computing by 2029” (2 de junio de 2026).
+Constellation Research, análisis del anuncio de Majorana 2 (junio de 2026).
+Sobre historia y fundamentos
+Feynman, R. (1982). “Simulating Physics with Computers”. International Journal of Theoretical Physics.
+Shor, P. (1994). “Algorithms for quantum computation: discrete logarithms and factoring”.
+Grover, L. (1996). “A fast quantum mechanical algorithm for database search”.
+Arute, F. et al. (2019). “Quantum supremacy using a programmable superconducting processor”. Nature (Google).
+Preskill, J. (2018). “Quantum Computing in the NISQ era and beyond”. Quantum.
+Nielsen, M. y Chuang, I. Quantum Computation and Quantum Information (libro de referencia).
+Kitaev, A. (1997/2003). “Fault-tolerant quantum computation by anyons”.
+Recomendación final
+Antes de exponer, verifica los datos más recientes (por ejemplo, números de qubits y fechas de anuncios), porque son los que más cambian. Y recuerda distinguir siempre entre lo que las empresas anuncian y lo que la comunidad científica ha confirmado.
+
+Name                                         Length
+----                                         ------
+5825034dae9f95bed649bff019dee3da7c26124b.png  71721
+
+

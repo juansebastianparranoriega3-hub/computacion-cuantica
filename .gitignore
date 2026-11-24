@@ -1,0 +1,11 @@
+# Imágenes de inspiración de terceros (no son nuestras)
+materiales/referencias/
+
+# Capturas de prueba (pesadas; se regeneran)
+docs/capturas/
+
+# Restos de herramientas
+.playwright-mcp/
+.claude/settings.local.json
+Thumbs.db
+desktop.ini
