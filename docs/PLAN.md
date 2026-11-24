@@ -22,7 +22,36 @@ Así el público *ve* el salto de lo clásico a lo cuántico.
 
 Tipografías (locales, en `web/fuentes/` o del sistema): una serif display para titulares de periódico, una serif de lectura para el texto, y una monoespaciada para el HUD.
 
-## 3. Estructura de láminas (según la guía del cap. 8 del documento)
+## 3. Estructura de láminas
+
+### 3.1 Recorrido principal de 10 minutos (aprobado por Sebas, 2026-11-24)
+Con `→`, Espacio y deslizar solo se recorren estas láminas, en este orden. La tabla vive en
+`BLOQUES` de `web/js/01-nucleo.js`: para sumar o quitar una lámina basta con editarla.
+
+| Bloque | Tiempo | Láminas (n.º en el recorrido · id) |
+|---|---|---|
+| 01 Apertura | 0:45 | 1 `l-portada` · 2 `l-gancho` |
+| 02 Bits | 1:30 | 3 `l-bit` · 4 `l-moore` |
+| 03 Física cuántica | 2:30 | 5 `l-transicion` (transición papel→HUD) · 6 `l-rendija` · 7 `l-moneda` · 8 `l-entrelazamiento` |
+| 04 Qubits | 2:00 | 9 `l-bloch` · 10 `l-potencia` · 11 `l-tabla` |
+| 05 Historia | 0:45 | 12 `l-linea` |
+| 06 Majorana | 2:00 | 13 `l-majorana1` · 14 `l-topologia` · 15 `l-majorana2` · 16 `l-controversia` |
+| 07 Cierre | 0:30 | 17 `l-ideas` |
+
+Son 17 láminas (la petición original decía 18, pero la lista de ids aprobada tiene 17; ver bitácora).
+
+### 3.2 Anexo — para preguntas (23 láminas)
+No se borran: se abren desde el índice (`Esc` o ☰), sección «Anexo — para preguntas», agrupadas por su
+sección original. Dentro del anexo `←`/`→` se mueven solo por el anexo; «↩ Recorrido» en la barra (o «atrás»
+del navegador) vuelve a la última lámina del recorrido. URL: `#N` = lámina N del recorrido; `#anexo-<nombre>`
+= lámina del anexo por su id sin `l-` (p. ej. `#anexo-cuantizacion`).
+
+Anexo: `l-computar`, `l-fundamentos`, `l-compuertas`, `l-cuantizacion`, `l-interferencia`, `l-decoherencia`,
+`l-sintesis`, `l-qubit`, `l-puertas`, `l-tipos`, `l-errores`, `l-usos`, `l-camino`, `l-particulas`,
+`l-topoconductor`, `l-medicion`, `l-tetron`, `l-comparacion`, `l-videos`, `l-futuro`, `l-preguntas`,
+`l-glosario`, `l-fuentes`.
+
+### 3.3 Estructura original completa (según la guía del cap. 8 del documento)
 
 | # | Bloque | Min | Lámina(s) | Animación que explica algo |
 |---|---|---|---|---|
@@ -82,7 +111,11 @@ Computacion Cuantica/
 | 5 | Revisión final del supervisor y ajustes | Claude |
 
 ## 8. Criterios de "terminado"
-- Las 10 secciones navegables, texto fiel al documento (sin inventar datos ni fechas).
+- **Exposición en 10 minutos:** el recorrido de la §3.1 (17 láminas, 7 bloques que suman 10:00) se expone
+  completo con `→`; la barra muestra «N / 17» y los minutos del bloque («≈ 2:30 min»), iguales a la tabla.
+  Cada lámina del recorrido tiene en sus notas (`N`) un guion de 15–45 s que cabe en el tiempo de su bloque,
+  sacado del documento. El resto (anexo) queda a un clic desde el índice para las preguntas.
+- Las 10 secciones navegables (recorrido + anexo), texto fiel al documento (sin inventar datos ni fechas).
 - Cada animación compleja explica su concepto y se puede controlar (play/reset o slider).
 - 0 errores en consola; 60 fps en las animaciones en un portátil normal.
 - Se lee bien en un proyector (contraste alto, texto mínimo 24 px en láminas).

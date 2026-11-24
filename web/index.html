@@ -6,7 +6,7 @@
 <title>Computación Cuántica</title>
 <meta name="description" content="Exposición interactiva: de los bits a los qubits, ciencia, historia y el chip Majorana de Microsoft.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2302050c'/%3E%3Cpath d='M16 2 L18.5 13.5 L30 16 L18.5 18.5 L16 30 L13.5 18.5 L2 16 L13.5 13.5 Z' fill='%233b8bff'/%3E%3C/svg%3E">
-<link rel="stylesheet" href="css/estilos.css?v=2026-11-24c">
+<link rel="stylesheet" href="css/estilos.css?v=2026-11-24d">
 </head>
 <body data-tema="papel">
 
@@ -55,9 +55,9 @@
     <p class="portada-ayuda e"><kbd>→</kbd> avanzar · <kbd>F</kbd> pantalla completa · <kbd>N</kbd> notas · <kbd>Esc</kbd> índice</p>
   </div>
   <div class="notas">
-    <h3>Portada</h3>
-    <p>Presentarse y anunciar el recorrido: computación clásica → física cuántica → qubits → historia → chip Majorana de Microsoft.</p>
-    <p>Idea del diseño: las primeras láminas son un periódico (lo clásico); al llegar a la física cuántica el papel se descompone y aparece una interfaz futurista (lo cuántico).</p>
+    <h3>Portada · ≈ 15 s</h3>
+    <p><b>Guion:</b> «En diez minutos vamos de los bits a los qubits: qué es un bit, la física cuántica que hay detrás, qué hace distinto a un qubit, un repaso de la historia y el chip Majorana de Microsoft.»</p>
+    <p>Idea del diseño: lo clásico se ve como un periódico; al llegar a la física cuántica el papel se descompone y aparece una interfaz futurista.</p>
   </div>
 </section>
 
@@ -76,9 +76,8 @@
     </div>
   </div>
   <div class="notas">
-    <h3>Apertura (1 min)</h3>
-    <p>Lanzar la pregunta y dejar unos segundos de silencio.</p>
-    <p>La naturaleza es cuántica: simular una molécula con un computador clásico se vuelve imposible porque el número de cálculos crece demasiado rápido. Ese es el problema que inspiró a Feynman (1981) y es uno de los usos principales que se esperan de la computación cuántica (nuevos medicamentos, baterías, fertilizantes).</p>
+    <h3>Pregunta gancho · ≈ 30 s</h3>
+    <p><b>Guion:</b> «¿Qué pasaría si una computadora pudiera simular una molécula tal como lo hace la naturaleza? [pausa de dos segundos] La naturaleza es cuántica, y simularla con un computador clásico es extremadamente costoso: el número de variables crece exponencialmente. Ese problema inspiró a Feynman en 1981, y es uno de los usos que más se esperan: nuevos medicamentos, baterías, fertilizantes.»</p>
     <p>Si la frase se está escribiendo, <b>→</b> la completa de golpe.</p>
   </div>
 </section>
@@ -199,7 +198,8 @@
     </div>
   </div>
   <div class="notas">
-    <h3>Bits</h3>
+    <h3>Bits · ≈ 45 s</h3>
+    <p><b>Guion:</b> «Un bit es la unidad mínima de información: solo vale 0 o 1, como el interruptor de la luz. Con n bits hay 2 a la n combinaciones; con 8 bits, un byte, hay 256: alcanza para una letra. [pulsar H, o, l, a] Así se escribe "Hola". Y fíjense en tres cosas que parecen obvias: un bit siempre tiene un valor definido, se lee sin alterarlo y se copia sin límite. Justo eso es lo que cambia con los qubits.»</p>
     <p>Físicamente, el 0 y el 1 se representan con algo que se distinga con claridad: voltaje bajo o alto, interruptor apagado o encendido, un punto magnetizado hacia un lado u otro.</p>
     <p><b>Del decimal al binario:</b> nosotros contamos en base 10; los computadores en base 2. Cada posición vale el doble: 1, 2, 4, 8, 16… Ejemplo: 13 = 8 + 4 + 1 → 1101 (botón «13»).</p>
     <p><b>«Hola» en bits</b> (ASCII, 8 bits por letra): H = 01001000, o = 01101111, l = 01101100, a = 01100001. Pulsa H, o, l, a en orden.</p>
@@ -275,7 +275,8 @@
     </div>
   </div>
   <div class="notas">
-    <h3>Ley de Moore</h3>
+    <h3>Ley de Moore · ≈ 45 s</h3>
+    <p><b>Guion:</b> «En 1965 Gordon Moore observó que los transistores de un chip se duplicaban cada dos años, más o menos; por eso los computadores fueron cada vez más rápidos y baratos. Pero hoy miden pocos nanómetros, unas decenas de átomos, y ahí aparece el efecto túnel: los electrones atraviesan barreras y el interruptor se filtra. Esa física que estorba a lo clásico es la que la computación cuántica aprovecha. Un computador clásico solo manipula bits que valen 0 o 1. Ahora cambiamos de reglas.» [→ y la transición]</p>
     <p>La curva es ilustrativa: muestra una duplicación cada dos años en escala logarítmica (×2, ×4… hasta ~×1.000 millones en 60 años). No son conteos reales de chips concretos.</p>
     <p>Efecto túnel (panel derecho): según la física clásica el electrón no debería cruzar la barrera, pero a escala atómica a veces la atraviesa. Por eso el transistor deja de ser un interruptor fiable.</p>
     <p>Frase puente: «Un computador clásico solo manipula bits que valen 0 o 1. Ahora cambiamos de reglas.»</p>
@@ -303,9 +304,9 @@
   </div>
   <canvas class="cv-transicion" id="cv-transicion" aria-hidden="true"></canvas>
   <div class="notas">
-    <h3>Del papel al holograma</h3>
-    <p>El periódico se descompone en píxeles: dejamos la física clásica (estados definidos) y entramos en la cuántica.</p>
-    <p>Cuatro ideas: cuantización, superposición, interferencia y entrelazamiento; más medición y decoherencia, que explican por qué es tan difícil de construir.</p>
+    <h3>Del papel al holograma · ≈ 30 s</h3>
+    <p><b>Guion:</b> «La computación cuántica procesa información usando directamente las leyes de la mecánica cuántica, la física de átomos, electrones y fotones; en lugar de bits usa qubits. Se apoya en cuatro ideas: cuantización, superposición, interferencia y entrelazamiento, más la medición y la decoherencia, que explican por qué es tan difícil de construirla. Veamos tres experimentos.»</p>
+    <p>El periódico se descompone en píxeles: dejamos la física clásica (estados definidos). Cuantización, interferencia y decoherencia tienen su lámina en el anexo, por si preguntan.</p>
   </div>
 </section>
 
@@ -359,7 +360,8 @@
     </div>
   </div>
   <div class="notas">
-    <h3>Doble rendija</h3>
+    <h3>Doble rendija · ≈ 40 s</h3>
+    <p><b>Guion:</b> «En 1801 Thomas Young hizo pasar luz por dos rendijas y aparecieron franjas claras y oscuras: la luz es una onda. Desde los años veinte se comprobó que los electrones también forman franjas, incluso enviados de uno en uno. [señalar] Cada punto es un electrón; con cientos, aparecen las franjas. La partícula no sigue un solo camino: su onda de probabilidad pasa por las dos rendijas a la vez. Esas franjas son interferencia, ondas que se suman o se cancelan, y es lo que usa un algoritmo cuántico: cancelar las respuestas incorrectas y reforzar la correcta.»</p>
     <p>Cada punto es un electrón que llega a la pantalla. Al principio parecen caer al azar; con cientos de impactos aparecen las franjas de interferencia (el histograma de la derecha).</p>
     <p>«Tapar una rendija» muestra la comparación: con un solo camino no hay franjas, solo una mancha. Las franjas solo aparecen cuando la onda pasa por las dos rendijas.</p>
     <p>Lección: el comportamiento cuántico se describe con una onda de probabilidad. Es la base de la superposición.</p>
@@ -390,7 +392,8 @@
     </div>
   </div>
   <div class="notas">
-    <h3>Superposición y medición</h3>
+    <h3>Superposición y medición · ≈ 40 s</h3>
+    <p><b>Guion:</b> «Una moneda sobre la mesa es un bit: cara o sello. Una moneda girando se parece a un qubit: tiene cierta probabilidad de caer en cada lado. Schrödinger, en 1926: el estado puede ser una superposición de posibilidades. Heisenberg, en 1927: medir cambia el sistema. [pulsar Medir] Al atraparla cae en un solo lado y ya no podemos ver cómo giraba: de un qubit, al final, solo se obtiene 0 o 1. Ojo: la moneda real siempre es cara o sello, solo que no lo sabemos; en el qubit la superposición es real.»</p>
     <p>Moneda sobre la mesa = bit (cara o sello). Moneda girando = qubit: tiene cierta probabilidad de caer en cada lado. Al atraparla (medir) cae en uno.</p>
     <p><b>Abrir la caja:</b> al medir, la moneda se detiene de golpe y nunca más puedes ver cómo giraba. Por eso de un qubit al final solo se obtiene 0 o 1.</p>
     <p><b>Gato de Schrödinger (1935):</b> experimento mental, no real, para preguntar dónde termina lo cuántico y empieza lo cotidiano.</p>
@@ -451,7 +454,8 @@
     </div>
   </div>
   <div class="notas">
-    <h3>El par de guantes</h3>
+    <h3>Entrelazamiento · ≈ 40 s</h3>
+    <p><b>Guion:</b> «En 1935 Einstein, Podolsky y Rosen plantearon esta paradoja; Einstein la llamó "acción fantasmal a distancia". Bell, en 1964, propuso cómo comprobarlo, y Aspect, Clauser y Zeilinger lo confirmaron: Nobel de 2022. Es como un par de guantes en dos cajas: abres la tuya y sabes cuál hay en la otra, solo que en lo cuántico el resultado no estaba decidido antes. [Medir 20 pares] Cada lado parece aleatorio: no sirve para mandar mensajes más rápido que la luz. Y todo esto dura solo si el sistema está aislado: calor o vibraciones lo "miden" sin querer y destruyen la superposición. Eso es la decoherencia.»</p>
     <p>Guardas un guante izquierdo y uno derecho en dos cajas y envías cada una a un extremo del mundo. Al abrir la tuya sabes qué hay en la otra.</p>
     <p><b>Diferencia profunda:</b> en lo cuántico los resultados no estaban decididos de antemano (eso lo demostró Bell). La analogía es solo una primera aproximación.</p>
     <p>En la animación: cada lado por separado sale ↑ o ↓ al 50 %; solo al comparar ambas columnas se ve que siempre son opuestos.</p>
@@ -579,7 +583,8 @@
     </div>
   </div>
   <div class="notas">
-    <h3>Esfera de Bloch</h3>
+    <h3>Esfera de Bloch · ≈ 45 s</h3>
+    <p><b>Guion:</b> «Un qubit, al medirlo, siempre da 0 o 1; antes de medirlo puede estar en superposición. La esfera de Bloch lo dibuja: un bit solo vive en los polos, norte 0 y sur 1; un qubit puede apuntar a cualquier punto. Cerca del norte es más probable medir 0; en el ecuador, 50-50. [|0⟩ → H] H lo lleva al ecuador: lanzar la moneda. [Z] Z lo gira: las probabilidades no cambian, cambia la fase. [H] Otro H y llega a 1. La fase importó: eso es interferencia.»</p>
     <p><b>X</b>: gira media vuelta alrededor del eje x (0 ↔ 1, como el NOT). <b>H</b> (Hadamard): lleva |0⟩ al ecuador, superposición 50-50, «lanzar la moneda». <b>Z</b>: media vuelta alrededor del eje vertical; no cambia las probabilidades, cambia la fase.</p>
     <p>Demostración sugerida: |0⟩ → H (ecuador) → Z (la fase cambia, P sigue 50-50) → H (llega a |1⟩). La fase importó: eso es interferencia.</p>
     <p><b>Analogía:</b> un bit es un interruptor; un qubit, un regulador con perilla que además tiene dirección. Pero al mirar la lámpara solo ves encendido o apagado.</p>
@@ -613,7 +618,8 @@
     <p class="pie-visual e">Analogía: un libro con todas las páginas «a la vez»; la interferencia amplifica la página de la respuesta. Al medir, solo se obtiene un resultado.</p>
   </div>
   <div class="notas">
-    <h3>Crecimiento 2ⁿ</h3>
+    <h3>Crecimiento 2ⁿ · ≈ 40 s</h3>
+    <p><b>Guion:</b> «Lo poderoso aparece al juntar qubits: n qubits se describen con 2 a la n amplitudes. [3, 10, 50, 300] Tres qubits: 8. Diez: 1.024. Cincuenta: más de mil billones. Trescientos: más que átomos en el universo observable. Con n bits, un computador clásico guarda un solo valor de los 2ⁿ posibles. Pero cuidado: al medir solo sale un resultado. La ventaja no es probar todo a la vez, sino usar la interferencia para amplificar la respuesta correcta.»</p>
     <p>Datos del documento: 3 qubits → 8 amplitudes; 10 → 1.024; 50 → más de 1,1 × 10¹⁵ (unos 1.100 billones); 300 → cerca de 2 × 10⁹⁰, más que átomos en el universo observable (~10⁸⁰).</p>
     <p>Con n bits clásicos el computador guarda un valor de los 2ⁿ posibles; con n qubits entrelazados el estado se describe con 2ⁿ amplitudes y las operaciones actúan sobre todas.</p>
   </div>
@@ -693,7 +699,8 @@
     </table>
   </div>
   <div class="notas">
-    <h3>Bit contra qubit</h3>
+    <h3>Bit contra qubit · ≈ 35 s</h3>
+    <p><b>Guion:</b> «En resumen: al medir, los dos dan 0 o 1. Pero el qubit, antes, está en superposición; al medirlo colapsa; puede entrelazarse con otros, y no se puede copiar si su estado es desconocido. Y es muy frágil: muchas tecnologías necesitan temperaturas cercanas al cero absoluto, unos −273 °C, aislamiento y corrección de errores. Ese problema del ruido es justo el que Microsoft quiere atacar.»</p>
     <p>Fila «información que guarda»: el bit guarda un valor de dos; el qubit, dos amplitudes con fase (un punto en la esfera de Bloch).</p>
     <p>Teorema de no clonación: no se puede copiar un estado cuántico desconocido. Por eso la corrección de errores cuántica es más difícil que la clásica.</p>
   </div>
@@ -866,7 +873,8 @@
     <p class="pie-visual linea-pie e"><kbd>→</kbd> recorre la línea · los hitos de empresas son anuncios de ellas mismas; algunos han sido debatidos</p>
   </div>
   <div class="notas">
-    <h3>Línea de tiempo</h3>
+    <h3>Línea de tiempo · ≈ 45 s</h3>
+    <p><b>Guion:</b> «¿Cómo llegamos aquí? [→ recorre la línea] La física cuántica nace con Planck en 1900. La idea de un computador cuántico, con Feynman en 1981: simular la naturaleza con computadores que sean ellos mismos cuánticos. En 1994 el algoritmo de Shor, que factoriza números, la volvió urgente porque amenaza la criptografía actual. En 2019 Google anunció la "supremacía cuántica" con 53 qubits, y en diciembre de 2024 presentó Willow, con 105. Y en 2025 y 2026, Microsoft presenta Majorana 1 y 2.»</p>
     <p>Con <b>→</b> la línea avanza por tramos; al llegar al final, <b>→</b> pasa a la siguiente lámina. También se puede arrastrar o usar la rueda del ratón.</p>
     <p>Hitos que la guía sugiere destacar: Feynman 1981, Shor 1994, Google 2019, Willow 2024.</p>
     <p>Las fichas antiguas van en estilo periódico; desde 1980 (la idea de computación cuántica) pasan a estilo HUD.</p>
@@ -897,7 +905,8 @@
     </div>
   </div>
   <div class="notas">
-    <h3>Majorana 1</h3>
+    <h3>Majorana 1 · ≈ 30 s</h3>
+    <p><b>Guion:</b> «En febrero de 2025 Microsoft presentó Majorana 1: un procesador del tamaño de la palma de la mano con un tipo especial de qubit, el topológico. El problema que quiere resolver: los qubits de otras tecnologías, como los superconductores de IBM y Google, son tan frágiles que necesitan miles de qubits físicos de apoyo por cada qubit confiable. Microsoft apostó por un qubit estable por diseño, que necesite menos corrección de errores.»</p>
     <p>Cuando se habla de las «micro tarjetas de qubits de Microsoft» se refiere a los chips Majorana. Majorana 1: febrero de 2025; Majorana 2: junio de 2026.</p>
     <p>Los qubits superconductores de IBM y Google son muy frágiles; Microsoft apostó por un enfoque diferente: un qubit estable por diseño.</p>
     <p>Las etiquetas de la foto son orientativas.</p>
@@ -926,7 +935,8 @@
     </div>
   </div>
   <div class="notas">
-    <h3>El nudo en una cuerda</h3>
+    <h3>Topología: el nudo · ≈ 30 s</h3>
+    <p><b>Guion:</b> «¿Cómo? Con topología: lo que no cambia al deformar una forma sin romperla. Un nudo en una cuerda: la sacudes o la estiras y el nudo sigue ahí. [subir el ruido] El dato guardado en un punto se voltea; el nudo no. Un qubit topológico guarda la información así, en una propiedad global. En el chip, esa propiedad es la paridad de unos nanohilos: si su número de electrones es par o impar, con modos de Majorana en los extremos.»</p>
     <p>Si haces un nudo y sacudes, estiras o arrugas la cuerda, el nudo sigue ahí. Para deshacerlo hay que hacer algo drástico. El ruido local no borra fácilmente la información.</p>
     <p><b>Dividir un secreto:</b> la mitad de la contraseña en cada extremo de una cuerda larga; el ruido en un extremo no basta, porque la información depende de la relación entre ambos.</p>
     <p>Izquierda: un dato guardado en un punto, que el ruido voltea. Derecha: el nudo se deforma, pero su topología no cambia.</p>
@@ -1104,7 +1114,8 @@
     </div>
   </div>
   <div class="notas">
-    <h3>Majorana 2</h3>
+    <h3>Majorana 2 · ≈ 30 s</h3>
+    <p><b>Guion:</b> «En junio de 2026, en su conferencia Build, Microsoft presentó Majorana 2. Según la empresa: cambia el aluminio por plomo; afirma 1.000 veces más fiabilidad, con una vida media de unos 20 segundos y casos de hasta un minuto; usó inteligencia artificial para diseñar el material, y adelantó a 2029 su meta de un computador escalable, con un millón de qubits en un solo chip. Ojo: son afirmaciones de la empresa.»</p>
     <p>Presentado el 2 de junio de 2026 en la conferencia Build. La vida media de ~20 s (casos de hasta un minuto) se compara con microsegundos o milisegundos en otras tecnologías o en la primera generación.</p>
     <p>Reafirmó la apuesta por un millón de qubits en un solo chip, sin arquitecturas modulares de varios chips.</p>
     <p>Repetir: son afirmaciones de la empresa.</p>
@@ -1153,7 +1164,8 @@
     </div>
   </div>
   <div class="notas">
-    <h3>Controversia</h3>
+    <h3>Controversia · ≈ 30 s</h3>
+    <p><b>Guion:</b> «Y hay que decirlo con honestidad. Los modos de Majorana son difíciles de distinguir de otros fenómenos con señales parecidas; parte de la comunidad pide evidencia adicional e independiente, en 2025 y con Majorana 2; y un artículo de 2018 sobre señales de Majorana fue retractado en 2021. Lo preciso es: Microsoft afirma haber demostrado qubits topológicos; la comunidad científica espera más evidencia independiente.»</p>
     <p>Un buen expositor señala que el trabajo de Microsoft ha sido debatido. La prensa especializada recogió las críticas en 2025 y con el anuncio de Majorana 2.</p>
     <p>Decir que Microsoft «ya creó un qubit topológico perfecto» sería exagerar.</p>
   </div>
@@ -1213,8 +1225,9 @@
     </ol>
   </div>
   <div class="notas">
-    <h3>Ideas fuerza</h3>
-    <p>Leer las cinco ideas despacio. Son el resumen de toda la exposición.</p>
+    <h3>Cierre · ≈ 30 s</h3>
+    <p><b>Guion:</b> «Para recordar: [leer las cinco ideas, una línea cada una]. Las empresas hablan de utilidad práctica hacia 2029-2030: son objetivos anunciados, no garantías. Y volvemos a la pregunta del inicio: ¿qué pasaría si una computadora pudiera simular una molécula tal como lo hace la naturaleza? Gracias. ¿Preguntas?»</p>
+    <p>Para las preguntas: <b>Esc</b> abre el índice; debajo del recorrido está el <b>anexo</b> (2029, preguntas frecuentes, glosario, fuentes y las láminas que no se mostraron). Desde el anexo, «↩ Recorrido» en la barra vuelve aquí.</p>
   </div>
 </section>
 
@@ -1239,7 +1252,7 @@
     </div>
   </div>
   <div class="notas">
-    <h3>Cierre (1 min)</h3>
+    <h3>2029: objetivos anunciados (anexo)</h3>
     <p>Son metas de las propias compañías, no garantías. Microsoft adelantó la suya a 2029 (antes 2033).</p>
     <p>Recomendación final del documento: verificar los datos más recientes antes de exponer y distinguir siempre entre lo que las empresas anuncian y lo que la comunidad científica ha confirmado.</p>
     <p>Cerrar con la pregunta inicial: «¿Qué pasaría si una computadora pudiera simular una molécula tal como lo hace la naturaleza?» y abrir preguntas.</p>
@@ -1364,7 +1377,8 @@
     <span class="barra-porcentaje" id="barra-porcentaje">0%</span>
   </div>
   <div class="barra-der">
-    <span class="barra-num" id="barra-num">1 / 40</span>
+    <button class="barra-btn texto barra-volver" id="btn-volver" hidden aria-label="Volver al recorrido" title="Volver al recorrido">↩ Recorrido</button>
+    <span class="barra-num" id="barra-num">1 / 17</span>
     <button class="barra-btn" id="btn-anterior" aria-label="Lámina anterior">‹</button>
     <button class="barra-btn" id="btn-siguiente" aria-label="Lámina siguiente">›</button>
     <button class="barra-btn texto" id="btn-notas" aria-label="Notas del expositor (N)">N</button>
@@ -1396,10 +1410,10 @@
   </div>
 </div>
 
-<script src="js/01-nucleo.js?v=2026-11-24c"></script>
-<script src="js/02-clasico.js?v=2026-11-24c"></script>
-<script src="js/03-cuantico.js?v=2026-11-24c"></script>
-<script src="js/04-bloch.js?v=2026-11-24c"></script>
-<script src="js/05-majorana.js?v=2026-11-24c"></script>
+<script src="js/01-nucleo.js?v=2026-11-24d"></script>
+<script src="js/02-clasico.js?v=2026-11-24d"></script>
+<script src="js/03-cuantico.js?v=2026-11-24d"></script>
+<script src="js/04-bloch.js?v=2026-11-24d"></script>
+<script src="js/05-majorana.js?v=2026-11-24d"></script>
 </body>
 </html>

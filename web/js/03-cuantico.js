@@ -149,8 +149,9 @@
     document.getElementById('transicion-repetir').addEventListener('click', lanzar);
     Expo.registrar('l-transicion', {
       iniciar: function () {
-        // La transición solo tiene sentido viniendo del periódico (hacia delante)
-        var previa = Expo.laminas[Expo.actual - 1];
+        // La transición solo tiene sentido viniendo del periódico (hacia delante):
+        // en el recorrido, desde la Ley de Moore
+        var previa = Expo.laminaPrevia;
         if (previa && previa.dataset.tema === 'papel' && Expo.direccion === 'adelante') lanzar();
         else terminar();
       },

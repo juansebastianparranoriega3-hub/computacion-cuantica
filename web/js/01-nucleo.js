@@ -6,19 +6,27 @@
 (function () {
   'use strict';
 
+  /* Secciones originales del documento (data-seccion de cada lámina).
+     Se usan para agrupar el anexo en el índice. */
   var SECCIONES = [
-    { nombre: 'Portada', min: 0 },
-    { nombre: 'Apertura', min: 1 },
-    { nombre: 'Computación y bits', min: 3 },
-    { nombre: 'Física cuántica', min: 4 },
-    { nombre: 'Qubits', min: 4 },
-    { nombre: 'Historia', min: 3 },
-    { nombre: 'Microsoft Majorana', min: 4 },
-    { nombre: 'Videos', min: 0 },
-    { nombre: 'Cierre', min: 1 },
-    { nombre: 'Extra', min: 0 }
+    'Portada', 'Apertura', 'Computación y bits', 'Física cuántica', 'Qubits',
+    'Historia', 'Microsoft Majorana', 'Videos', 'Cierre', 'Extra'
   ];
   var ROMANOS = ['0', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX'];
+
+  /* Recorrido principal de 10 minutos (aprobado por Sebas). Solo estas
+     láminas se recorren con →, Espacio y deslizar; el resto pasa al anexo.
+     Para sumar o quitar una lámina del recorrido basta con editar esta tabla. */
+  var BLOQUES = [
+    { nombre: 'Apertura', tiempo: '0:45', ids: ['l-portada', 'l-gancho'] },
+    { nombre: 'Bits', tiempo: '1:30', ids: ['l-bit', 'l-moore'] },
+    { nombre: 'Física cuántica', tiempo: '2:30', ids: ['l-transicion', 'l-rendija', 'l-moneda', 'l-entrelazamiento'] },
+    { nombre: 'Qubits', tiempo: '2:00', ids: ['l-bloch', 'l-potencia', 'l-tabla'] },
+    { nombre: 'Historia', tiempo: '0:45', ids: ['l-linea'] },
+    { nombre: 'Majorana', tiempo: '2:00', ids: ['l-majorana1', 'l-topologia', 'l-majorana2', 'l-controversia'] },
+    { nombre: 'Cierre', tiempo: '0:30', ids: ['l-ideas'] }
+  ];
+  var PREFIJO_ANEXO = 'anexo-';
 
   var consultaReducido = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
 
@@ -162,29 +170,64 @@
   /* ------------------------------------------------------------------
      Construcción de cabeceras, índice
      ------------------------------------------------------------------ */
-  function construirCabecera(lamina, i, total) {
+  /* ------------------------------------------------------------------
+     Recorrido y anexo
+     ------------------------------------------------------------------ */
+  /** Reparte las láminas: Expo.recorrido (orden de BLOQUES) y Expo.anexo (el resto, en orden del documento). */
+  function repartirLaminas() {
+    var porId = {};
+    Expo.laminas.forEach(function (l, i) { porId[l.id] = i; });
+    Expo.recorrido = [];
+    BLOQUES.forEach(function (bloque, b) {
+      bloque.ids.forEach(function (id) {
+        var i = porId[id];
+        if (i == null) { console.error('Recorrido: no existe la lámina #' + id); return; }
+        var l = Expo.laminas[i];
+        l.dataset.parte = 'recorrido';
+        l.dataset.bloque = b;
+        Expo.recorrido.push(i);
+        l.dataset.pos = Expo.recorrido.length;
+      });
+    });
+    Expo.anexo = [];
+    Expo.laminas.forEach(function (l, i) {
+      if (l.dataset.parte === 'recorrido') return;
+      l.dataset.parte = 'anexo';
+      Expo.anexo.push(i);
+      l.dataset.pos = Expo.anexo.length;
+    });
+  }
+
+  function esAnexo(i) { return Expo.laminas[i] && Expo.laminas[i].dataset.parte === 'anexo'; }
+  /** Lista que recorren las flechas desde la lámina i: el recorrido o el anexo. */
+  function listaDe(i) { return esAnexo(i) ? Expo.anexo : Expo.recorrido; }
+  function dos(n) { return String(n).padStart(2, '0'); }
+
+  function construirCabecera(lamina) {
     if (lamina.hasAttribute('data-sin-cabecera')) return;
-    var sec = +lamina.dataset.seccion;
+    var anexo = lamina.dataset.parte === 'anexo';
+    var pos = +lamina.dataset.pos;
+    var total = anexo ? Expo.anexo.length : Expo.recorrido.length;
+    var b = +lamina.dataset.bloque;
+    var nombre = anexo ? SECCIONES[+lamina.dataset.seccion] : BLOQUES[b].nombre;
     var marco = lamina.querySelector('.marco');
     var cab = Expo.crear('header', 'cab');
     cab.setAttribute('aria-hidden', 'true');
     var izq = Expo.crear('div', 'cab-izq');
     var centro = Expo.crear('div', 'cab-centro');
     var der = Expo.crear('div', 'cab-der');
-    var num = String(i + 1).padStart(2, '0');
     if (lamina.dataset.tema === 'papel') {
-      izq.textContent = 'Sección ' + ROMANOS[sec] + ' · ' + SECCIONES[sec].nombre;
+      izq.textContent = (anexo ? 'Anexo' : 'Sección ' + ROMANOS[b + 1]) + ' · ' + nombre;
       centro.textContent = 'Gaceta Cuántica';
-      der.textContent = 'Pág. ' + num + ' · Nov. 2026';
+      der.textContent = (anexo ? 'Anexo, pág. A' : 'Pág. ') + dos(pos) + ' · Nov. 2026';
     } else {
-      var b = Expo.crear('b', null, '// ' + String(sec).padStart(2, '0'));
-      izq.appendChild(b);
-      izq.appendChild(document.createTextNode(' · ' + SECCIONES[sec].nombre));
-      der.textContent = 'Lámina ' + num + '/' + total;
+      izq.appendChild(Expo.crear('b', null, '// ' + (anexo ? 'ANEXO' : dos(b + 1))));
+      izq.appendChild(document.createTextNode(' · ' + nombre));
+      der.textContent = (anexo ? 'Anexo ' : 'Lámina ') + dos(pos) + '/' + total;
       var seg = Expo.crear('span', 'cab-segmentos');
       for (var k = 0; k < 10; k++) {
         var s = document.createElement('i');
-        if (k < Math.round((i + 1) / total * 10)) s.className = 'on';
+        if (k < Math.round(pos / total * 10)) s.className = 'on';
         seg.appendChild(s);
       }
       der.appendChild(seg);
@@ -193,26 +236,59 @@
     marco.insertBefore(cab, marco.firstChild);
   }
 
+  function enlaceIndice(i, etiqueta) {
+    var li = document.createElement('li');
+    var btn = Expo.crear('button', 'indice-enlace');
+    btn.dataset.indice = i;
+    btn.appendChild(Expo.crear('span', null, etiqueta));
+    btn.appendChild(document.createTextNode(Expo.laminas[i].dataset.titulo));
+    btn.addEventListener('click', function () { cerrarIndice(); irA(i); });
+    li.appendChild(btn);
+    return li;
+  }
+
+  function grupoIndice(contenedor, titulo, tiempo) {
+    var div = Expo.crear('div', 'indice-seccion');
+    var h4 = Expo.crear('h4', null, titulo);
+    if (tiempo) h4.appendChild(Expo.crear('small', 'indice-tiempo', tiempo));
+    div.appendChild(h4);
+    var ol = document.createElement('ol');
+    div.appendChild(ol);
+    contenedor.appendChild(div);
+    return ol;
+  }
+
+  function parteIndice(rejilla, clase, titulo, detalle) {
+    var parte = Expo.crear('section', 'indice-parte ' + clase);
+    var h3 = Expo.crear('h3', 'indice-parte-titulo', titulo);
+    if (detalle) h3.appendChild(Expo.crear('small', null, detalle));
+    parte.appendChild(h3);
+    var grupos = Expo.crear('div', 'indice-grupos');
+    parte.appendChild(grupos);
+    rejilla.appendChild(parte);
+    return grupos;
+  }
+
+  /** Índice: primero el recorrido por bloques (con su tiempo); debajo, el anexo por sección original. */
   function construirIndice() {
     var rejilla = document.getElementById('indice-rejilla');
+    var recorrido = parteIndice(rejilla, 'indice-recorrido', 'Recorrido', '10 min · ' + Expo.recorrido.length + ' láminas');
+    var pos = 0;
+    BLOQUES.forEach(function (bloque, b) {
+      var ol = grupoIndice(recorrido, dos(b + 1) + ' · ' + bloque.nombre, '≈ ' + bloque.tiempo);
+      bloque.ids.forEach(function (id) {
+        var i = Expo.laminas.indexOf(document.getElementById(id));
+        if (i < 0) return;
+        pos++;
+        ol.appendChild(enlaceIndice(i, dos(pos)));
+      });
+    });
+    var anexo = parteIndice(rejilla, 'indice-anexo', 'Anexo — para preguntas', Expo.anexo.length + ' láminas · ← y → se mueven dentro del anexo');
     var grupos = {};
-    Expo.laminas.forEach(function (l, i) {
-      var sec = +l.dataset.seccion;
-      if (!grupos[sec]) {
-        var div = Expo.crear('div', 'indice-seccion');
-        div.appendChild(Expo.crear('h4', null, String(sec).padStart(2, '0') + ' · ' + SECCIONES[sec].nombre));
-        var ol = document.createElement('ol');
-        div.appendChild(ol);
-        rejilla.appendChild(div);
-        grupos[sec] = ol;
-      }
-      var li = document.createElement('li');
-      var btn = Expo.crear('button', 'indice-enlace');
-      btn.appendChild(Expo.crear('span', null, String(i + 1).padStart(2, '0')));
-      btn.appendChild(document.createTextNode(l.dataset.titulo));
-      btn.addEventListener('click', function () { cerrarIndice(); irA(i); });
-      li.appendChild(btn);
-      grupos[sec].appendChild(li);
+    Expo.anexo.forEach(function (i, k) {
+      var sec = +Expo.laminas[i].dataset.seccion;
+      if (!grupos[sec]) grupos[sec] = grupoIndice(anexo, SECCIONES[sec]);
+      grupos[sec].appendChild(enlaceIndice(i, 'A' + dos(k + 1)));
     });
   }
 
@@ -234,7 +310,8 @@
     return consumido;
   }
 
-  function irA(n) {
+  /** Va a la lámina n (índice en el documento). desdeHash: la URL ya cambió (enlace, atrás/adelante). */
+  function irA(n, desdeHash) {
     n = Expo.limitar(n, 0, Expo.laminas.length - 1);
     if (n === Expo.actual) return;
     var ahora = performance.now();
@@ -242,7 +319,10 @@
     ultimoCambio = ahora;
 
     Expo.direccion = n > Expo.actual ? 'adelante' : 'atras';
+    var cambiaParte = Expo.actual >= 0 && esAnexo(n) !== esAnexo(Expo.actual);
     var anterior = Expo.laminas[Expo.actual];
+    Expo.laminaPrevia = anterior || null;   // la transición papel→HUD mira de dónde se viene
+    if (!esAnexo(n)) ultimaRecorrido = n;
     if (anterior) {
       llamar(Expo.actual, 'detener');
       anterior.classList.remove('activa', 'entrando');
@@ -259,43 +339,95 @@
     lamina.removeAttribute('aria-hidden');
     lamina.inert = false;
     document.body.dataset.tema = lamina.dataset.tema;
+    document.body.dataset.parte = lamina.dataset.parte;
 
     actualizarBarra();
     actualizarNotas();
     actualizarIndice();
-    try { history.replaceState(null, '', '#' + (n + 1)); } catch (e) { /* file:// en algunos navegadores */ }
+    // Dentro de una misma parte se reemplaza la entrada del historial (no se llena de #N);
+    // al entrar o salir del anexo se agrega una, para que «atrás» devuelva al punto anterior.
+    if (!desdeHash) {
+      try {
+        if (cambiaParte) history.pushState(null, '', hashDe(n));
+        else history.replaceState(null, '', hashDe(n));
+      } catch (e) { /* file:// en algunos navegadores */ }
+    }
 
     llamar(n, 'iniciar');
   }
   Expo.irA = irA;
 
+  /** Paso dentro de la parte actual (recorrido o anexo): +1 siguiente, −1 anterior. */
+  function paso(delta) {
+    var lista = listaDe(Expo.actual);
+    var p = lista.indexOf(Expo.actual) + delta;
+    if (p >= 0 && p < lista.length) irA(lista[p]);
+  }
   function siguiente() {
     if (llamar(Expo.actual, 'siguiente')) return;
-    irA(Expo.actual + 1);
+    paso(1);
   }
   function anterior() {
     if (llamar(Expo.actual, 'anterior')) return;
-    irA(Expo.actual - 1);
+    paso(-1);
   }
   Expo.siguiente = siguiente;
   Expo.anterior = anterior;
+
+  /** Sale del anexo y vuelve a la última lámina del recorrido que se vio. */
+  var ultimaRecorrido = 0;
+  function volverAlRecorrido() { irA(ultimaRecorrido); }
+  Expo.volverAlRecorrido = volverAlRecorrido;
+
+  /* Esquema de la URL:
+       #N              lámina N del recorrido (1…total del recorrido)
+       #anexo-<nombre> lámina del anexo, por su id sin «l-» (p. ej. #anexo-cuantizacion) */
+  function hashDe(n) {
+    var l = Expo.laminas[n];
+    return esAnexo(n) ? '#' + PREFIJO_ANEXO + l.id.replace(/^l-/, '') : '#' + l.dataset.pos;
+  }
+  /** Índice (base 0, en el documento) de la lámina que indica el hash, o null si no es válido. */
+  function laminaDesdeHash() {
+    var h = decodeURIComponent((location.hash || '').replace(/^#/, ''));
+    if (h.indexOf(PREFIJO_ANEXO) === 0) {
+      var el = document.getElementById('l-' + h.slice(PREFIJO_ANEXO.length));
+      var i = el ? Expo.laminas.indexOf(el) : -1;
+      return i < 0 ? null : i;
+    }
+    if (!/^\d+$/.test(h)) return null;
+    var n = parseInt(h, 10);
+    return n >= 1 && n <= Expo.recorrido.length ? Expo.recorrido[n - 1] : null;
+  }
 
   /* ------------------------------------------------------------------
      Barra de progreso
      ------------------------------------------------------------------ */
   function actualizarBarra() {
     var l = Expo.laminas[Expo.actual];
-    var sec = +l.dataset.seccion;
-    var total = Expo.laminas.length;
-    var pct = Math.round(Expo.actual / (total - 1) * 100);
-    document.getElementById('barra-seccion').textContent = String(sec).padStart(2, '0') + ' · ' + SECCIONES[sec].nombre;
-    document.getElementById('barra-min').textContent = SECCIONES[sec].min ? '≈ ' + SECCIONES[sec].min + ' min' : '';
-    document.getElementById('barra-num').textContent = (Expo.actual + 1) + ' / ' + total;
+    var anexo = esAnexo(Expo.actual);
+    var pos = +l.dataset.pos;
+    var total = listaDe(Expo.actual).length;
+    var pct = total > 1 ? Math.round((pos - 1) / (total - 1) * 100) : 100;
+    var num = document.getElementById('barra-num');
+    if (anexo) {
+      document.getElementById('barra-seccion').textContent = 'Anexo · ' + SECCIONES[+l.dataset.seccion];
+      document.getElementById('barra-min').textContent = '';
+      num.textContent = 'A' + pos + ' / ' + total;
+      num.setAttribute('aria-label', 'Anexo, lámina ' + pos + ' de ' + total);
+    } else {
+      var b = +l.dataset.bloque;
+      document.getElementById('barra-seccion').textContent = dos(b + 1) + ' · ' + BLOQUES[b].nombre;
+      document.getElementById('barra-min').textContent = '≈ ' + BLOQUES[b].tiempo + ' min';
+      num.textContent = pos + ' / ' + total;
+      num.setAttribute('aria-label', 'Lámina ' + pos + ' de ' + total);
+    }
     document.getElementById('barra-porcentaje').textContent = pct + '%';
-    document.getElementById('barra-estado').textContent = l.dataset.tema === 'hud'
-      ? (pct >= 100 ? 'Transferencia completa' : 'Transferencia en curso…')
-      : 'Edición';
+    document.getElementById('barra-estado').textContent = anexo ? 'Anexo'
+      : l.dataset.tema === 'hud'
+        ? (pct >= 100 ? 'Transferencia completa' : 'Transferencia en curso…')
+        : 'Edición';
     document.getElementById('barra-relleno').style.transform = 'scaleX(' + (pct / 100) + ')';
+    document.getElementById('btn-volver').hidden = !anexo;
   }
 
   /* ------------------------------------------------------------------
@@ -326,7 +458,7 @@
   function actualizarIndice() {
     if (!indice) return;
     var enlaces = indice.querySelectorAll('.indice-enlace');
-    Array.prototype.forEach.call(enlaces, function (b, i) { b.classList.toggle('actual', i === Expo.actual); });
+    Array.prototype.forEach.call(enlaces, function (b) { b.classList.toggle('actual', +b.dataset.indice === Expo.actual); });
   }
   function abrirIndice() {
     indice.classList.add('abierto');
@@ -386,8 +518,8 @@
         e.preventDefault(); siguiente(); break;
       case 'ArrowLeft': case 'PageUp':
         e.preventDefault(); anterior(); break;
-      case 'Home': e.preventDefault(); irA(0); break;
-      case 'End': e.preventDefault(); irA(Expo.laminas.length - 1); break;
+      case 'Home': e.preventDefault(); irA(listaDe(Expo.actual)[0]); break;
+      case 'End': e.preventDefault(); irA(listaDe(Expo.actual)[listaDe(Expo.actual).length - 1]); break;
       case 'f': case 'F': e.preventDefault(); alternarPantalla(); break;
       case 'n': case 'N': e.preventDefault(); alternarNotas(); break;
       case 'Escape': case 'i': case 'I':
@@ -462,10 +594,10 @@
      ------------------------------------------------------------------ */
   function arrancar() {
     Expo.laminas = Array.prototype.slice.call(document.querySelectorAll('.lamina'));
-    var total = Expo.laminas.length;
+    repartirLaminas();
 
-    Expo.laminas.forEach(function (l, i) {
-      construirCabecera(l, i, total);
+    Expo.laminas.forEach(function (l) {
+      construirCabecera(l);
       // Orden de entrada escalonada (máx. 8 pasos para no hacerla lenta)
       Array.prototype.forEach.call(l.querySelectorAll('.e'), function (el, k) {
         el.style.setProperty('--i', Math.min(k, 8));
@@ -486,6 +618,7 @@
     document.getElementById('btn-indice').addEventListener('click', abrirIndice);
     document.getElementById('cerrar-indice').addEventListener('click', cerrarIndice);
     document.getElementById('btn-pantalla').addEventListener('click', alternarPantalla);
+    document.getElementById('btn-volver').addEventListener('click', volverAlRecorrido);
     indice.addEventListener('click', function (e) { if (e.target === indice) cerrarIndice(); });
 
     document.addEventListener('keydown', alTeclado);
@@ -495,20 +628,20 @@
     soltarFocoDeslizadores();
     despertarAlInteractuar();
 
-    // Navegar al cambiar el hash (enlace #N, atrás/adelante). irA() actualiza el hash
-    // con replaceState, que no dispara «hashchange»: no hay bucle.
-    window.addEventListener('hashchange', function () {
+    // Navegar al cambiar el hash (enlace #N o #anexo-…, atrás/adelante). irA() escribe el
+    // hash con replaceState/pushState, que no disparan «hashchange»: no hay bucle.
+    // «popstate» cubre atrás/adelante entre entradas creadas con pushState.
+    function alCambiarHash() {
       var n = laminaDesdeHash();
-      if (n !== null && n !== Expo.actual) irA(n);
-    });
+      if (n === null) {   // hash no válido: se deja la URL de la lámina actual
+        try { history.replaceState(null, '', hashDe(Expo.actual)); } catch (e) { /* file:// */ }
+      } else if (n !== Expo.actual) irA(n, true);
+    }
+    window.addEventListener('hashchange', alCambiarHash);
+    window.addEventListener('popstate', alCambiarHash);
     var inicial = laminaDesdeHash();
-    irA(inicial === null ? 0 : inicial);
-  }
-
-  /** Índice (base 0) de la lámina indicada en el hash «#N», o null si no hay uno válido. */
-  function laminaDesdeHash() {
-    var n = parseInt((location.hash || '').replace('#', ''), 10);
-    return isNaN(n) ? null : n - 1;
+    // irA() también normaliza la URL (sin hash, o un #N fuera de rango → la portada)
+    irA(inicial === null ? Expo.recorrido[0] : inicial);
   }
 
   // Con movimiento reducido los lienzos están quietos: cualquier interacción los redibuja
