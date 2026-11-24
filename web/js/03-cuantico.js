@@ -320,8 +320,8 @@
       ctx.strokeStyle = C.azul; ctx.lineWidth = 1.5; ctx.strokeRect(sx, py0, hx - sx, pantallaH);
       textoHUD(ctx, 'PANTALLA', (sx + hx) / 2, py0 + pantallaH + rem * 0.5, rem * 0.55, C.tenue, 'center');
 
-      // Emisión
-      if (emitiendo) {
+      // Emisión (con movimiento reducido no hay vuelos: ver acumularReducido)
+      if (emitiendo && !Expo.reducido) {
         var tasa = rafaga ? 160 : 5;
         var nuevos = tasa * dt + (Math.random() < (tasa * dt) % 1 ? 1 : 0);
         nuevos = Math.floor(nuevos);
@@ -378,26 +378,38 @@
       textoHUD(ctx, 'CONTEO', hx0 + hw / 2, py0 + pantallaH + rem * 0.5, rem * 0.55, C.tenue, 'center');
     }
 
+    // Con movimiento reducido no hay electrones en vuelo: los impactos se suman de
+    // golpe (al entrar y con cada botón) y el lienzo queda en un fotograma estático.
+    function acumularReducido(n) {
+      if (!Expo.reducido || !emitiendo) return;
+      for (var i = 0; i < n; i++) registrar(muestrear());
+    }
     var bucle = Expo.bucle(cuadro);
     bLanzar.addEventListener('click', function () {
       emitiendo = !emitiendo;
       bLanzar.textContent = emitiendo ? 'Pausa' : 'Lanzar';
       bLanzar.setAttribute('aria-pressed', emitiendo ? 'true' : 'false');
+      acumularReducido(rafaga ? 400 : 40);
     });
     bRafaga.addEventListener('click', function () {
       rafaga = !rafaga;
       bRafaga.setAttribute('aria-pressed', rafaga ? 'true' : 'false');
       bRafaga.textContent = rafaga ? 'De uno en uno' : 'Ráfaga ×20';
       if (rafaga && !emitiendo) bLanzar.click();
+      else if (rafaga) acumularReducido(400);
     });
     bModo.addEventListener('click', function () {
       dosRendijas = !dosRendijas;
       bModo.setAttribute('aria-pressed', dosRendijas ? 'false' : 'true');
       bModo.textContent = dosRendijas ? 'Tapar una rendija' : 'Abrir las dos rendijas';
       reiniciar();
+      acumularReducido(300);
     });
     document.getElementById('rendija-reiniciar').addEventListener('click', reiniciar);
-    Expo.registrar('l-rendija', { iniciar: bucle.iniciar, detener: bucle.detener });
+    Expo.registrar('l-rendija', {
+      iniciar: function () { if (acumulado === 0) acumularReducido(300); bucle.iniciar(); },
+      detener: bucle.detener
+    });
   }
 
   /* ------------------------------------------------------------------
@@ -443,7 +455,7 @@
       var cx = w * 0.3, cy = h * 0.5, R = Math.min(w * 0.2, h * 0.34);
 
       if (estado === 'girando') {
-        angulo += vel * dt;
+        if (!Expo.reducido) angulo += vel * dt;   // con movimiento reducido: moneda quieta
       } else if (estado === 'cayendo') {
         tCaida = Math.min(1, tCaida + dt / 0.7);
         angulo = anguloInicio + (anguloFinal - anguloInicio) * Expo.suavizar(tCaida);
@@ -729,7 +741,9 @@
       if (particulas.length > objetivo) particulas.length = objetivo;
       var rapidez = 80 + ruido * 260;
       ctx.fillStyle = 'rgba(255,176,59,0.75)';
+      var quietas = Expo.reducido;   // con movimiento reducido: partículas fijas, sin choques
       particulas.forEach(function (p) {
+        if (quietas) { ctx.beginPath(); ctx.arc(p.x, p.y, 2.4, 0, TAU); ctx.fill(); return; }
         p.x += p.vx * rapidez * dt; p.y += p.vy * rapidez * dt;
         if (p.x < 0 || p.x > w) p.vx *= -1;
         if (p.y < 0 || p.y > h) p.vy *= -1;
@@ -740,7 +754,7 @@
           coherencia = Math.max(0, coherencia - 0.012);
         }
       });
-      coherencia = Math.max(0, coherencia - ruido * ruido * dt * 0.12);
+      if (!quietas) coherencia = Math.max(0, coherencia - ruido * ruido * dt * 0.12);
 
       // Destellos de choque
       choques = choques.filter(function (c) {
@@ -783,6 +797,8 @@
     rango.addEventListener('input', function () {
       ruido = rango.value / 100;
       txt.textContent = rango.value + ' %';
+      // Sin animación, el desgaste se muestra directamente: más ruido, menos coherencia
+      if (Expo.reducido) coherencia = Math.max(0, 1 - ruido);
     });
     document.getElementById('deco-reiniciar').addEventListener('click', function () { coherencia = 1; });
     var bucle = Expo.bucle(cuadro);

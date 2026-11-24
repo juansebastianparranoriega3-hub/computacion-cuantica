@@ -492,7 +492,6 @@
         f.src = 'https://www.youtube-nocookie.com/embed/' + encodeURIComponent(id) + '?autoplay=1&rel=0';
         f.title = nombre;
         f.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture; fullscreen');
-        f.setAttribute('allowfullscreen', '');
         f.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
         marco.appendChild(f);
       }

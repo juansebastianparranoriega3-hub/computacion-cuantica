@@ -40,7 +40,10 @@
     }
   };
   if (consultaReducido && consultaReducido.addEventListener) {
-    consultaReducido.addEventListener('change', function (e) { Expo.reducido = e.matches; });
+    consultaReducido.addEventListener('change', function (e) {
+      Expo.reducido = e.matches;
+      if (Expo.despertarBucles) Expo.despertarBucles();   // reanuda el bucle continuo o redibuja
+    });
   }
 
   /* ------------------------------------------------------------------
@@ -78,27 +81,59 @@
       if (alCambiar) alCambiar(L);
     }
     L.ajustar = ajustar;
-    if (window.ResizeObserver) new ResizeObserver(function () { ajustar(); }).observe(canvas);
+    // Cambiar el tamaño borra el canvas: se pide redibujar (importa con movimiento reducido)
+    if (window.ResizeObserver) new ResizeObserver(function () { ajustar(); Expo.despertarBucles(); }).observe(canvas);
     else window.addEventListener('resize', ajustar);
     ajustar();
     return L;
   };
 
-  /** Bucle requestAnimationFrame que se puede iniciar y detener. cuadro(dt en s, t en s). */
+  /* Con movimiento reducido, un bucle no anima en continuo: dibuja durante una
+     ráfaga corta al iniciar y tras cada interacción (para que los cambios de
+     estado se asienten) y luego se queda en un fotograma estático. */
+  var RAFAGA_REDUCIDO_MS = 800;
+  var bucles = [];
+
+  /** Bucle requestAnimationFrame que se puede iniciar y detener. cuadro(dt en s, t en s).
+      Con movimiento reducido, t se congela en 0 para que no haya movimiento ambiental. */
   Expo.bucle = function (cuadro) {
-    var id = 0, previo = 0, activo = false;
+    var id = 0, previo = 0, activo = false, hasta = 0;
+    function programar() { if (activo && !id) id = requestAnimationFrame(paso); }
     function paso(t) {
+      id = 0;
       if (!activo) return;
       var dt = previo ? Math.min(0.05, (t - previo) / 1000) : 0;
       previo = t;
-      cuadro(dt, t / 1000);
-      if (activo) id = requestAnimationFrame(paso);
+      cuadro(dt, Expo.reducido ? 0 : t / 1000);
+      // Si cuadro() llamó a detener()+iniciar(), ya hay un cuadro pedido (id ≠ 0):
+      // no se pide otro, así nunca corren dos cadenas a la vez (tasa doble).
+      if (id || !activo) return;
+      if (!Expo.reducido || t < hasta) programar();
+      else previo = 0;   // en reposo: la próxima ráfaga empieza con dt = 0
     }
-    return {
-      iniciar: function () { if (activo) return; activo = true; previo = 0; id = requestAnimationFrame(paso); },
-      detener: function () { activo = false; cancelAnimationFrame(id); },
-      estaActivo: function () { return activo; }
+    var control = {
+      iniciar: function () {
+        if (activo) return;
+        activo = true; previo = 0;
+        hasta = performance.now() + RAFAGA_REDUCIDO_MS;
+        programar();
+      },
+      detener: function () { activo = false; cancelAnimationFrame(id); id = 0; },
+      estaActivo: function () { return activo; },
+      /** Redibuja (con movimiento reducido, una ráfaga corta); sin efecto si está detenido. */
+      despertar: function () {
+        if (!activo) return;
+        hasta = Math.max(hasta, performance.now() + RAFAGA_REDUCIDO_MS);
+        programar();
+      }
     };
+    bucles.push(control);
+    return control;
+  };
+
+  /** Pide redibujar todos los bucles activos (interacción, cambio de tamaño o de preferencia). */
+  Expo.despertarBucles = function () {
+    for (var i = 0; i < bucles.length; i++) bucles[i].despertar();
   };
 
   /** Posición del puntero relativa a un elemento, en píxeles CSS. */
@@ -425,9 +460,33 @@
     document.addEventListener('keydown', alTeclado);
     configurarToque();
     soltarFocoDeslizadores();
+    despertarAlInteractuar();
 
-    var desdeHash = parseInt((location.hash || '').replace('#', ''), 10);
-    irA(isNaN(desdeHash) ? 0 : desdeHash - 1);
+    // Navegar al cambiar el hash (enlace #N, atrás/adelante). irA() actualiza el hash
+    // con replaceState, que no dispara «hashchange»: no hay bucle.
+    window.addEventListener('hashchange', function () {
+      var n = laminaDesdeHash();
+      if (n !== null && n !== Expo.actual) irA(n);
+    });
+    var inicial = laminaDesdeHash();
+    irA(inicial === null ? 0 : inicial);
+  }
+
+  /** Índice (base 0) de la lámina indicada en el hash «#N», o null si no hay uno válido. */
+  function laminaDesdeHash() {
+    var n = parseInt((location.hash || '').replace('#', ''), 10);
+    return isNaN(n) ? null : n - 1;
+  }
+
+  // Con movimiento reducido los lienzos están quietos: cualquier interacción los redibuja
+  function despertarAlInteractuar() {
+    ['pointerdown', 'pointerup', 'click', 'input', 'change', 'keydown', 'wheel'].forEach(function (tipo) {
+      document.addEventListener(tipo, Expo.despertarBucles, { capture: true, passive: true });
+    });
+    document.addEventListener('pointermove', function (e) {
+      if (e.buttons) Expo.despertarBucles();   // solo al arrastrar
+    }, { capture: true, passive: true });
+    window.addEventListener('resize', Expo.despertarBucles);
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', arrancar);
