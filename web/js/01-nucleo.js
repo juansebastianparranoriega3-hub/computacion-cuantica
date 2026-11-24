@@ -253,6 +253,7 @@
     Expo.actual = n;
     var lamina = Expo.laminas[n];
     lamina.classList.remove('entrando');
+    lamina.scrollTop = 0;   // diseño compacto: cada lámina empieza arriba
     if (!rapido) { void lamina.offsetWidth; lamina.classList.add('entrando'); }
     lamina.classList.add('activa');
     lamina.removeAttribute('aria-hidden');
@@ -397,24 +398,54 @@
     }
   }
 
-  // Gestos de deslizamiento en pantallas táctiles (fuera de controles)
+  // Gestos de deslizamiento en pantallas táctiles (fuera de lienzos y zonas con arrastre propio).
+  // Se usan eventos touch (pasivos) y no pointer: en el diseño compacto la lámina se desplaza
+  // en vertical y el navegador cancelaría los pointer events al empezar ese desplazamiento.
+  // Solo cuenta un gesto claramente horizontal, así no choca con el desplazamiento vertical.
+  var ZONAS_SIN_DESLIZAR = 'canvas, input, .linea-contenedor, .esquema-desliza, [data-inclinar]';
   function configurarToque() {
     var escenario = document.getElementById('escenario');
     var inicio = null;
-    escenario.addEventListener('pointerdown', function (e) {
-      if (e.pointerType !== 'touch') return;
-      if (e.target.closest('canvas, input, button, .linea-contenedor, [data-inclinar]')) return;
-      inicio = { x: e.clientX, y: e.clientY, t: performance.now() };
-    });
-    escenario.addEventListener('pointerup', function (e) {
-      if (!inicio || e.pointerType !== 'touch') return;
-      var dx = e.clientX - inicio.x, dy = e.clientY - inicio.y;
-      var dt = performance.now() - inicio.t;
+    escenario.addEventListener('touchstart', function (e) {
+      if (e.touches.length !== 1 || e.target.closest(ZONAS_SIN_DESLIZAR)) { inicio = null; return; }
+      var t = e.touches[0];
+      inicio = { x: t.clientX, y: t.clientY, t: performance.now() };
+    }, { passive: true });
+    escenario.addEventListener('touchcancel', function () { inicio = null; }, { passive: true });
+    escenario.addEventListener('touchend', function (e) {
+      if (!inicio || e.changedTouches.length !== 1) { inicio = null; return; }
+      var t = e.changedTouches[0];
+      var dx = t.clientX - inicio.x, dy = t.clientY - inicio.y;
+      var dt = Math.max(1, performance.now() - inicio.t);
       inicio = null;
-      var veloz = Math.abs(dx) / dt > 0.4;
+      if (indiceAbierto() || (Expo.modalAbierto && Expo.modalAbierto())) return;
+      var veloz = Math.abs(dx) / dt > 0.4 && Math.abs(dx) > 30;
       if (Math.abs(dx) > Math.abs(dy) * 1.5 && (Math.abs(dx) > 60 || veloz)) {
         if (dx < 0) siguiente(); else anterior();
       }
+    }, { passive: true });
+  }
+
+  // Tablas HUD: cada celda guarda el nombre de su columna (el diseño compacto
+  // las muestra como tarjetas y usa esa etiqueta con attr(data-etq)).
+  function etiquetarTablas() {
+    Array.prototype.forEach.call(document.querySelectorAll('.h-tabla'), function (tabla) {
+      var cabeceras = Array.prototype.map.call(tabla.querySelectorAll('thead th'), function (th) {
+        return th.firstChild ? th.firstChild.textContent.trim() : '';
+      });
+      Array.prototype.forEach.call(tabla.querySelectorAll('tbody tr'), function (tr) {
+        Array.prototype.forEach.call(tr.children, function (celda, k) {
+          if (celda.tagName === 'TD' && cabeceras[k]) celda.setAttribute('data-etq', cabeceras[k]);
+        });
+      });
+    });
+  }
+
+  // En pantallas táctiles, las pistas «mueve el ratón» hablan del dedo
+  function adaptarPistasTactiles() {
+    if (!window.matchMedia || !window.matchMedia('(hover: none) and (pointer: coarse)').matches) return;
+    Array.prototype.forEach.call(document.querySelectorAll('[data-inclinar] .pista-arrastre'), function (p) {
+      p.textContent = 'Desliza el dedo sobre la foto';
     });
   }
 
@@ -459,6 +490,8 @@
 
     document.addEventListener('keydown', alTeclado);
     configurarToque();
+    etiquetarTablas();
+    adaptarPistasTactiles();
     soltarFocoDeslizadores();
     despertarAlInteractuar();
 

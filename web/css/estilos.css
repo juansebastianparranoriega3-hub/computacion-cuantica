@@ -952,7 +952,8 @@ canvas { display: block; width: 100%; height: 100%; }
 .capa.inas { background: linear-gradient(90deg, #1d4fa8, #3b8bff); color: #fff; }
 
 /* Medición digital */
-.esquema-medicion { width: 100%; height: 9.5rem; flex: none; }
+.esquema-desliza { flex: none; }   /* envoltorio: en el diseño compacto permite deslizar el esquema */
+.esquema-medicion { display: block; width: 100%; height: 9.5rem; flex: none; }
 .esquema-medicion .nodo { transition: opacity 260ms ease; }
 .esquema-medicion.en-curso .nodo { opacity: 0.3; }
 .esquema-medicion.en-curso .nodo.on { opacity: 1; }
@@ -1195,6 +1196,326 @@ body[data-tema="hud"] .barra-estado, body[data-tema="hud"] .barra-porcentaje { c
 .indice-enlace span { color: var(--tenue); font-family: var(--f-mono); margin-right: 0.4rem; }
 .indice-enlace.actual { border-left-color: var(--azul); color: #fff; background: rgba(59, 139, 255, 0.15); }
 @media (hover: hover) and (pointer: fine) { .indice-enlace:hover { background: rgba(59, 139, 255, 0.12); color: #fff; } }
+
+/* ---------------------------------------------------------------------
+   PANTALLAS TÁCTILES: sin ayuda de teclado (F, N, Esc)
+   --------------------------------------------------------------------- */
+@media (hover: none) and (pointer: coarse) {
+  .portada-ayuda, .linea-pie kbd { display: none; }
+}
+
+/* ---------------------------------------------------------------------
+   DISEÑO COMPACTO (celular vertical u horizontal, tableta vertical)
+   Las láminas dejan el lienzo 16:9 y se apilan en una columna que se
+   desplaza en vertical. Escritorio y proyector no entran aquí:
+   1366×768 y 1920×1080 no cumplen ninguna de las tres condiciones.
+   --------------------------------------------------------------------- */
+@media (max-width: 760px), (max-height: 500px), (max-aspect-ratio: 4/5) {
+  :root {
+    /* rem propio basado en el ancho: 15,4 px a 375 px; texto de lectura ≥ 15 px */
+    font-size: clamp(15px, 4.1vw, 18px);
+    --txt-min: 13px;
+    --barra-alto: calc(52px + env(safe-area-inset-bottom, 0px));
+    --margen: max(16px, env(safe-area-inset-left, 0px));
+    --margen-d: max(16px, env(safe-area-inset-right, 0px));
+    --alto-visual: max(200px, min(72vw, 58dvh, 420px));
+  }
+  html, body { height: 100dvh; }
+
+  /* Escenario: termina donde empieza la barra fija */
+  .escenario { inset: 0 0 var(--barra-alto) 0; }
+  .lamina {
+    display: block;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+  .marco {
+    width: 100%;
+    height: auto;
+    min-height: 100%;
+    padding: 0.8rem var(--margen-d) 1.6rem var(--margen);
+    gap: 1rem;
+  }
+
+  /* Cabecera generada: dos columnas, sin el centro */
+  .cab { grid-template-columns: 1fr auto; gap: 0.6rem; }
+  .cab-centro { display: none; }
+  .lamina[data-tema="papel"] .cab, .lamina[data-tema="hud"] .cab { letter-spacing: 0.08em; }
+  .cab-segmentos { display: none; }
+
+  /* Tipografía de títulos */
+  .p-titular { font-size: 2rem; line-height: 1.02; }
+  .h-titulo { font-size: 1.75rem; line-height: 1.05; overflow-wrap: anywhere; }
+  .p-entrada, .h-entrada { font-size: 1.02rem; }
+  .pie-visual, .portada-lectura p, .glosario dd, .fuentes ul, .ruta .h-aviso p,
+  .rama-hitos div, .p-tabla td, .h-panel p, .h-aviso p, .dato-clave p { font-size: 1rem; }
+
+  /* Todas las rejillas pasan a una columna */
+  .rejilla-texto-visual, .rejilla-texto-visual.ancho, .moore-rejilla, .bloch-rejilla, .potencia-rejilla,
+  .puertas-rejilla, .topo-rejilla, .tetron-rejilla, .bits-rejilla, .compuertas-rejilla, .qubit-rejilla,
+  .portada-rejilla, .chip-rejilla, .chip-rejilla.invertida, .futuro, .controversia, .videos, .fuentes,
+  .camino-pie, .mitos, .usos, .tipos, .tuberia, .cuatro-ideas, .columnas-4, .glosario {
+    display: flex;
+    flex-direction: column;
+    flex: none;
+    height: auto;
+    min-height: 0;
+    margin: 0;
+    gap: 1rem;
+  }
+  .texto-lateral, .moore-texto { gap: 0.8rem; }
+
+  /* Visuales: a todo el ancho, alto razonable y controles debajo */
+  .visual { flex: none; padding: 0.7rem; }
+  .visual canvas, .moore-grafica canvas, .portada-figura canvas {
+    flex: none;
+    height: var(--alto-visual);
+  }
+  .bloch-visual canvas { height: max(240px, min(86vw, 58dvh, 440px)); }
+  .moore-grafica { flex: none; }
+  .moore-texto { order: -1; }
+  .tetron-rejilla .ruta { order: -1; }
+  .chip-rejilla.invertida .texto-lateral { order: -1; }
+
+  .controles { gap: 0.5rem; }
+  .controles-esquina { position: static; }
+  .btn { min-height: 44px; min-width: 44px; padding: 0.5rem 0.8rem; }
+  .deslizador { flex: 1 1 100%; min-width: 0; }
+  input[type="range"] { height: 44px; }
+  .contador { margin-left: 0; flex: 1 1 100%; }
+
+  /* Portada */
+  .portada .marco { padding-top: 1rem; gap: 0.7rem; }
+  .mancheta { grid-template-columns: 1fr 1fr; row-gap: 0.5rem; }
+  .mancheta-centro { grid-column: 1 / -1; order: -1; }
+  .mancheta-lado { font-size: 0.78rem; }
+  .mancheta-nombre { font-size: 1.7rem; gap: 0.6rem; }
+  .asterisco { font-size: 1rem; }
+  .titular-portada { font-size: min(9.6vw, 4.6rem); letter-spacing: 0.03em; }
+  .portada-indice { font-size: 1rem; }
+
+  /* Apertura */
+  .gancho { padding: 1rem 0; gap: 1rem; }
+  .gancho-texto { font-size: 2.1rem; min-height: 9.5rem; }
+  .gancho-ruta { font-size: 1.05rem; }
+
+  /* ¿Qué es la computación? */
+  .receta { display: flex; flex-direction: column; height: auto; margin: 0; gap: 0.4rem; }
+  .receta-paso { padding: 0.8rem 1rem; }
+  .receta-etq { font-size: 1.7rem; }
+  .receta-valor { font-size: 1.5rem; margin-top: 0.3rem; }
+  .receta-flecha { transform: rotate(90deg); font-size: 1.8rem; line-height: 1; }
+  .computar-pie { flex-direction: column; align-items: stretch; gap: 1rem; }
+  .definiciones { flex-direction: column; gap: 0.6rem; }
+  .definiciones div { max-width: none; }
+
+  /* Fundamentos */
+  .columna { padding: 0.8rem 0 0; border-left: 0; border-top: 1px solid var(--tinta); min-height: 0; }
+  .columna:first-child { border-top: 0; padding-top: 0; }
+  .anio-grande { font-size: 3.2rem; }
+  .columna p { font-size: 1.05rem; }
+  .p-ejemplo { grid-template-columns: 1fr; gap: 0.6rem; margin-top: 0; }
+  .p-ejemplo-etq { justify-self: start; }
+
+  /* Bits: interruptores en dos filas de cuatro */
+  .bits-caja { padding: 0.9rem; }
+  .interruptores { grid-template-columns: repeat(4, 1fr); gap: 0.6rem 0.5rem; }
+  .interruptor-placa { width: 100%; max-width: 4rem; height: 5rem; }
+  .interruptor-palanca { width: 1.5rem; height: 2.2rem; transform: translateY(0.6rem); }
+  .interruptor[aria-pressed="true"] .interruptor-palanca { transform: translateY(-0.6rem); }
+  .interruptor-bit { font-size: 1.2rem; }
+  .lectura-valor { font-size: 1.7rem; }
+  .lectura-valor.mono { font-size: 1.15rem; letter-spacing: 0.02em; }
+  .bits-lectura > div { padding: 0.4rem 0.5rem; min-width: 0; }
+  .lectura-etq { letter-spacing: 0.05em; }
+  .p-tabla td:first-child { font-size: 1.15rem; }
+
+  /* Compuertas */
+  .compuerta-caja { padding: 0.9rem; }
+  .pestanas { flex-wrap: nowrap; }
+  .pestana { flex: 1 1 0; padding: 0.5rem 0.3rem; min-height: 44px; font-size: 0.9rem; letter-spacing: 0.04em; }
+  .compuerta-circuito { gap: 0.4rem; min-height: 9rem; }
+  .bit-boton { min-height: 44px; padding: 0.3rem 0.6rem; }
+  .bombillo { width: 3rem; height: 3rem; }
+  .p-columna-lateral { border-left: 0; padding-left: 0; border-top: 1px solid var(--tinta); padding-top: 0.8rem; }
+
+  /* Transición y síntesis */
+  .cuatro-ideas .h-panel { min-height: 0; gap: 0.3rem; padding: 0.9rem 1rem; }
+  .cuatro-ideas .h-num { font-size: 1.6rem; }
+  .tuberia .h-panel { min-height: 9.5rem; padding-top: 3.2rem; }
+  .tuberia .h-num { font-size: 1.8rem; top: 0.7rem; }
+  .tuberia-glifo { position: absolute; top: 0.7rem; right: 1rem; margin: 0; font-size: 1.5rem; }
+  .tuberia .h-panel h3 { font-size: 1.35rem; }
+  .h-hito { grid-template-columns: 4.2rem 1fr; }
+  .h-anio { font-size: 1.35rem; }
+
+  /* Qubit */
+  .qubit-rejilla .h-panel { padding: 1rem; }
+  .formula { font-size: 2rem !important; }
+  .formula-pie { font-size: 1rem !important; }
+  .barra-prob { grid-template-columns: 5.6rem 1fr 3.4rem; gap: 0.5rem; font-size: 0.95rem; }
+
+  /* Bloch, potencia, puertas */
+  .lecturas b { font-size: 1.3rem; }
+  .numero-grande { font-size: 1.8rem !important; }
+  .potencia-comparacion { margin-top: 0; }
+  .circuito { flex: none; height: auto; aspect-ratio: 640 / 260; }
+  .bell-resultados { height: 6.5rem; gap: 0.5rem; }
+
+  /* Tablas HUD: cada fila se vuelve una tarjeta con sus dos columnas */
+  .h-tabla, .h-tabla tbody, .h-tabla tr, .h-tabla th, .h-tabla td { display: block; }
+  .h-tabla { margin: 0; font-size: 1rem; }
+  .h-tabla thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .h-tabla tbody { display: flex; flex-direction: column; gap: 0.6rem; }
+  .h-tabla tbody tr {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.2rem 0.8rem;
+    padding: 0.6rem 0.8rem 0.7rem;
+    border: 1px solid rgba(82, 145, 255, 0.3);
+    background: rgba(6, 14, 32, 0.7);
+  }
+  .h-tabla th, .h-tabla td, .h-tabla.grande td { padding: 0; border: 0; font-size: 1rem; }
+  .h-tabla tbody th { grid-column: 1 / -1; width: auto; font-size: 0.85rem; color: var(--azul-2); padding-bottom: 0.35rem; border-bottom: 1px solid rgba(82, 145, 255, 0.25); margin-bottom: 0.2rem; }
+  .h-tabla td::before {
+    content: attr(data-etq);
+    display: block;
+    font: 600 0.72rem/1.3 var(--f-mono);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--tenue);
+    margin-bottom: 0.15rem;
+  }
+
+  /* Tipos, errores, usos */
+  .tipos .h-panel, .usos .h-panel { padding: 1rem; }
+  .tipos .h-panel h3, .usos .h-panel h3 { font-size: 1.25rem; }
+  .tipos .h-panel p, .usos .h-panel p { font-size: 1.02rem; }
+  .tipo-icono { width: 2.4rem; height: 2.4rem; }
+  .usos .h-num { font-size: 1.5rem; margin-bottom: 0.3rem; }
+  .repeticion { display: flex; flex-direction: column; gap: 0.5rem; padding: 0.4rem 0; }
+  .rep-flecha { transform: rotate(90deg); font-size: 1.8rem; line-height: 1; }
+  .rep-grande { font-size: 3rem; }
+  .rep-bit { width: 3.6rem; height: 4.4rem; font-size: 2.3rem; }
+
+  /* Historia: ramas apiladas */
+  .ramas { display: flex; flex-direction: column; gap: 0.7rem; flex: none; }
+  .ramas-svg { position: static; height: 5rem; }
+  .rama-etq, .rama-etq.r1, .rama-etq.r2 { position: static; max-width: none; }
+  .rama-hitos { position: static; transform: none; grid-template-columns: 1fr 1fr; }
+  .p-cita { font-size: 1.45rem; }
+
+  /* Línea de tiempo: desplazamiento horizontal con el dedo */
+  .linea-encabezado { flex-direction: column; align-items: stretch; gap: 0.8rem; }
+  .linea-regla { width: 100%; }
+  .linea-contenedor { flex: none; height: auto; overscroll-behavior-x: contain; }
+  .linea-pista { height: auto; padding: 2.2rem 1rem 0.5rem; }
+  .ficha { width: 14rem; min-height: 15rem; }
+  .ficha-anio { font-size: 2rem; }
+  .ficha-hito { font-size: 1.05rem; }
+
+  /* Majorana: fotos de los chips */
+  .chip-escena { height: auto; perspective: 60rem; }
+  .chip-tarjeta { height: auto; width: min(100%, 22rem); }
+  .chip-etq { left: -5.5rem; top: 2.6rem; width: 12rem; white-space: normal; }
+  .chip-etq::before { display: none; }
+  [data-inclinar] .chip-tarjeta { touch-action: pan-y; }   /* arrastre horizontal = inclinar */
+  .tetron-svg { height: auto; aspect-ratio: 520 / 300; }
+  .esquema-desliza { overflow-x: auto; margin: 0 calc(-1 * var(--margen-d)) 0 calc(-1 * var(--margen)); padding: 0 var(--margen-d) 0 var(--margen); scrollbar-width: none; }
+  .esquema-desliza::-webkit-scrollbar { display: none; }
+  .esquema-medicion { width: 56rem; height: auto; aspect-ratio: 1200 / 150; }
+  .pasos-medicion { display: flex; flex-direction: column; gap: 0.7rem; flex: none; }
+  .pasos-medicion .h-num { font-size: 1.6rem; }
+  .pasos-medicion .h-panel h3 { font-size: 1.15rem; }
+  .medicion-pie { flex-direction: column; align-items: stretch; gap: 0.8rem; }
+  .controversia { padding-bottom: 0; align-items: stretch; }
+  .controversia .h-lista { gap: 0.9rem; }
+  .controversia .h-lista li, .h-lista.grande li { font-size: 1.1rem; }
+  .frase-precisa { padding: 1.2rem; }
+  .frase-precisa p { font-size: 1.12rem !important; }
+  .tachado { font-size: 1rem !important; }
+
+  /* Videos y modal */
+  .video-titulo { font-size: 1.1rem; }
+  .mini-play { width: 3.4rem; height: 3.4rem; right: 1rem; bottom: 1rem; }
+  .mini-play::after { left: 1.3rem; top: 1rem; border-left-width: 1.1rem; border-top-width: 0.7rem; border-bottom-width: 0.7rem; }
+  .modal-caja { width: calc(100vw - 32px); }
+
+  /* Cierre */
+  .ideas { gap: 0.7rem; flex: none; }
+  .ideas li { grid-template-columns: 3rem 1fr; padding-bottom: 0.7rem; }
+  .ideas .h-num { font-size: 1.4rem; }
+  .ideas p { font-size: 1.1rem; }
+  .futuro-grande { --c: 1.4rem; padding: 1.4rem 1.4rem; }
+  .futuro-anio { font-size: 5.2rem; }
+  .futuro-lema { font-size: 1.5rem !important; margin: 0.8rem 0 1.2rem !important; }
+  .estrella.grande { width: 2rem; height: 2rem; right: 1rem; top: 1rem; }
+
+  /* Extra */
+  .acordeon { flex: none; overflow: visible; }
+  .acordeon-boton { font-size: 1.15rem; min-height: 44px; padding-right: 2rem; }
+  .acordeon-panel p { font-size: 1.02rem; }
+  .glosario { gap: 0; }
+  .glosario div { padding-right: 0; }
+  .gracias { font-size: 2.6rem !important; }
+
+  /* Barra inferior: fija, compacta, siempre visible */
+  .barra {
+    left: 0; right: 0; bottom: 0;
+    width: auto; margin: 0;
+    height: var(--barra-alto);
+    padding: 4px var(--margen-d) env(safe-area-inset-bottom, 0px) var(--margen);
+    display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;
+    font-size: 0.85rem; letter-spacing: 0.08em;
+  }
+  body[data-tema="papel"] .barra { background: var(--papel); border-top: 1.5px solid var(--tinta); }
+  body[data-tema="hud"] .barra { background: rgba(3, 8, 20, 0.96); border-top: 1px solid var(--linea-hud); }
+  .barra-izq, .barra-estado, .barra-porcentaje, #btn-notas, #btn-pantalla { display: none; }
+  /* El progreso queda como una línea fina en el borde superior de la barra */
+  .barra-centro { position: absolute; left: 0; right: 0; top: -1px; display: block; }
+  .barra-pista { height: 3px; border: 0 !important; }
+  .barra-der { display: contents; }
+  .barra-btn { min-width: 48px; height: 44px; font-size: 1.3rem; opacity: 0.9; }
+  #btn-anterior { order: 1; }
+  .barra-num { order: 2; margin: 0; flex: 1; text-align: center; font-size: 0.95rem; }
+  #btn-indice { order: 3; font-size: 1.2rem; }
+  #btn-siguiente { order: 4; }
+
+  /* Índice a pantalla completa */
+  .indice { place-items: stretch; }
+  .indice-caja { width: 100%; max-height: 100dvh; padding: 0.8rem var(--margen-d) env(safe-area-inset-bottom, 0px) var(--margen); }
+  .indice-cab .barra-btn { min-width: 44px; height: 44px; }
+  .indice-rejilla { grid-template-columns: 1fr; gap: 0.8rem; padding-bottom: 1rem; }
+  .indice-enlace { min-height: 44px; font-size: 1rem; padding: 0.5rem 0.6rem; }
+  .indice-seccion h4 { font-size: 0.8rem; }
+
+  /* Notas del expositor (si se abren desde el teclado) */
+  .panel-notas { width: 100vw; }
+}
+
+/* Celular horizontal: aún más bajo, los visuales se ajustan a la altura */
+@media (max-height: 500px) and (min-aspect-ratio: 1/1) {
+  :root { --alto-visual: max(200px, min(64dvh, 300px)); }
+  .bloch-visual canvas { height: max(220px, min(70dvh, 300px)); }
+  .chip-tarjeta { width: min(100%, 16rem); }
+  .titular-portada { font-size: min(9.6vw, 13dvh); }
+  /* Hay ancho de sobra: texto a la izquierda y visual a la derecha */
+  .rejilla-texto-visual, .rejilla-texto-visual.ancho, .moore-rejilla, .bloch-rejilla, .potencia-rejilla,
+  .puertas-rejilla, .topo-rejilla, .tetron-rejilla, .bits-rejilla, .compuertas-rejilla, .qubit-rejilla,
+  .chip-rejilla, .chip-rejilla.invertida, .camino-pie, .mitos, .futuro {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
+    align-items: start;
+    gap: 1.2rem;
+  }
+  .usos, .tipos, .cuatro-ideas, .glosario, .fuentes, .videos, .tuberia, .pasos-medicion {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.8rem 1.2rem;
+  }
+}
 
 /* ---------------------------------------------------------------------
    Movimiento reducido: sin desplazamientos, solo fundidos
