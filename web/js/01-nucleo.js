@@ -299,10 +299,10 @@
   /** Índice: primero el recorrido por bloques (con su tiempo); debajo, el anexo por sección original. */
   function construirIndice() {
     var rejilla = document.getElementById('indice-rejilla');
-    var recorrido = parteIndice(rejilla, 'indice-recorrido', 'Recorrido', '10 min · ' + Expo.recorrido.length + ' láminas');
+    var recorrido = parteIndice(rejilla, 'indice-recorrido', 'Recorrido', Expo.recorrido.length + ' láminas');
     var pos = 0;
     BLOQUES.forEach(function (bloque, b) {
-      var ol = grupoIndice(recorrido, dos(b + 1) + ' · ' + bloque.nombre, '≈ ' + bloque.tiempo);
+      var ol = grupoIndice(recorrido, dos(b + 1) + ' · ' + bloque.nombre, '');
       bloque.ids.forEach(function (id) {
         var i = Expo.laminas.indexOf(document.getElementById(id));
         if (i < 0) return;
@@ -456,7 +456,7 @@
     } else {
       var b = +l.dataset.bloque;
       document.getElementById('barra-seccion').textContent = dos(b + 1) + ' · ' + BLOQUES[b].nombre;
-      document.getElementById('barra-min').textContent = '≈ ' + BLOQUES[b].tiempo + ' min';
+      document.getElementById('barra-min').textContent = '';   // sin tiempos a la vista del público
       num.textContent = pos + ' / ' + total;
       num.setAttribute('aria-label', 'Lámina ' + pos + ' de ' + total);
     }
