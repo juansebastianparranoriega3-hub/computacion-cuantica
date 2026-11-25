@@ -142,7 +142,8 @@
       escena.addEventListener('pointerleave', function () { sobre = false; objetivo.x = objetivo.y = 0; });
 
       var bucle = Expo.bucle(function (dt, t) {
-        if (Expo.reducido) { tarjeta.style.transform = 'none'; return; }
+        // Con movimiento reducido, o con el visor 3D del chip (08-chips.js), la tarjeta no se inclina
+        if (Expo.reducido || tarjeta.classList.contains('con-visor')) { tarjeta.style.transform = 'none'; return; }
         var ox = objetivo.x, oy = objetivo.y;
         if (!sobre) { ox = Math.sin(t * 0.5) * 0.35; oy = Math.cos(t * 0.37) * 0.25; }  // vaivén suave en reposo
         // Resorte amortiguado (rigidez 120, amortiguación 16)

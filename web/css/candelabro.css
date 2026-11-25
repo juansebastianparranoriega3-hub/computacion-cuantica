@@ -131,7 +131,7 @@ body.modo-3d .barra-pista { border: 1px solid var(--linea-hud); }
 body.modo-3d .barra-relleno { background: repeating-linear-gradient(90deg, var(--azul) 0 0.5rem, rgba(59, 139, 255, 0.4) 0.5rem 0.6rem); box-shadow: 0 0 8px var(--azul); }
 body.modo-3d .barra-estado, body.modo-3d .barra-porcentaje { color: var(--azul-2); }
 body.modo-3d .barra-volver { color: var(--azul-2); border-color: var(--azul); }
-.barra-temp { white-space: nowrap; color: var(--azul-2); }
+.barra-temp { white-space: nowrap; color: var(--azul-2); text-transform: none; }   /* «mK» no es «MK» */
 body:not(.modo-3d) .barra-temp { display: none; }
 /* En pantallas de menos de ~1700 px la barra no tiene sitio: la temperatura la da el termómetro */
 @media (max-width: 1700px) { .barra-temp { display: none; } }
@@ -297,4 +297,156 @@ body.modo-3d-listo.primer-plano .termometro { opacity: 0; }
 @media (prefers-reduced-motion: reduce) {
   .termo-carro { transition: none; }
   .aviso-modo { transform: translate(-50%, 0); }
+}
+
+/* ---------------------------------------------------------------------
+   Chips Majorana (08-chips.js)
+   1. Visor 3D en el panel de las láminas 13 y 15: el lienzo sobresale de
+      la tarjeta (el chip gira sin cortarse); la foto se queda debajo hasta
+      que el primer cuadro está dibujado, y vuelve si el visor no existe.
+   --------------------------------------------------------------------- */
+.chip-visor { display: none; }
+body.modo-3d .chip-tarjeta.con-visor { transform-style: flat; }
+body.modo-3d .chip-tarjeta.con-visor .chip-visor {
+  display: block;
+  position: absolute;
+  left: -3rem;
+  top: -3rem;
+  width: calc(100% + 6rem);
+  height: calc(100% + 6rem);
+  opacity: 0;
+  cursor: grab;
+  touch-action: none;
+  transition: opacity 300ms var(--ease-out);
+}
+body.modo-3d .chip-tarjeta.con-visor .chip-visor.arrastrando { cursor: grabbing; }
+body.modo-3d .chip-tarjeta.visor-listo .chip-visor { opacity: 1; }
+body.modo-3d .chip-tarjeta.con-visor img,
+body.modo-3d .chip-tarjeta.con-visor .chip-brillo { transition: opacity 300ms var(--ease-out); }
+body.modo-3d .chip-tarjeta.visor-listo img,
+body.modo-3d .chip-tarjeta.visor-listo .chip-brillo { opacity: 0; }
+body.modo-3d .chip-tarjeta.con-visor::after { border-color: rgba(190, 215, 255, 0.14); }
+/* La etiqueta del chip sigue al dado (posición en px desde 08-chips.js) */
+body.modo-3d .chip-tarjeta.con-visor .chip-marca { left: 0; top: 0; opacity: 0; transition: opacity 300ms var(--ease-out); }
+body.modo-3d .chip-tarjeta.visor-listo .chip-marca { opacity: 1; }
+
+/* ---------------------------------------------------------------------
+   2. Capa HUD del primer plano (V en 13 y 15): etiquetas con línea a la
+      izquierda del chip, datos curiosos a la derecha. Solo visual.
+      Entrada: líneas que se dibujan (70 ms entre una y otra), su pastilla
+      al llegar la línea, luego las tarjetas de datos. Salida: fundido corto.
+   --------------------------------------------------------------------- */
+.chip-hud {
+  position: fixed;
+  inset: 0;
+  z-index: 14;
+  pointer-events: none;
+  font-family: var(--f-hud);
+  color: var(--cr-texto, #eef3ff);
+  transition: opacity 160ms var(--ease-out);
+}
+.chip-hud.saliendo { opacity: 0; }
+.chip-hud-lineas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.9));
+}
+.chip-hud-linea {
+  fill: none;
+  stroke: #d6eeff;
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+.chip-hud-punto {
+  fill: #8fd8ff;
+  stroke: rgba(3, 8, 20, 0.85);
+  stroke-width: 2;
+  opacity: 0;
+}
+.chip-hud.visible .chip-hud-linea { stroke-dashoffset: 0; transition: stroke-dashoffset 380ms var(--ease-out); }
+.chip-hud.visible .chip-hud-punto { opacity: 1; transition: opacity 200ms var(--ease-out); }
+
+.chip-hud-etq { position: absolute; left: 0; top: 0; will-change: transform; }
+.chip-hud-pastilla,
+.chip-hud-dato {
+  display: block;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.04)), rgba(8, 12, 30, 0.86);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 0.8rem 1.6rem -0.8rem rgba(0, 0, 0, 0.6);
+  opacity: 0;
+}
+.chip-hud-pastilla {
+  white-space: nowrap;
+  font: 600 0.92rem/1.2 var(--f-hud);
+  padding: 0.45rem 0.95rem;
+  border-radius: 1rem;
+  transform: translateX(-0.5rem);
+}
+.chip-hud-pastilla small { display: block; font-size: 0.75rem; font-weight: 500; color: var(--cr-cian, #8fd8ff); margin-top: 0.1rem; }
+.chip-hud.visible .chip-hud-pastilla { opacity: 1; transform: none; transition: opacity 240ms var(--ease-out), transform 300ms var(--ease-out); }
+
+.chip-hud-datos {
+  position: absolute;
+  right: calc(50% - 40rem + 1.6rem);
+  top: 50%;
+  width: 17.5rem;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+.chip-hud-cab {
+  font: 600 0.75rem/1.2 var(--f-hud);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--cr-cian, #8fd8ff);
+  align-self: flex-start;
+  padding: 0.4rem 0.8rem;
+  border-radius: 999px;
+  background: rgba(8, 12, 30, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  opacity: 0;
+}
+.chip-hud-dato {
+  margin: 0;
+  font: 500 0.82rem/1.32 var(--f-hud);
+  padding: 0.6rem 0.9rem;
+  border-radius: 1rem;
+  transform: translateY(0.5rem);
+}
+.chip-hud.visible .chip-hud-cab { opacity: 1; transition: opacity 240ms var(--ease-out); }
+.chip-hud.visible .chip-hud-dato { opacity: 1; transform: none; transition: opacity 260ms var(--ease-out), transform 320ms var(--ease-out); }
+
+/* Sin sitio para las líneas (celular, o sin el modelo real): solo los datos, abajo */
+.chip-hud.sin-lineas .chip-hud-datos {
+  left: 50%;
+  right: auto;
+  top: auto;
+  bottom: calc(var(--barra-alto, 3rem) + 4.2rem);
+  width: min(40rem, calc(100vw - 32px));
+  transform: translateX(-50%);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+.chip-hud.sin-lineas .chip-hud-cab { grid-column: 1 / -1; }
+@media (max-width: 760px), (max-height: 500px), (max-aspect-ratio: 4/5) {
+  .chip-hud .chip-hud-lineas, .chip-hud .chip-hud-etq { display: none; }
+  .chip-hud .chip-hud-datos { left: 16px; right: 16px; top: auto; bottom: calc(var(--barra-alto, 3rem) + 12px); width: auto; transform: none; display: grid; grid-template-columns: 1fr 1fr; }
+  .chip-hud .chip-hud-cab { grid-column: 1 / -1; }
+  .chip-hud .chip-hud-dato { font-size: 0.8rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Sin movimiento: las líneas ya dibujadas, todo aparece con un fundido corto */
+  .chip-hud .chip-hud-linea { stroke-dashoffset: 0; }
+  .chip-hud .chip-hud-pastilla, .chip-hud .chip-hud-dato { transform: none; }
+  .chip-hud.visible .chip-hud-linea, .chip-hud.visible .chip-hud-punto, .chip-hud.visible .chip-hud-cab,
+  .chip-hud.visible .chip-hud-pastilla, .chip-hud.visible .chip-hud-dato { transition: opacity 150ms ease !important; transition-delay: 0s !important; }
+  .chip-hud.visible .chip-hud-linea { opacity: 1; }
+  .chip-hud .chip-hud-linea { opacity: 0; }
 }

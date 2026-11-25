@@ -19,7 +19,7 @@
   'use strict';
 
   var Expo = window.Expo;
-  var VERSION = '2026-11-25b';
+  var VERSION = '2026-11-25d';
   var RUTA_THREE = 'vendor/three/';
 
   /* Modelos reales hechos en Blender (agente chip-3d). En file:// no se puede
@@ -155,6 +155,17 @@
   var fundido = null;            // { inicio, saliente, matsNuevos, matsViejos }
   var primerPlano = null;        // nombre del chip en primer plano (tecla V en 13 / 15)
   var cargaPausaFps = false;     // la prueba de fps no cuenta mientras se decodifica el modelo
+  /* Avisos para otros scripts (08-chips.js): 'cuadro' (tras cada render),
+     'primerPlano' (nombre | null, ms de viaje), 'modelo' (el real ya está), 'modo'. */
+  var oyentes = {};
+  function emitir(ev) {
+    var l = oyentes[ev];
+    if (!l) return;
+    var args = Array.prototype.slice.call(arguments, 1);
+    for (var i = 0; i < l.length; i++) {
+      try { l[i].apply(null, args); } catch (err) { console.error('Candelabro ' + ev, err); }
+    }
+  }
 
   function reducido() { return !!Expo.reducido; }
   function compacto() { return consultaCompacto.matches; }
@@ -1041,6 +1052,7 @@
     renderer.render(escena, camara);
     var costo = performance.now() - t0;
     costoRender.suma += costo; costoRender.n++;
+    if (oyentes.cuadro) emitir('cuadro');
 
     // La prueba de fps solo cuenta los cuadros a ritmo completo (no los del fondo a 30 fps)
     if (dt > 0 && continuo && !lento) registrarFps(dt);
@@ -1177,14 +1189,16 @@
     // Láminas 13 y 15: V lleva la cámara a un primer plano del chip (y de vuelta a la estación)
     var lamina = Expo.laminas[Expo.actual];
     var nombreChip = lamina && LAMINA_CHIP[lamina.id];
+    var antes = primerPlano, espera = 0;
     if (verEscena && nombreChip && construido && modo === '3d') {
       var v = vistaPrimerPlano(nombreChip);
-      if (v) { primerPlano = nombreChip; tiltObjX = 0; tiltObjY = 0; viajarA(v, true); }
+      if (v) { primerPlano = nombreChip; tiltObjX = 0; tiltObjY = 0; espera = viajarA(v, true); }
     } else if (primerPlano) {
       primerPlano = null;
       if (construido && Expo.actual >= 0 && !Expo.esAnexo(Expo.actual)) viajarA(vistaDeLamina(Expo.actual), true);
     }
     document.body.classList.toggle('primer-plano', !!primerPlano);
+    if (antes !== primerPlano) emitir('primerPlano', primerPlano, espera);
     pedirCuadros(2);
   }
 
@@ -1338,6 +1352,7 @@
       ajustarTamano();
       pedirCuadros(3);
       document.body.classList.add('modo-3d-listo');
+      emitir('modo', modo);
       return true;
     }).catch(function (err) {
       console.warn('Modo candelabro no disponible:', err && err.message);
@@ -1356,6 +1371,7 @@
     delete document.body.dataset.vista;
     aplicarPaletaCristal(false);
     actualizarBoton();
+    emitir('modo', modo);
   }
 
   /* ------------------------------------------------------------------
@@ -1504,6 +1520,7 @@
           marcarModelo('real');
           cargaPausaFps = false;
           document.body.classList.add('modelo-real');
+          emitir('modelo');
         };
         if (viajando) pendienteModelo = aplicar;
         else aplicar();
@@ -1616,6 +1633,20 @@
     activar3D: function () { forzado = true; return activar3D(); },
     activarClasico: function () { activarClasico(false); },
     verEscena: alternarVerEscena,
+    /** Escucha un aviso ('cuadro' | 'primerPlano' | 'modelo' | 'modo'). */
+    escuchar: function (ev, fn) { (oyentes[ev] = oyentes[ev] || []).push(fn); },
+    /** THREE, la cámara y el lienzo de la escena (null si aún no se construyó). */
+    three: function () { return T; },
+    camara: function () { return construido ? camara : null; },
+    /** Grupo del chip del modelo real (null si es el marcador provisional o no hay). */
+    chipModelo: function (nombre) {
+      var c = chips[nombre];
+      return c && c.userData.ancla && !c.userData.provisional ? c : null;
+    },
+    /** Grupo que gira con el candelabro (para tomar la orientación de los chips). */
+    raiz: function () { return raiz || null; },
+    primerPlano: function () { return primerPlano; },
+    compacto: compacto,
     estado: function () {
       return {
         modo: modo, construido: construido, viajando: viajando, bucleActivo: !!bucleId,

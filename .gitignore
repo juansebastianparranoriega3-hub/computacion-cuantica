@@ -11,6 +11,7 @@ prototipos/
 # Guiones personales (llevan nombres): solo en el equipo
 docs/GUION*.md
 docs/Guion*.pdf
+docs/Portada*.pdf
 
 # Restos de herramientas
 .playwright-mcp/
