@@ -185,7 +185,7 @@
         var bit = Expo.crear('span', 'interruptor-bit', '0');
         var val = Expo.crear('span', 'interruptor-valor', String(1 << pos));
         b.appendChild(placa); b.appendChild(bit); b.appendChild(val);
-        b.addEventListener('click', function () { valor ^= (1 << pos); pintar(); });
+        b.addEventListener('click', function () { valor ^= (1 << pos); pintar(); Expo.sonar('interruptor', (valor >> pos) & 1); });
         botones.push({ boton: b, pos: pos, texto: bit });
         cont.appendChild(b);
       })(i);
@@ -282,10 +282,10 @@
       });
       dibujar(out);
     }
-    bA.addEventListener('click', function () { a ^= 1; pintar(); });
-    bB.addEventListener('click', function () { b ^= 1; pintar(); });
+    bA.addEventListener('click', function () { a ^= 1; pintar(); Expo.sonar('compuerta', calcular()); });
+    bB.addEventListener('click', function () { b ^= 1; pintar(); Expo.sonar('compuerta', calcular()); });
     Array.prototype.forEach.call(pestanas, function (p) {
-      p.addEventListener('click', function () { tipo = p.dataset.compuerta; pintar(); });
+      p.addEventListener('click', function () { tipo = p.dataset.compuerta; pintar(); Expo.sonar('compuerta', calcular()); });
     });
     pintar();
   }
@@ -311,32 +311,41 @@
       ctx.clearRect(0, 0, w, h);
 
       // --- Gráfica (65 % izquierdo)
-      var gx = rem * 3.6, gy = rem * 0.8, gw = w * 0.64 - gx, gh = h - gy - rem * 2.2;
+      // Rótulos a 0,75 rem (18 px a 1920×1080). El margen izquierdo se calcula con el ancho
+      // real de las marcas, así el rótulo vertical nunca se cruza con «×1.000 M».
+      var tm = rem * 0.75, tv = rem * 0.75;
+      var marcas = [[0, '×1'], [10, '×1.000'], [20, '×1 M'], [30, '×1.000 M']];
+      ctx.font = Math.round(tm) + 'px ' + F.mono;
+      var anchoMarcas = 0;
+      marcas.forEach(function (m) { anchoMarcas = Math.max(anchoMarcas, ctx.measureText(m[1]).width); });
+      var xVertical = rem * 0.3;                                    // borde izquierdo del rótulo vertical
+      var gx = xVertical + tv * 1.25 + rem * 0.45 + anchoMarcas + rem * 0.35;
+      var gy = rem * 1.4, gw = w * 0.64 - gx, gh = h - gy - rem * 2.4;
       var prog = Expo.reducido ? 1 : Expo.limitar((t - t0) / DUR, 0, 1);
       var progS = Expo.suavizarIO(prog);
       ctx.strokeStyle = C.tinta; ctx.fillStyle = C.tinta; ctx.lineWidth = 1.5;
       ctx.beginPath(); ctx.moveTo(gx, gy); ctx.lineTo(gx, gy + gh); ctx.lineTo(gx + gw, gy + gh); ctx.stroke();
 
-      // Marcas del eje Y: multiplicadores (escala logarítmica, ×2 cada 2 años)
-      ctx.font = Math.round(rem * 0.62) + 'px ' + F.mono;
+      // Marcas del eje Y: multiplicadores (escala logarítmica, ×2 cada ~2 años; ilustrativa)
       ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
-      var marcas = [[0, '×1'], [10, '×1.000'], [20, '×1 M'], [30, '×1.000 M']];
       marcas.forEach(function (m) {
         var y = gy + gh - m[0] / 30 * gh;
         ctx.globalAlpha = 0.25; ctx.beginPath(); ctx.moveTo(gx, y); ctx.lineTo(gx + gw, y); ctx.stroke(); ctx.globalAlpha = 1;
-        ctx.fillText(m[1], gx - rem * 0.3, y);
+        ctx.fillText(m[1], gx - rem * 0.35, y);
       });
-      // Eje X: años
-      ctx.textAlign = 'center'; ctx.textBaseline = 'top';
-      for (var a = ANIO0; a <= ANIO1; a += 10) {
-        var x = gx + (a - ANIO0) / (ANIO1 - ANIO0) * gw;
-        ctx.fillText(String(a), x, gy + gh + rem * 0.35);
-      }
+      // Eje X: solo lo que dice el documento (1965 → hoy)
+      ctx.textBaseline = 'top';
+      ctx.textAlign = 'left'; ctx.fillText(String(ANIO0), gx, gy + gh + rem * 0.35);
+      ctx.textAlign = 'right'; ctx.fillText('hoy', gx + gw, gy + gh + rem * 0.35);
+      // Rótulo vertical (se achica si la gráfica es baja, para no salirse)
+      var rotuloV = 'transistores por chip (escala relativa)';
+      ctx.font = 'italic ' + Math.round(tv) + 'px ' + F.texto;
+      var anchoV = ctx.measureText(rotuloV).width;
+      if (anchoV > gh) { tv *= gh / anchoV; ctx.font = 'italic ' + Math.floor(tv) + 'px ' + F.texto; }
       ctx.save();
-      ctx.translate(rem * 0.6, gy + gh / 2); ctx.rotate(-Math.PI / 2);
+      ctx.translate(xVertical, gy + gh / 2); ctx.rotate(-Math.PI / 2);
       ctx.textAlign = 'center'; ctx.textBaseline = 'top';
-      ctx.font = 'italic ' + Math.round(rem * 0.66) + 'px ' + F.texto;
-      ctx.fillText('transistores por chip (escala relativa)', 0, 0);
+      ctx.fillText(rotuloV, 0, 0);
       ctx.restore();
 
       // Banda de la escala atómica (aparece al final)
@@ -349,11 +358,13 @@
         }
         ctx.globalAlpha = banda;
         ctx.fillStyle = C.tinta;
-        ctx.fillRect(gx + gw * 0.03, by + bh * 0.12, rem * 12.8, rem * 1.15);
+        ctx.font = 'italic bold ' + Math.round(rem * 0.75) + 'px ' + F.display;
+        var rotuloB = 'ESCALA ATÓMICA · EFECTO TÚNEL';
+        var anchoB = Math.min(ctx.measureText(rotuloB).width + rem, gw * 0.94);   // la caja mide lo que el texto
+        ctx.fillRect(gx + gw * 0.03, by + bh * 0.12, anchoB, rem * 1.3);
         ctx.fillStyle = C.papel;
         ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
-        ctx.font = 'italic bold ' + Math.round(rem * 0.66) + 'px ' + F.display;
-        ctx.fillText('ESCALA ATÓMICA · EFECTO TÚNEL', gx + gw * 0.03 + rem * 0.5, by + bh * 0.12 + rem * 0.6);
+        ctx.fillText(rotuloB, gx + gw * 0.03 + rem * 0.5, by + bh * 0.12 + rem * 0.68, anchoB - rem);
         ctx.globalAlpha = 1;
       }
 
@@ -377,16 +388,18 @@
       // Etiqueta de la punta
       var ex = gx + (anioFin - ANIO0) / (ANIO1 - ANIO0) * gw;
       var ey = gy + gh - ((anioFin - ANIO0) / 2) / 30 * gh;
-      ctx.font = 'bold ' + Math.round(rem * 0.72) + 'px ' + F.mono;
+      // Sin años en la punta: el documento solo da 1965 y «hoy» (la curva es ilustrativa)
+      var rotuloP = '×2 cada ~2 años';
+      ctx.font = 'bold ' + Math.round(rem * 0.8) + 'px ' + F.mono;
       ctx.textAlign = 'right'; ctx.textBaseline = 'bottom';
-      ctx.fillText(Math.floor(anioFin) + '  ×2 cada 2 años', ex - rem * 0.4, ey - rem * 0.2);
+      ctx.fillText(rotuloP, Math.max(ex - rem * 0.4, gx + ctx.measureText(rotuloP).width + rem * 0.4), ey - rem * 0.2);
 
       // --- Efecto túnel (derecha)
       var tx = w * 0.69, tw = w - tx - rem * 0.4, ty = gy, th = gh;
       ctx.strokeStyle = C.tinta; ctx.lineWidth = 1.5;
       ctx.strokeRect(tx, ty, tw, th);
       ctx.fillStyle = C.tinta;
-      ctx.font = 'italic bold ' + Math.round(rem * 0.7) + 'px ' + F.display;
+      ctx.font = 'italic bold ' + Math.round(rem * 0.8) + 'px ' + F.display;
       ctx.textAlign = 'center'; ctx.textBaseline = 'top';
       ctx.fillText('EFECTO TÚNEL', tx + tw / 2, ty + rem * 0.4);
       var barX = tx + tw * 0.55, barW = tw * 0.08;
@@ -397,7 +410,7 @@
       for (var k = -th; k < th; k += 6) { ctx.beginPath(); ctx.moveTo(barX, ty + k); ctx.lineTo(barX + barW, ty + k + barW); ctx.stroke(); }
       ctx.restore();
       ctx.strokeRect(barX, ty + rem * 1.6, barW, th - rem * 3.4);
-      ctx.font = Math.round(rem * 0.58) + 'px ' + F.mono;
+      ctx.font = Math.round(rem * 0.75) + 'px ' + F.mono;
       ctx.textBaseline = 'bottom';
       ctx.fillText('barrera', barX + barW / 2, ty + th - rem * 0.4);
 

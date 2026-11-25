@@ -1,0 +1,300 @@
+/* =====================================================================
+   Modo candelabro 3D (06-candelabro.js)
+   La escena 3D va detrás (#cv-candelabro); las láminas se leen sobre un
+   panel de cristal esmerilado (#vidrio-3d, fuera de las láminas para que
+   el desenfoque no dependa de su opacidad). En el modo 3D todo es cristal
+   (dirección E): el estilo de las láminas está en cristal.css.
+   Sin .modo-3d todo queda como el modo clásico.
+   ===================================================================== */
+
+.cv-candelabro, .vidrio-3d, .termometro { display: none; }
+
+body.modo-3d .fondo { display: none; }
+body.modo-3d .cv-candelabro {
+  display: block;
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transition: filter 300ms ease;
+}
+
+/* ---------------------------------------------------------------------
+   Panel de cristal bajo la lámina (todas las láminas, también las de «papel»)
+   --------------------------------------------------------------------- */
+body.modo-3d .vidrio-3d {
+  display: block;
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  width: 80rem;
+  height: 45rem;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+.vidrio-capa {
+  position: absolute;
+  inset: 0.6rem 0.9rem 2.9rem;
+  opacity: 0;
+  transition: opacity 280ms var(--ease-out);
+}
+.vidrio-hud {
+  border-radius: 1.2rem;
+  background: linear-gradient(135deg, rgba(22, 34, 72, 0.7), rgba(4, 9, 22, 0.84) 70%);
+  -webkit-backdrop-filter: blur(18px) saturate(1.35);
+  backdrop-filter: blur(18px) saturate(1.35);
+  border: 1px solid rgba(190, 215, 255, 0.16);
+  box-shadow: 0 1.6rem 3rem -1.2rem rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+body.modo-3d .vidrio-hud { opacity: 1; overflow: hidden; }
+
+/* Vidrio «falso» (sin backdrop-filter): más opaco, con gradiente y ruido.
+   Se usa en el cierre (el candelabro gira detrás del panel y el desenfoque
+   real costaría ~15 fps; medido) y con body.vidrio-falso si el real no rinde. */
+body.modo-3d.vidrio-falso .vidrio-hud,
+body.modo-3d[data-vista="cierre"] .vidrio-hud {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+    linear-gradient(135deg, rgba(30, 44, 88, 0.86), rgba(6, 10, 26, 0.93) 70%);
+}
+
+/* Luz suave que sigue al puntero sobre el cristal (06-candelabro.js la mueve con transform) */
+.luz-cristal {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 34rem;
+  height: 34rem;
+  margin: -17rem 0 0 -17rem;
+  pointer-events: none;
+  background: radial-gradient(closest-side, rgba(200, 230, 255, 0.16), rgba(140, 190, 255, 0.06) 45%, transparent);
+  transform: translate(50vw, 30vh);
+  will-change: transform;
+}
+
+/* Portada: sin panel, el candelabro es el protagonista */
+body.modo-3d[data-vista="portada"] .vidrio-capa { opacity: 0; }
+
+/* Cierre: la cámara se aleja; el candelabro queda a la izquierda y el panel a la derecha */
+body.modo-3d[data-vista="cierre"] .vidrio-capa { left: 31rem; }
+body.modo-3d #l-ideas .marco { padding-left: 33.4rem; }
+body.modo-3d #l-ideas .ideas p { font-size: 1.25rem; }
+
+/* Anexo: sin viaje; el candelabro se queda atrás, desenfocado */
+body.modo-3d[data-parte="anexo"] .cv-candelabro { filter: blur(6px) brightness(0.6); }
+
+/* Viaje entre bloques: el panel se aparta (rápido) y vuelve al llegar */
+body.modo-3d .escenario { transition: opacity 300ms var(--ease-out); }
+body.modo-3d.viajando .escenario,
+body.modo-3d.viajando .vidrio-capa {
+  opacity: 0;
+  visibility: hidden;   /* oculto del todo: el desenfoque no se recalcula mientras la cámara se mueve */
+  transition: opacity 160ms var(--ease-out), visibility 0s linear 160ms;
+}
+
+/* La lámina nueva no se pinta hasta llegar: así su primer pintado no frena el viaje */
+body.modo-3d.viajando .lamina.activa { visibility: hidden; }
+
+/* Tecla V: mirar el piso sin el panel */
+body.modo-3d.ver-escena .escenario,
+body.modo-3d.ver-escena .vidrio-capa { opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 200ms var(--ease-out), visibility 0s linear 200ms; }
+
+/* ---------------------------------------------------------------------
+   Portada sobre la escena
+   --------------------------------------------------------------------- */
+body.modo-3d #l-portada { color: var(--hielo); }
+body.modo-3d #l-portada .portada-rejilla { visibility: hidden; }
+body.modo-3d #l-portada .filete-doble { border-color: rgba(234, 242, 255, 0.55); }
+body.modo-3d #l-portada .titular-portada { text-shadow: 0 0 2.4rem rgba(59, 139, 255, 0.45); }
+body.modo-3d #l-portada .portada-ayuda { color: var(--tenue); }
+body.modo-3d #l-portada .portada-ayuda::after { content: " · V mirar el candelabro"; }
+
+/* ---------------------------------------------------------------------
+   Barra inferior: flota sobre la escena (siempre en clave HUD)
+   --------------------------------------------------------------------- */
+body.modo-3d .barra { color: var(--tenue); isolation: isolate; }
+body.modo-3d .barra::before {
+  /* Placa oscura bajo la barra: se lee aunque detrás pase una placa dorada */
+  content: "";
+  position: absolute;
+  inset: -0.35rem -0.8rem;
+  z-index: -1;
+  border-radius: 0.7rem;
+  background: rgba(3, 8, 20, 0.78);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(143, 193, 255, 0.14);
+}
+body.modo-3d .barra-pista { border: 1px solid var(--linea-hud); }
+body.modo-3d .barra-relleno { background: repeating-linear-gradient(90deg, var(--azul) 0 0.5rem, rgba(59, 139, 255, 0.4) 0.5rem 0.6rem); box-shadow: 0 0 8px var(--azul); }
+body.modo-3d .barra-estado, body.modo-3d .barra-porcentaje { color: var(--azul-2); }
+body.modo-3d .barra-volver { color: var(--azul-2); border-color: var(--azul); }
+.barra-temp { white-space: nowrap; color: var(--azul-2); }
+body:not(.modo-3d) .barra-temp { display: none; }
+/* En pantallas de menos de ~1700 px la barra no tiene sitio: la temperatura la da el termómetro */
+@media (max-width: 1700px) { .barra-temp { display: none; } }
+
+.barra-modo { padding: 0 0.45rem; letter-spacing: 0.06em; }
+.barra-modo[aria-pressed="true"] { color: var(--azul-2); border-color: var(--azul); opacity: 0.9; }
+
+/* ---------------------------------------------------------------------
+   Termómetro HUD: baja con la cámara (misma duración y curva)
+   --------------------------------------------------------------------- */
+body.modo-3d-listo .termometro {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  position: fixed;
+  z-index: 15;
+  left: calc(50% - 40rem + 2rem);
+  top: calc(50% - 22.5rem + 9.5rem);
+  height: 27rem;
+  pointer-events: none;
+  font-family: var(--f-hud);
+  color: var(--tenue);
+  padding: 1rem 1.2rem 1.6rem;
+  margin: -1rem 0 0 -1.2rem;
+  box-sizing: content-box;
+  border-radius: 1.2rem;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.03)), rgba(8, 12, 30, 0.66);   /* más oscuro: con el giro pasan placas muy claras detrás */
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1.2rem 2.4rem -1.2rem rgba(0, 0, 0, 0.55);
+  opacity: 0;
+  transition: opacity 220ms var(--ease-out);
+}
+body.modo-3d-listo.viajando .termometro,
+body.modo-3d-listo.ver-escena .termometro { opacity: 1; }
+body.modo-3d-listo[data-vista="cierre"] .termometro { opacity: 0; }
+/* Portada: sin termómetro (tapaba la «C» de COMPUTACIÓN). Aparece al empezar
+   el primer viaje (body.viajando, con data-vista ya en «estacion») y con V. */
+body.modo-3d-listo[data-vista="portada"]:not(.ver-escena) .termometro { opacity: 0; transition-duration: 120ms; }
+/* Primer plano de un chip (V en las láminas 13 y 15): sin termómetro, el chip queda limpio */
+body.modo-3d-listo.primer-plano .termometro { opacity: 0; }
+
+.termo-cab { font-size: max(var(--txt-min), 0.62rem); font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #8fd8ff; }
+.termo-cab small { margin-left: 0.5rem; font-size: inherit; color: var(--tenue); letter-spacing: 0.08em; text-transform: none; }
+.termo-cuerpo { position: relative; display: flex; gap: 1rem; flex: 1; min-height: 0; }
+.termo-pista {
+  position: relative;
+  width: 0.32rem;
+  border-radius: 1rem;
+  background: linear-gradient(180deg, #ffc27a, #c9a2ff 32%, #5ab8ff 64%, #8fd8ff);
+  box-shadow: 0 0 0.8rem rgba(59, 139, 255, 0.35);
+}
+.termo-carro {
+  position: absolute;
+  inset: 0;
+  transform: translateY(calc(var(--k, 0) * 20%));
+  transition: transform 1200ms cubic-bezier(0.65, 0, 0.35, 1);
+}
+.termo-marca {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 1.05rem;
+  height: 1.05rem;
+  margin: -0.525rem 0 0 -0.525rem;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 0 0.22rem rgba(143, 216, 255, 0.4), 0 0 1rem #8fd8ff;
+}
+.termo-escala {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.termo-escala li {
+  height: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  white-space: nowrap;
+  opacity: 0.55;
+  transition: opacity 200ms ease;
+}
+.termo-escala li b { font-size: max(var(--txt-min), 0.9rem); font-weight: 600; color: var(--hielo); min-width: 5.2rem; }
+.termo-escala li span { font-size: max(var(--txt-min), 0.68rem); letter-spacing: 0.1em; text-transform: uppercase; }
+.termo-escala li.on { opacity: 1; }
+.termo-escala li.on b { color: #fff; text-shadow: 0 0 0.8rem var(--azul); }
+
+/* ---------------------------------------------------------------------
+   Aviso (cambio automático de modo)
+   --------------------------------------------------------------------- */
+.aviso-modo {
+  position: fixed;
+  z-index: 45;
+  left: 50%;
+  bottom: max(3.4rem, calc((100vh - 45rem) / 2 + 3.2rem));
+  max-width: min(36rem, calc(100vw - 32px));
+  padding: 0.6rem 1rem;
+  border-radius: 0.8rem;
+  font: 500 max(var(--txt-min), 0.8rem)/1.35 var(--f-hud);
+  color: #eef3ff;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.04)), rgba(8, 12, 30, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  box-shadow: 0 1rem 2rem -0.8rem rgba(0, 0, 0, 0.6);
+  opacity: 0;
+  transform: translate(-50%, 0.5rem);
+  pointer-events: none;
+  transition: opacity 260ms var(--ease-out), transform 260ms var(--ease-out);
+}
+.aviso-modo.visible { opacity: 1; transform: translate(-50%, 0); }
+/* Con botón («Volver a 3D»): cristal esmerilado y clicable mientras se ve */
+.aviso-modo.con-accion {
+  display: flex; align-items: center; gap: 0.9rem;
+  padding: 0.45rem 0.45rem 0.45rem 1.1rem;
+  -webkit-backdrop-filter: blur(14px) saturate(1.3);
+  backdrop-filter: blur(14px) saturate(1.3);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.05)), rgba(8, 12, 30, 0.62);
+}
+.aviso-modo.con-accion.visible { pointer-events: auto; }
+.aviso-accion {
+  flex: none;
+  font: 600 max(var(--txt-min), 0.8rem)/1 var(--f-hud);
+  color: #fff;
+  padding: 0.55rem 0.95rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.14);
+  cursor: pointer;
+  transition: background-color 160ms var(--ease-out), transform 120ms var(--ease-out);
+}
+@media (hover: hover) { .aviso-accion:hover { background: rgba(255, 255, 255, 0.24); } }
+.aviso-accion:active { transform: scale(0.97); }
+.aviso-accion:focus-visible { outline: 2px solid #8fd8ff; outline-offset: 2px; }
+
+/* ---------------------------------------------------------------------
+   Diseño compacto (celular): panel a pantalla completa; el termómetro
+   solo aparece durante los viajes (y con V)
+   --------------------------------------------------------------------- */
+@media (max-width: 760px), (max-height: 500px), (max-aspect-ratio: 4/5) {
+  body.modo-3d .vidrio-3d { left: 0; top: 0; width: 100%; height: auto; bottom: var(--barra-alto); transform: none; }
+  .vidrio-capa { inset: 0; }
+  .vidrio-hud { border-radius: 0; border: 0; }
+  body.modo-3d[data-vista="cierre"] .vidrio-capa { left: 0; }
+  body.modo-3d #l-ideas .marco { padding-left: var(--margen); }
+  body.modo-3d #l-ideas .ideas p { font-size: inherit; }
+  body.modo-3d .barra, body.modo-3d[data-tema="papel"] .barra { background: rgba(3, 8, 20, 0.96); border-top: 1px solid var(--linea-hud); }
+  body.modo-3d .barra::before { display: none; }
+  body.modo-3d #l-portada .portada-rejilla { display: none; }
+  body.modo-3d #l-portada .portada-ayuda::after { content: ""; }
+  body.modo-3d #l-portada .titular-portada { margin-top: 1rem; }
+  body.modo-3d-listo .termometro { left: var(--margen); top: auto; bottom: calc(var(--barra-alto) + 1.2rem); height: 34dvh; }
+  body.modo-3d-listo[data-vista="cierre"] .termometro { opacity: 0; }
+  .termo-escala li b { min-width: 4.4rem; }
+  .barra-modo { order: 3; min-width: 44px; font-size: 0.85rem !important; }
+}
+
+/* ---------------------------------------------------------------------
+   Movimiento reducido: sin viajes (la cámara salta), solo fundidos
+   --------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .termo-carro { transition: none; }
+  .aviso-modo { transform: translate(-50%, 0); }
+}

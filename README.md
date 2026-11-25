@@ -13,7 +13,9 @@ Abre `web/index.html` en el navegador (Chrome o Edge). No necesita internet ni i
 | ← | Anterior |
 | F | Pantalla completa |
 | N | Notas del expositor |
+| M | Silenciar / activar el sonido (también el parlante de la barra; se recuerda) |
 | Esc / I | Índice |
+| V | Modo 3D: mirar el candelabro sin el panel |
 
 ## Qué tiene
 - **Recorrido de 10 minutos: 17 láminas** en 7 bloques (apertura, bits, física cuántica, qubits, historia, Majorana y cierre). → / Espacio solo recorren estas.
@@ -21,6 +23,8 @@ Abre `web/index.html` en el navegador (Chrome o Edge). No necesita internet ni i
 - Enlaces: `#7` = lámina 7 del recorrido; `#anexo-glosario` = lámina del anexo.
 - Animaciones interactivas en canvas: doble rendija, interferencia, moneda que colapsa, entrelazamiento, decoherencia, esfera de Bloch, crecimiento 2ⁿ, línea de tiempo 1900→2026, chips Majorana con inclinación 3D.
 - Respeta `prefers-reduced-motion`.
+- **Sonidos sutiles** sintetizados en el navegador (Web Audio, sin archivos ni internet): viaje entre pisos, demostraciones, botones de la barra y aniquilaciones muy bajas en el fondo 3D. Empiezan a sonar tras el primer clic o tecla; `M` o el parlante de la barra los silencia.
+- **Modo candelabro 3D (por defecto):** la exposición se recorre bajando por el sistema de enfriamiento de un computador cuántico; cada bloque es un piso más frío (de ambiente a ~15 mK) y todo se ve en cristal. `V` muestra el piso sin el panel; el botón «3D/2D» de la barra cambia de modo. Si no hay WebGL, si el equipo va lento o con `?modo=clasico`, se usa el modo clásico (periódico → HUD). `?modo=3d` fuerza el 3D. Usa three.js r147 local (`web/vendor/three/`, licencia MIT): sigue sin necesitar internet.
 
 ## Estructura
 ```

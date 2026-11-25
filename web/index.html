@@ -6,13 +6,19 @@
 <title>Computación Cuántica</title>
 <meta name="description" content="Exposición interactiva: de los bits a los qubits, ciencia, historia y el chip Majorana de Microsoft.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2302050c'/%3E%3Cpath d='M16 2 L18.5 13.5 L30 16 L18.5 18.5 L16 30 L13.5 18.5 L2 16 L13.5 13.5 Z' fill='%233b8bff'/%3E%3C/svg%3E">
-<link rel="stylesheet" href="css/estilos.css?v=2026-11-24d">
+<link rel="stylesheet" href="css/estilos.css?v=2026-11-25b">
+<link rel="stylesheet" href="css/candelabro.css?v=2026-11-25b">
+<link rel="stylesheet" href="css/cristal.css?v=2026-11-24g">
 </head>
 <body data-tema="papel">
 
 <!-- Fondos globales: se funden según el tema de la lámina activa -->
 <div class="fondo fondo-papel" aria-hidden="true"></div>
 <div class="fondo fondo-hud" aria-hidden="true"><div class="estrellas"></div></div>
+
+<!-- Modo candelabro 3D (06-candelabro.js): escena detrás y panel de cristal bajo las láminas -->
+<canvas id="cv-candelabro" class="cv-candelabro" aria-hidden="true"></canvas>
+<div class="vidrio-3d" id="vidrio-3d" aria-hidden="true"><div class="vidrio-capa vidrio-hud"><i class="luz-cristal"></i></div></div>
 
 <main id="escenario" class="escenario">
 
@@ -52,7 +58,7 @@
         <p><span class="capitular">D</span>e lo más simple a lo más complejo: qué es computar, los bits, la física cuántica que permite los qubits y, al final, el chip de Microsoft. Cada idea trae una analogía cotidiana, y se aclara dónde se queda corta.</p>
       </div>
     </div>
-    <p class="portada-ayuda e"><kbd>→</kbd> avanzar · <kbd>F</kbd> pantalla completa · <kbd>N</kbd> notas · <kbd>Esc</kbd> índice</p>
+    <p class="portada-ayuda e"><kbd>→</kbd> avanzar · <kbd>F</kbd> pantalla completa · <kbd>N</kbd> notas · <kbd>M</kbd> sonido · <kbd>Esc</kbd> índice</p>
   </div>
   <div class="notas">
     <h3>Portada · ≈ 15 s</h3>
@@ -277,7 +283,7 @@
   <div class="notas">
     <h3>Ley de Moore · ≈ 45 s</h3>
     <p><b>Guion:</b> «En 1965 Gordon Moore observó que los transistores de un chip se duplicaban cada dos años, más o menos; por eso los computadores fueron cada vez más rápidos y baratos. Pero hoy miden pocos nanómetros, unas decenas de átomos, y ahí aparece el efecto túnel: los electrones atraviesan barreras y el interruptor se filtra. Esa física que estorba a lo clásico es la que la computación cuántica aprovecha. Un computador clásico solo manipula bits que valen 0 o 1. Ahora cambiamos de reglas.» [→ y la transición]</p>
-    <p>La curva es ilustrativa: muestra una duplicación cada dos años en escala logarítmica (×2, ×4… hasta ~×1.000 millones en 60 años). No son conteos reales de chips concretos.</p>
+    <p>La curva es ilustrativa: en escala logarítmica, la cantidad de transistores se duplica cada ~2 años (×2, ×4, ×8…) desde 1965 hasta hoy. No son conteos reales de chips concretos.</p>
     <p>Efecto túnel (panel derecho): según la física clásica el electrón no debería cruzar la barrera, pero a escala atómica a veces la atraviesa. Por eso el transistor deja de ser un interruptor fiable.</p>
     <p>Frase puente: «Un computador clásico solo manipula bits que valen 0 o 1. Ahora cambiamos de reglas.»</p>
   </div>
@@ -569,7 +575,7 @@
         </div>
       </div>
       <div class="h-panel visual bloch-visual e">
-        <canvas id="cv-bloch" aria-label="Esfera de Bloch en 3D; arrastra para girarla"></canvas>
+        <canvas id="cv-bloch" data-interactivo aria-label="Esfera de Bloch en 3D; arrastra para girarla"></canvas>
         <p class="pista-arrastre">Arrastra para girar la esfera</p>
         <div class="controles">
           <button class="btn btn-puerta" data-puerta="X">X</button>
@@ -1383,6 +1389,8 @@
     <button class="barra-btn" id="btn-siguiente" aria-label="Lámina siguiente">›</button>
     <button class="barra-btn texto" id="btn-notas" aria-label="Notas del expositor (N)">N</button>
     <button class="barra-btn texto" id="btn-indice" aria-label="Índice (Esc)">☰</button>
+    <button class="barra-btn texto barra-modo" id="btn-modo" hidden aria-pressed="false">3D</button>
+    <button class="barra-btn texto barra-sonido" id="btn-sonido" aria-pressed="false" aria-label="Silenciar sonido (M)" title="Silenciar sonido (M)"><svg class="ico-sonido" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path class="ico-parlante" d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path class="ico-ondas" d="M15.5 9a4.2 4.2 0 0 1 0 6M18 6.5a7.7 7.7 0 0 1 0 11"/><path class="ico-cruz" d="M16 9.5l5 5M21 9.5l-5 5"/></svg></button>
     <button class="barra-btn texto" id="btn-pantalla" aria-label="Pantalla completa (F)">⛶</button>
   </div>
 </nav>
@@ -1410,10 +1418,12 @@
   </div>
 </div>
 
-<script src="js/01-nucleo.js?v=2026-11-24d"></script>
-<script src="js/02-clasico.js?v=2026-11-24d"></script>
-<script src="js/03-cuantico.js?v=2026-11-24d"></script>
-<script src="js/04-bloch.js?v=2026-11-24d"></script>
-<script src="js/05-majorana.js?v=2026-11-24d"></script>
+<script src="js/01-nucleo.js?v=2026-11-25b"></script>
+<script src="js/02-clasico.js?v=2026-11-25b"></script>
+<script src="js/03-cuantico.js?v=2026-11-25b"></script>
+<script src="js/04-bloch.js?v=2026-11-25b"></script>
+<script src="js/05-majorana.js?v=2026-11-25b"></script>
+<script src="js/06-candelabro.js?v=2026-11-25b"></script>
+<script src="js/07-sonido.js?v=2026-11-24h"></script>
 </body>
 </html>

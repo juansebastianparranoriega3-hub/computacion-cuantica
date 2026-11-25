@@ -38,7 +38,8 @@
     color: {
       papel: '#ebe6da', papel2: '#e0d9c8', tinta: '#17160f', tinta2: '#3a372e', tinta3: '#6f6a58',
       noche: '#02050c', azul: '#3b8bff', azul2: '#8fc1ff', azulOscuro: '#1a4fb0',
-      hielo: '#eaf2ff', tenue: '#93a3c4', alerta: '#ffb03b', violeta: '#9b7bff'
+      hielo: '#eaf2ff', tenue: '#93a3c4', alerta: '#ffb03b', violeta: '#9b7bff',
+      rotulo: '#c9d6ee'   // rótulos secundarios de los lienzos: claros, legibles en proyector
     },
     fuente: {
       mono: '"Cascadia Code", "Cascadia Mono", Consolas, monospace',
@@ -66,6 +67,32 @@
   /** Tamaño actual de 1rem en píxeles CSS. */
   Expo.rem = function () {
     return parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+  };
+
+  /** Para que un texto, ya con su ctx.font, quepa dentro del lienzo (pantallas chicas):
+      devuelve { x, k }: un texto centrado junto a un borde se corre hacia adentro (x) y, solo
+      si aun así no cabe, se achica (k ≤ 1). Solo actúa si el contexto no está girado ni trasladado. */
+  Expo.ajusteTexto = function (ctx, txt, x, alinear) {
+    var m = ctx.getTransform();
+    if (m.b || m.c || m.e || m.f || !m.a) return { x: x, k: 1 };
+    var W = ctx.canvas.width / m.a, margen = 4, disp;
+    var ancho = ctx.measureText(txt).width;
+    if (alinear === 'center') {
+      x = Math.min(Math.max(x, ancho / 2 + margen), W - ancho / 2 - margen);
+      disp = W - margen * 2;
+      if (ancho > disp) x = W / 2;
+    }
+    else if (alinear === 'right' || alinear === 'end') disp = x - margen;
+    else disp = W - x - margen;
+    return { x: x, k: disp > 0 && ancho > disp ? disp / ancho : 1 };
+  };
+
+  /** Toca un sonido de 07-sonido.js: Expo.sonar('nombre', args…). No hace nada si no está cargado. */
+  Expo.sonar = function (nombre) {
+    var S = window.Sonido;
+    if (!S || typeof S[nombre] !== 'function') return;
+    try { S[nombre].apply(S, Array.prototype.slice.call(arguments, 1)); }
+    catch (err) { console.error('Sonido ' + nombre, err); }
   };
 
   Expo.limitar = function (v, a, b) { return v < a ? a : (v > b ? b : v); };
@@ -332,9 +359,13 @@
 
     Expo.actual = n;
     var lamina = Expo.laminas[n];
+    // Modo candelabro (06-candelabro.js): puede pedir esperar al viaje de la cámara
+    // antes de la entrada escalonada y de iniciar las animaciones de la lámina.
+    clearTimeout(entradaPendiente);
+    var espera = Expo.esperaAlEntrar ? Expo.esperaAlEntrar(n, anterior ? Expo.laminas.indexOf(anterior) : -1, rapido) : 0;
     lamina.classList.remove('entrando');
     lamina.scrollTop = 0;   // diseño compacto: cada lámina empieza arriba
-    if (!rapido) { void lamina.offsetWidth; lamina.classList.add('entrando'); }
+    if (!rapido && !espera) { void lamina.offsetWidth; lamina.classList.add('entrando'); }
     lamina.classList.add('activa');
     lamina.removeAttribute('aria-hidden');
     lamina.inert = false;
@@ -353,9 +384,17 @@
       } catch (e) { /* file:// en algunos navegadores */ }
     }
 
-    llamar(n, 'iniciar');
+    if (!espera) { llamar(n, 'iniciar'); return; }
+    entradaPendiente = setTimeout(function () {
+      if (Expo.actual !== n) return;
+      void lamina.offsetWidth; lamina.classList.add('entrando');
+      llamar(n, 'iniciar');
+    }, espera);
   }
+  var entradaPendiente = 0;
   Expo.irA = irA;
+  Expo.BLOQUES = BLOQUES;
+  Expo.esAnexo = esAnexo;
 
   /** Paso dentro de la parte actual (recorrido o anexo): +1 siguiente, −1 anterior. */
   function paso(delta) {
@@ -446,6 +485,7 @@
   }
   function alternarNotas(forzar) {
     var abrir = forzar != null ? forzar : !panelNotas.classList.contains('abierto');
+    if (abrir !== panelNotas.classList.contains('abierto')) Expo.sonar('deslizar', abrir);
     panelNotas.classList.toggle('abierto', abrir);
     panelNotas.setAttribute('aria-hidden', abrir ? 'false' : 'true');
   }
@@ -461,12 +501,14 @@
     Array.prototype.forEach.call(enlaces, function (b) { b.classList.toggle('actual', +b.dataset.indice === Expo.actual); });
   }
   function abrirIndice() {
+    if (!indiceAbierto()) Expo.sonar('deslizar', true);
     indice.classList.add('abierto');
     indice.setAttribute('aria-hidden', 'false');
     var actual = indice.querySelector('.indice-enlace.actual');
     if (actual) actual.focus({ preventScroll: false });
   }
   function cerrarIndice() {
+    if (indiceAbierto()) Expo.sonar('deslizar', false);
     indice.classList.remove('abierto');
     indice.setAttribute('aria-hidden', 'true');
   }
@@ -522,6 +564,7 @@
       case 'End': e.preventDefault(); irA(listaDe(Expo.actual)[listaDe(Expo.actual).length - 1]); break;
       case 'f': case 'F': e.preventDefault(); alternarPantalla(); break;
       case 'n': case 'N': e.preventDefault(); alternarNotas(); break;
+      case 'm': case 'M': e.preventDefault(); Expo.sonar('alternar'); break;
       case 'Escape': case 'i': case 'I':
         e.preventDefault();
         if (panelNotas.classList.contains('abierto') && tecla === 'Escape') alternarNotas(false);
@@ -534,7 +577,9 @@
   // Se usan eventos touch (pasivos) y no pointer: en el diseño compacto la lámina se desplaza
   // en vertical y el navegador cancelaría los pointer events al empezar ese desplazamiento.
   // Solo cuenta un gesto claramente horizontal, así no choca con el desplazamiento vertical.
-  var ZONAS_SIN_DESLIZAR = 'canvas, input, .linea-contenedor, .esquema-desliza, [data-inclinar]';
+  // Solo bloquean el gesto los lienzos que se arrastran (marcados con data-interactivo);
+  // los decorativos (portada, gráficas) dejan pasar de lámina.
+  var ZONAS_SIN_DESLIZAR = '[data-interactivo], input, .linea-contenedor, .esquema-desliza, [data-inclinar]';
   function configurarToque() {
     var escenario = document.getElementById('escenario');
     var inicio = null;

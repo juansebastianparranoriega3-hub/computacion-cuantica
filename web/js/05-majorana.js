@@ -9,9 +9,13 @@
   var TAU = Math.PI * 2;
 
   function texto(ctx, txt, x, y, tam, color, alinear, peso) {
+    alinear = alinear || 'left';
     ctx.font = (peso || 500) + ' ' + Math.round(tam) + 'px ' + F.mono;
+    var aj = Expo.ajusteTexto(ctx, txt, x, alinear), k = aj.k;   // en pantallas chicas, que no se salga
+    x = aj.x;
+    if (k < 1) ctx.font = (peso || 500) + ' ' + Math.floor(tam * k) + 'px ' + F.mono;
     ctx.fillStyle = color;
-    ctx.textAlign = alinear || 'left';
+    ctx.textAlign = alinear;
     ctx.textBaseline = 'middle';
     ctx.fillText(txt, x, y);
   }
@@ -73,6 +77,9 @@
       }
       animId = requestAnimationFrame(paso);
     }
+    /* Paso de → / ›: lo visible (×0,8) o 1/6 del recorrido, lo que sea mayor. Así la línea
+       se recorre en ~6 pasos como máximo en cualquier tamaño (en celular antes eran > 20). */
+    function pasoLinea() { return Math.max(cont.clientWidth * 0.8, maxScroll() / 6); }
     function posicion() { return destino === null ? cont.scrollLeft : destino; }
     function alFinal() { return posicion() >= maxScroll() - 4; }
     function alInicio() { return posicion() <= 4; }
@@ -110,8 +117,8 @@
       },
       detener: function () { cancelAnimationFrame(animId); destino = null; },
       // → avanza la línea; al llegar al final, deja pasar a la siguiente lámina
-      siguiente: function () { if (alFinal()) return false; desplazar(cont.clientWidth * 0.8); return true; },
-      anterior: function () { if (alInicio()) return false; desplazar(-cont.clientWidth * 0.8); return true; }
+      siguiente: function () { if (alFinal()) return false; desplazar(pasoLinea()); return true; },
+      anterior: function () { if (alInicio()) return false; desplazar(-pasoLinea()); return true; }
     });
   }
 
@@ -172,7 +179,7 @@
       ctx.beginPath(); ctx.moveTo(mitad, rem * 0.5); ctx.lineTo(mitad, h - rem * 0.5); ctx.stroke(); ctx.setLineDash([]);
 
       // --- Dato local: un punto en una cuerda
-      texto(ctx, 'INFORMACIÓN LOCAL', rem * 0.6, rem * 0.9, rem * 0.68, C.azul2, 'left', 600);
+      texto(ctx, 'INFORMACIÓN LOCAL', rem * 0.6, rem * 0.9, rem * 0.8, C.azul2, 'left', 600);
       var cy = h * 0.46, x0 = rem * 1, x1 = mitad - rem * 1;
       ctx.strokeStyle = C.azul2; ctx.lineWidth = 4; ctx.lineCap = 'round';
       ctx.beginPath();
@@ -189,11 +196,11 @@
       ctx.fillStyle = bit === 1 ? '#fff' : C.alerta;
       ctx.beginPath(); ctx.arc(bx, by, rem * 0.95, 0, TAU); ctx.fill();
       texto(ctx, String(bit), bx, by + 1, rem * 1.1, '#071226', 'center', 700);
-      texto(ctx, 'dato guardado en un punto', (x0 + x1) / 2, cy + rem * 2.6, rem * 0.62, C.tenue, 'center');
+      texto(ctx, 'dato guardado en un punto', (x0 + x1) / 2, cy + rem * 2.6, rem * 0.75, C.rotulo, 'center', 600);
       texto(ctx, 'VOLTEOS POR RUIDO: ' + volteos, rem * 0.6, h - rem * 1.2, rem * 0.75, volteos ? C.alerta : '#fff', 'left', 700);
 
       // --- Nudo de trébol deformado por el ruido
-      texto(ctx, 'INFORMACIÓN TOPOLÓGICA', mitad + rem * 0.8, rem * 0.9, rem * 0.68, C.azul2, 'left', 600);
+      texto(ctx, 'INFORMACIÓN TOPOLÓGICA', mitad + rem * 0.8, rem * 0.9, rem * 0.8, C.azul2, 'left', 600);
       var kx = (mitad + w) / 2, ky = h * 0.5, esc = Math.min(w - mitad, h) * 0.13;
       var pts = [];
       for (var i = 0; i <= N; i++) {
@@ -226,7 +233,7 @@
         ctx.lineCap = 'round';
         ctx.lineWidth = rem * 0.42; ctx.stroke();
       });
-      texto(ctx, 'NUDO: INTACTO · SIGUE SIENDO UN NUDO', mitad + rem * 0.8, h - rem * 1.2, rem * 0.75, '#fff', 'left', 700);
+      texto(ctx, w - mitad > rem * 16 ? 'NUDO: INTACTO · SIGUE SIENDO UN NUDO' : 'NUDO: INTACTO', mitad + rem * 0.8, h - rem * 1.2, rem * 0.75, '#fff', 'left', 700);
     }
     rango.addEventListener('input', function () { ruido = rango.value / 100; txt.textContent = rango.value + ' %'; });
     document.getElementById('nudo-reiniciar').addEventListener('click', function () { bit = 1; volteos = 0; });
@@ -280,9 +287,9 @@
         ctx.beginPath();
         ctx.moveTo(cx - paso * 2.2, rem * 2.6); ctx.lineTo(cx - paso * 2.2, rem * 2.1); ctx.lineTo(cx + paso * 2.2, rem * 2.1); ctx.lineTo(cx + paso * 2.2, rem * 2.6);
         ctx.stroke();
-        texto(ctx, 'CUASIPARTÍCULA →', cx, rem * 1.3, rem * 0.7, '#fff', 'center', 700);
+        texto(ctx, 'CUASIPARTÍCULA →', cx, rem * 1.3, rem * 0.8, '#fff', 'center', 700);
       }
-      texto(ctx, '● esta persona solo se levanta y se sienta', margen, h - rem * 0.7, rem * 0.65, C.alerta, 'left', 600);
+      texto(ctx, '● esta persona solo se levanta y se sienta', margen, h - rem * 0.7, rem * 0.75, C.alerta, 'left', 600);
     }
     var bucle = Expo.bucle(cuadro);
     Expo.registrar('l-particulas', { iniciar: bucle.iniciar, detener: bucle.detener });
@@ -344,9 +351,9 @@
         var g = ctx.createRadialGradient(mx, py + ph / 2, 0, mx, py + ph / 2, ph * 0.35);
         g.addColorStop(0, 'rgba(143,193,255,0.9)'); g.addColorStop(1, 'rgba(59,139,255,0)');
         ctx.fillStyle = g; ctx.beginPath(); ctx.arc(mx, py + ph / 2, ph * 0.35, 0, TAU); ctx.fill();
-        texto(ctx, 'MZM', mx, py + ph + rem * 0.7, rem * 0.6, C.azul2, 'center', 600);
+        texto(ctx, 'MZM', mx, py + ph + rem * 0.7, rem * 0.75, C.azul2, 'center', 600);
       });
-      texto(ctx, 'NANOHILO TOPOLÓGICO · PISTA DE BAILE', px, rem * 0.9, rem * 0.65, C.tenue, 'left', 600);
+      texto(ctx, 'NANOHILO TOPOLÓGICO · PISTA DE BAILE', px, rem * 0.9, rem * 0.75, C.rotulo, 'left', 600);
 
       // Golpe de ruido: onda que cruza
       if (golpe > 0) {
@@ -384,7 +391,7 @@
         ctx.fillStyle = g2; ctx.beginPath(); ctx.arc(sx, sy, r * 4, 0, TAU); ctx.fill();
         ctx.fillStyle = C.alerta; ctx.beginPath(); ctx.arc(sx, sy, r * 1.1, 0, TAU); ctx.fill();
         ctx.globalAlpha = 1;
-        if (k > 0.9) texto(ctx, 'SIN PAREJA', sx, sy - r * 3, rem * 0.6, C.alerta, 'center', 700);
+        if (k > 0.9) texto(ctx, 'SIN PAREJA', sx, sy - r * 3, rem * 0.75, C.alerta, 'center', 700);
         if (suelto.saliendo && suelto.entrando <= 0) { suelto = null; estado(); }
       }
 
@@ -393,7 +400,7 @@
         mensaje.t += dt;
         var a = mensaje.t < 2.2 ? 1 : Math.max(0, 1 - (mensaje.t - 2.2) / 0.4);
         ctx.globalAlpha = a;
-        texto(ctx, mensaje.txt, w / 2, h - rem * 0.8, rem * 0.7, mensaje.color, 'center', 600);
+        texto(ctx, mensaje.txt, w / 2, h - rem * 0.8, rem * 0.8, mensaje.color, 'center', 600);
         ctx.globalAlpha = 1;
         if (a <= 0) mensaje = null;
       }

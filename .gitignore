@@ -4,6 +4,14 @@ materiales/referencias/
 # Capturas de prueba (pesadas; se regeneran)
 docs/capturas/
 
+# Fuentes 3D (Blender, renders) y prototipos: se quedan en el equipo
+3d/
+prototipos/
+
+# Guiones personales (llevan nombres): solo en el equipo
+docs/GUION*.md
+docs/Guion*.pdf
+
 # Restos de herramientas
 .playwright-mcp/
 .claude/settings.local.json

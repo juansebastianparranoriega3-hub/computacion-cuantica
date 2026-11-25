@@ -10,9 +10,13 @@
 
   /* Utilidades de dibujo HUD */
   function textoHUD(ctx, txt, x, y, tam, color, alinear, peso) {
+    alinear = alinear || 'left';
     ctx.font = (peso || 500) + ' ' + Math.round(tam) + 'px ' + F.mono;
+    var aj = Expo.ajusteTexto(ctx, txt, x, alinear), k = aj.k;   // en pantallas chicas, que no se salga
+    x = aj.x;
+    if (k < 1) ctx.font = (peso || 500) + ' ' + Math.floor(tam * k) + 'px ' + F.mono;
     ctx.fillStyle = color || C.azul2;
-    ctx.textAlign = alinear || 'left';
+    ctx.textAlign = alinear;
     ctx.textBaseline = 'middle';
     ctx.fillText(txt, x, y);
   }
@@ -141,6 +145,7 @@
       prepararPapel();
       canvas.style.visibility = 'visible';
       t0 = 0;
+      Expo.sonar('disolucion');
       // Primer cuadro inmediato: papel completo, sin parpadeo
       L.ctx.drawImage(papel, 0, 0, papel.width, papel.height, 0, 0, L.ancho, L.alto);
       bucle.detener();
@@ -152,7 +157,9 @@
         // La transición solo tiene sentido viniendo del periódico (hacia delante):
         // en el recorrido, desde la Ley de Moore
         var previa = Expo.laminaPrevia;
-        if (previa && previa.dataset.tema === 'papel' && Expo.direccion === 'adelante') lanzar();
+        // En el modo candelabro 3D todo es cristal: no hay papel que descomponer
+        if (Expo.cristal) terminar();
+        else if (previa && previa.dataset.tema === 'papel' && Expo.direccion === 'adelante') lanzar();
         else terminar();
       },
       detener: terminar
@@ -178,7 +185,7 @@
 
       // --- RAMPA
       var x0 = margen, x1 = mitad - margen, topY = base - alto;
-      textoHUD(ctx, 'RAMPA · CUALQUIER ALTURA', x0, rem * 0.9, rem * 0.7, C.azul2);
+      textoHUD(ctx, 'RAMPA · CUALQUIER ALTURA', x0, rem * 0.9, rem * 0.75, C.azul2);
       ctx.fillStyle = 'rgba(59,139,255,0.15)'; ctx.strokeStyle = C.azul; ctx.lineWidth = 2;
       ctx.beginPath(); ctx.moveTo(x0, base); ctx.lineTo(x1, topY); ctx.lineTo(x1, base); ctx.closePath(); ctx.fill(); ctx.stroke();
       var u = Expo.reducido ? 0.6 : 0.5 + 0.45 * Math.sin(t * 0.9);
@@ -193,7 +200,7 @@
 
       // --- ESCALERA
       var e0 = mitad + margen, e1 = w - margen, pasoW = (e1 - e0) / NIVELES, pasoH = alto / NIVELES;
-      textoHUD(ctx, 'ESCALERA · SOLO ESCALONES', e0, rem * 0.9, rem * 0.7, C.azul2);
+      textoHUD(ctx, 'ESCALERA · SOLO ESCALONES', e0, rem * 0.9, rem * 0.75, C.azul2);
       ctx.fillStyle = 'rgba(59,139,255,0.15)';
       ctx.beginPath(); ctx.moveTo(e0, base);
       for (var i = 0; i < NIVELES; i++) {
@@ -203,7 +210,7 @@
       ctx.lineTo(e1, base); ctx.closePath(); ctx.fill(); ctx.stroke();
       // Etiquetas de nivel
       for (var j = 0; j < NIVELES; j++) {
-        textoHUD(ctx, 'E' + (j + 1), e0 + j * pasoW + pasoW / 2, base - (j + 1) * pasoH + rem * 0.7, rem * 0.6, C.tenue, 'center');
+        textoHUD(ctx, 'E' + (j + 1), e0 + j * pasoW + pasoW / 2, base - (j + 1) * pasoH + rem * 0.75, rem * 0.75, C.rotulo, 'center', 600);
       }
       // Saltos discretos
       if (!Expo.reducido) {
@@ -227,8 +234,8 @@
       ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(sx, sy, r, 0, TAU); ctx.fill();
       // Marcar 0 y 1 (dos niveles usados como qubit)
       ctx.strokeStyle = C.azul2; ctx.lineWidth = 1.5;
-      textoHUD(ctx, '«0»', e0 + pasoW / 2, base - pasoH - rem * 2.1, rem * 0.6, C.azul2, 'center');
-      textoHUD(ctx, '«1»', e0 + pasoW * 1.5, base - pasoH * 2 - rem * 2.1, rem * 0.6, C.azul2, 'center');
+      textoHUD(ctx, '«0»', e0 + pasoW / 2, base - pasoH - rem * 2.1, rem * 0.75, C.azul2, 'center');
+      textoHUD(ctx, '«1»', e0 + pasoW * 1.5, base - pasoH * 2 - rem * 2.1, rem * 0.75, C.azul2, 'center');
       textoHUD(ctx, 'nivel E' + ((tSalto >= 1 ? nivel : hacia) + 1), e0, base + rem * 0.85, rem * 0.85, '#fff', 'left', 600);
     }
     var bucle = Expo.bucle(cuadro);
@@ -269,6 +276,7 @@
       var b = Math.floor((u + 1) / 2 * BINS);
       hist[Expo.limitar(b, 0, BINS - 1)]++;
       acumulado++;
+      Expo.sonar('impacto');   // limitado en 07-sonido.js (no se satura con la ráfaga)
       contador.textContent = acumulado + (acumulado === 1 ? ' electrón' : ' electrones');
     }
     function reiniciar() {
@@ -282,7 +290,7 @@
       var fx = w * 0.06, bx = w * 0.36, sx = w * 0.72, hx = w * 0.76, cy = h / 2;
       var gap = h * 0.12, ancho = h * 0.035;
       var y1 = cy - gap, y2 = cy + gap;
-      var pantallaH = h * 0.86, py0 = cy - pantallaH / 2;
+      var pantallaH = Math.min(h * 0.86, h - rem * 3.4), py0 = cy - pantallaH / 2;   // deja aire arriba y abajo para los rótulos
 
       // Ondas de fondo desde la fuente (la «onda de probabilidad»)
       ctx.lineWidth = 1.5;
@@ -304,7 +312,7 @@
       // Fuente
       brillo(ctx, fx, cy, rem * 1.6, 'rgba(143,193,255,0.9)', 0.9);
       ctx.fillStyle = '#fff'; ctx.fillRect(fx - rem * 0.5, cy - rem * 0.7, rem * 0.5, rem * 1.4);
-      textoHUD(ctx, 'FUENTE', fx - rem * 0.25, cy + rem * 1.5, rem * 0.55, C.tenue, 'center');
+      textoHUD(ctx, 'FUENTE', fx - rem * 0.25, cy + rem * 1.6, rem * 0.75, C.rotulo, 'center', 600);
 
       // Barrera con rendijas
       ctx.fillStyle = '#c9d6ee';
@@ -313,13 +321,13 @@
       if (dosRendijas) ctx.fillRect(bx - bw / 2, y1 + ancho, bw, (y2 - ancho) - (y1 + ancho));
       else ctx.fillRect(bx - bw / 2, y1 - ancho, bw, (y2 - ancho) - (y1 - ancho));
       ctx.fillRect(bx - bw / 2, y2 + ancho, bw, piso - (y2 + ancho));
-      textoHUD(ctx, dosRendijas ? 'DOS RENDIJAS' : 'UNA RENDIJA', bx, rem * 0.7, rem * 0.6, C.tenue, 'center', 600);
+      textoHUD(ctx, dosRendijas ? 'DOS RENDIJAS' : 'UNA RENDIJA', bx, rem * 0.7, rem * 0.8, C.rotulo, 'center', 600);
 
       // Pantalla
       ctx.fillStyle = 'rgba(10,24,54,0.9)';
       ctx.fillRect(sx, py0, hx - sx, pantallaH);
       ctx.strokeStyle = C.azul; ctx.lineWidth = 1.5; ctx.strokeRect(sx, py0, hx - sx, pantallaH);
-      textoHUD(ctx, 'PANTALLA', (sx + hx) / 2, py0 + pantallaH + rem * 0.5, rem * 0.55, C.tenue, 'center');
+      textoHUD(ctx, 'PANTALLA', (sx + hx) / 2, py0 + pantallaH + rem * 0.85, rem * 0.75, C.rotulo, 'center', 600);
 
       // Emisión (con movimiento reducido no hay vuelos: ver acumularReducido)
       if (emitiendo && !Expo.reducido) {
@@ -376,7 +384,7 @@
           ctx.fillRect(hx0, py0 + c * bh, largo, bh - 1);
         }
       }
-      textoHUD(ctx, 'CONTEO', hx0 + hw / 2, py0 + pantallaH + rem * 0.5, rem * 0.55, C.tenue, 'center');
+      textoHUD(ctx, 'CONTEO', hx0 + hw / 2, py0 - rem * 0.85, rem * 0.75, C.rotulo, 'center', 600);   // arriba: abajo choca con PANTALLA en pantallas angostas
     }
 
     // Con movimiento reducido no hay electrones en vuelo: los impactos se suman de
@@ -436,8 +444,9 @@
       var base = Math.ceil(angulo / TAU) * TAU + TAU;
       anguloFinal = base + (resultado === 'cara' ? 0 : Math.PI);
       if (Expo.reducido) { angulo = anguloFinal; estado = 'medida'; }
+      Expo.sonar('moneda', resultado);
     }
-    function lanzar() { estado = 'girando'; resultado = null; vel = 9; }
+    function lanzar() { estado = 'girando'; resultado = null; vel = 9; Expo.sonar('giro', true); }
     function medirCien() {
       for (var i = 0; i < 100; i++) {
         var r = Math.random() < p ? 'cara' : 'sello';
@@ -448,6 +457,7 @@
       resultado = ultimos[0];
       estado = 'medida';
       angulo = resultado === 'cara' ? 0 : Math.PI;
+      Expo.sonar('monedaCien');
     }
 
     function cuadro(dt, t) {
@@ -472,6 +482,9 @@
       // Halo de superposición
       if (estado === 'girando') brillo(ctx, cx, cy + flota, R * 1.7, 'rgba(59,139,255,0.45)', 0.5 + 0.2 * Math.sin(t * 5));
 
+      // Modo candelabro 3D: moneda de cristal (borde irisado, reflejo que barre la cara)
+      if (Expo.cristal) monedaCristal(ctx, cx, cy + flota, R, angulo, cara, t);
+      else {
       // Moneda (elipse que cambia de ancho al girar)
       ctx.save();
       ctx.translate(cx, cy + flota);
@@ -488,6 +501,7 @@
       ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
       ctx.fillText(cara ? 'C' : 'S', 0, R * 0.05);
       ctx.restore();
+      }
 
       // Rótulo de estado
       var etiqueta, color;
@@ -498,33 +512,92 @@
 
       // Panel derecho: probabilidades y frecuencias
       var px = w * 0.58, pw = w - px - rem * 0.6;
-      textoHUD(ctx, 'PROBABILIDAD ANTES DE MEDIR', px, rem * 0.9, rem * 0.6, C.tenue);
-      barra(ctx, px, rem * 1.7, pw, rem * 0.9, p, 'Cara', C.azul);
-      barra(ctx, px, rem * 3.1, pw, rem * 0.9, 1 - p, 'Sello', C.violeta);
+      var angosto = pw < rem * 15;   // celular: rótulos cortos en vez de letra diminuta
+      textoHUD(ctx, angosto ? 'ANTES DE MEDIR' : 'PROBABILIDAD ANTES DE MEDIR', px, rem * 0.9, rem * 0.75, C.rotulo, 'left', 600);
+      barra(ctx, px, rem * 1.7, pw, rem * 1.15, p, 'Cara', C.azul);
+      barra(ctx, px, rem * 3.15, pw, rem * 1.15, 1 - p, 'Sello', C.violeta);
       var total = cuenta.cara + cuenta.sello;
-      textoHUD(ctx, 'RESULTADOS MEDIDOS · ' + total, px, rem * 5.0, rem * 0.6, C.tenue);
-      barra(ctx, px, rem * 5.8, pw, rem * 0.9, total ? cuenta.cara / total : 0, 'Cara ' + cuenta.cara, C.azul);
-      barra(ctx, px, rem * 7.2, pw, rem * 0.9, total ? cuenta.sello / total : 0, 'Sello ' + cuenta.sello, C.violeta);
+      textoHUD(ctx, (angosto ? 'MEDIDOS · ' : 'RESULTADOS MEDIDOS · ') + total, px, rem * 5.3, rem * 0.75, C.rotulo, 'left', 600);
+      barra(ctx, px, rem * 6.1, pw, rem * 1.15, total ? cuenta.cara / total : 0, 'Cara ' + cuenta.cara, C.azul);
+      barra(ctx, px, rem * 7.55, pw, rem * 1.15, total ? cuenta.sello / total : 0, 'Sello ' + cuenta.sello, C.violeta);
       // Últimos resultados
-      textoHUD(ctx, 'ÚLTIMOS', px, rem * 9.1, rem * 0.6, C.tenue);
+      textoHUD(ctx, 'ÚLTIMOS', px, rem * 9.75, rem * 0.75, C.rotulo, 'left', 600);
       for (var i = 0; i < ultimos.length; i++) {
-        var col = i % 8, fila = Math.floor(i / 8);
-        var x = px + col * rem * 1.4, y = rem * 10 + fila * rem * 1.4;
+        var porFila = Math.max(1, Math.min(8, Math.floor((w - px) / (rem * 1.4))));   // en celular caben menos
+        var col = i % porFila, fila = Math.floor(i / porFila);
+        var x = px + col * rem * 1.4, y = rem * 10.85 + fila * rem * 1.4;
         if (y > h - rem * 0.6) break;
         ctx.fillStyle = ultimos[i] === 'cara' ? C.azul : C.violeta;
         ctx.globalAlpha = 1 - i / 18;
-        ctx.fillRect(x, y - rem * 0.5, rem * 1.1, rem * 1.1);
+        if (Expo.cristal) { ctx.beginPath(); ctx.arc(x + rem * 0.55, y + rem * 0.05, rem * 0.55, 0, TAU); ctx.fill(); }
+        else ctx.fillRect(x, y - rem * 0.5, rem * 1.1, rem * 1.1);
         ctx.globalAlpha = 1;
-        textoHUD(ctx, ultimos[i] === 'cara' ? 'C' : 'S', x + rem * 0.55, y + rem * 0.05, rem * 0.6, '#fff', 'center', 700);
+        textoHUD(ctx, ultimos[i] === 'cara' ? 'C' : 'S', x + rem * 0.55, y + rem * 0.05, rem * 0.75, '#fff', 'center', 700);
       }
     }
+    /** Moneda de cristal (dirección E): cuerpo translúcido, canto, borde irisado, letra fina y reflejo. */
+    function monedaCristal(ctx, cx, cy, R, ang, cara, t) {
+      var c = Math.cos(ang), ac = Math.max(0.05, Math.abs(c));
+      var mov = Expo.reducido ? 0 : t;
+      var g0 = ctx.createRadialGradient(cx, cy, R * 0.2, cx, cy, R * 1.7);
+      g0.addColorStop(0, cara ? 'rgba(140,200,255,0.30)' : 'rgba(210,150,255,0.30)'); g0.addColorStop(1, 'rgba(140,200,255,0)');
+      ctx.fillStyle = g0; ctx.beginPath(); ctx.arc(cx, cy, R * 1.7, 0, TAU); ctx.fill();
+      var grosor = R * 0.09 * Math.sqrt(1 - ac * ac);
+      ctx.save(); ctx.translate(cx + (c >= 0 ? -grosor : grosor), cy); ctx.scale(ac, 1);
+      ctx.fillStyle = 'rgba(180,215,255,0.22)'; ctx.beginPath(); ctx.arc(0, 0, R, 0, TAU); ctx.fill();
+      ctx.restore();
+      ctx.save(); ctx.translate(cx, cy); ctx.scale(ac, 1);
+      var g = ctx.createLinearGradient(-R, -R, R, R);
+      g.addColorStop(0, 'rgba(255,255,255,0.42)');
+      g.addColorStop(0.5, cara ? 'rgba(120,180,255,0.16)' : 'rgba(190,130,255,0.16)');
+      g.addColorStop(1, 'rgba(255,255,255,0.28)');
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(0, 0, R, 0, TAU); ctx.fill();
+      if (ctx.createConicGradient) {
+        var cg = ctx.createConicGradient(ang + mov * 0.3, 0, 0);
+        ['#9fd4ff', '#ffffff', '#d6a6ff', '#9fffe0', '#ffd6a6', '#9fd4ff'].forEach(function (col, i, a) { cg.addColorStop(i / (a.length - 1), col); });
+        ctx.strokeStyle = cg;
+      } else ctx.strokeStyle = '#cfe6ff';
+      ctx.lineWidth = R * 0.07; ctx.beginPath(); ctx.arc(0, 0, R * 0.965, 0, TAU); ctx.stroke();
+      ctx.lineWidth = 1.5; ctx.strokeStyle = 'rgba(255,255,255,0.7)';
+      ctx.beginPath(); ctx.arc(0, 0, R * 0.8, 0, TAU); ctx.stroke();
+      ctx.font = '200 ' + Math.round(R * 1.05) + 'px ' + F.hud;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillStyle = 'rgba(255,255,255,0.85)'; ctx.fillText(cara ? 'C' : 'S', 0, R * 0.04);
+      ctx.save(); ctx.beginPath(); ctx.arc(0, 0, R, 0, TAU); ctx.clip();
+      var bx = Math.sin(ang) * R * 1.2;
+      var gl = ctx.createLinearGradient(bx - R * 0.5, -R, bx + R * 0.5, R);
+      gl.addColorStop(0, 'rgba(255,255,255,0)'); gl.addColorStop(0.5, 'rgba(255,255,255,0.55)'); gl.addColorStop(1, 'rgba(255,255,255,0)');
+      ctx.fillStyle = gl; ctx.fillRect(-R, -R, R * 2, R * 2);
+      ctx.restore();
+      ctx.restore();
+    }
+    /** ¿Caben el rótulo y el «NN %» en la barra sin tocarse? (en celular a veces no: va solo el rótulo) */
+    function cabe(ctx, txt, w, rem) {
+      ctx.font = '600 ' + Math.round(rem * 0.75) + 'px ' + F.mono;
+      return ctx.measureText(txt).width + ctx.measureText('100 %').width + rem * 1.6 <= w;
+    }
     function barra(ctx, x, y, w, h, v, txt, color) {
+      if (Expo.cristal) {
+        // Pista de cristal redondeada con relleno luminoso
+        var rr = h / 2;
+        ctx.fillStyle = 'rgba(255,255,255,0.08)';
+        ctx.beginPath(); if (ctx.roundRect) ctx.roundRect(x, y, w, h, rr); else ctx.rect(x, y, w, h); ctx.fill();
+        if (v > 0) {
+          ctx.save(); ctx.shadowColor = color; ctx.shadowBlur = h * 0.8; ctx.fillStyle = color;
+          ctx.beginPath(); if (ctx.roundRect) ctx.roundRect(x, y, Math.max(h, w * v), h, rr); else ctx.rect(x, y, w * v, h); ctx.fill();
+          ctx.restore();
+        }
+        var rm = Expo.rem();
+        textoHUD(ctx, txt, x + rm * 0.5, y + h / 2, rm * 0.75, '#fff', 'left', 600);
+        if (cabe(ctx, txt, w, rm)) textoHUD(ctx, Math.round(v * 100) + ' %', x + w - rm * 0.5, y + h / 2, rm * 0.75, '#fff', 'right', 600);
+        return;
+      }
       ctx.fillStyle = 'rgba(82,145,255,0.12)'; ctx.fillRect(x, y, w, h);
       ctx.fillStyle = color; ctx.fillRect(x, y, w * v, h);
       ctx.strokeStyle = 'rgba(82,145,255,0.4)'; ctx.strokeRect(x, y, w, h);
       var rem = Expo.rem();
-      textoHUD(ctx, txt, x + rem * 0.35, y + h / 2, rem * 0.6, '#fff', 'left', 600);
-      textoHUD(ctx, Math.round(v * 100) + ' %', x + w - rem * 0.35, y + h / 2, rem * 0.6, '#fff', 'right', 600);
+      textoHUD(ctx, txt, x + rem * 0.4, y + h / 2, rem * 0.75, '#fff', 'left', 600);
+      if (cabe(ctx, txt, w, rem)) textoHUD(ctx, Math.round(v * 100) + ' %', x + w - rem * 0.4, y + h / 2, rem * 0.75, '#fff', 'right', 600);
     }
 
     deslizador.addEventListener('input', function () {
@@ -535,7 +608,10 @@
     document.getElementById('moneda-lanzar').addEventListener('click', lanzar);
     document.getElementById('moneda-cien').addEventListener('click', medirCien);
     var bucle = Expo.bucle(cuadro);
-    Expo.registrar('l-moneda', { iniciar: bucle.iniciar, detener: bucle.detener });
+    Expo.registrar('l-moneda', {
+      iniciar: function () { bucle.iniciar(); if (estado === 'girando') Expo.sonar('giro', true); },
+      detener: function () { bucle.detener(); Expo.sonar('giro', false); }
+    });
   }
 
   /* ------------------------------------------------------------------
@@ -570,8 +646,8 @@
       // Ejes
       ctx.strokeStyle = 'rgba(82,145,255,0.22)'; ctx.lineWidth = 1;
       [yA, yB, yS].forEach(function (y) { ctx.beginPath(); ctx.moveTo(x0, y); ctx.lineTo(x1, y); ctx.stroke(); });
-      textoHUD(ctx, 'ONDA A', rem * 0.4, yA, rem * 0.7, C.azul2, 'left', 600);
-      textoHUD(ctx, 'ONDA B', rem * 0.4, yB, rem * 0.7, C.violeta, 'left', 600);
+      textoHUD(ctx, 'ONDA A', rem * 0.4, yA, rem * 0.75, C.azul2, 'left', 600);
+      textoHUD(ctx, 'ONDA B', rem * 0.4, yB, rem * 0.75, C.violeta, 'left', 600);
       textoHUD(ctx, 'A + B', rem * 0.4, yS, rem * 0.9, '#fff', 'left', 700);
 
       onda(ctx, x0, x1, yA, amp, function (u) { return Math.sin(k * u - mov); }, C.azul2, 2.5);
@@ -618,6 +694,7 @@
       historial.unshift({ a: a, b: 1 - a });
       if (historial.length > 40) historial.pop();
       estado = 'medido'; tMedida = 0;
+      Expo.sonar('par', a === 1);
     }
     function flecha(ctx, x, y, arriba, tam, color) {
       ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = tam * 0.12;
@@ -640,7 +717,7 @@
         flecha(ctx, x, y, valor === 1, R * 1.3, valor === 1 ? '#fff' : C.violeta);
         textoHUD(ctx, valor === 1 ? '↑ ARRIBA' : '↓ ABAJO', x, y + R + rem * 0.9, rem * 0.8, '#fff', 'center', 700);
       }
-      textoHUD(ctx, etiqueta, x, y - R - rem * 0.8, rem * 0.7, C.tenue, 'center', 600);
+      textoHUD(ctx, etiqueta, x, y - R - rem * 0.8, rem * 0.8, C.rotulo, 'center', 600);
     }
 
     function cuadro(dt, t) {
@@ -666,7 +743,7 @@
           ctx.stroke();
         }
         ctx.restore();
-        textoHUD(ctx, 'ENTRELAZADAS · CUALQUIER DISTANCIA', w / 2, cy - R * 1.2, rem * 0.6, C.azul2, 'center');
+        textoHUD(ctx, 'ENTRELAZADAS · CUALQUIER DISTANCIA', w / 2, cy - R * 1.2, rem * 0.75, C.azul2, 'center', 600);
       }
       // Onda de la medición
       if (estado === 'medido' && tMedida < 0.6) {
@@ -680,8 +757,8 @@
 
       // Registro: dos columnas
       var y0 = h * 0.62, celda = Math.min(rem * 1.25, (w - rem * 6) / 20);
-      textoHUD(ctx, 'A', rem * 0.6, y0, rem * 0.7, C.tenue, 'left', 700);
-      textoHUD(ctx, 'B', rem * 0.6, y0 + celda * 1.3, rem * 0.7, C.tenue, 'left', 700);
+      textoHUD(ctx, 'A', rem * 0.6, y0, rem * 0.8, C.rotulo, 'left', 700);
+      textoHUD(ctx, 'B', rem * 0.6, y0 + celda * 1.3, rem * 0.8, C.rotulo, 'left', 700);
       var n = Math.min(historial.length, 20);
       for (var i = 0; i < n; i++) {
         var hx = rem * 2 + i * celda;
@@ -699,10 +776,10 @@
         var total = historial.length, aArriba = 0, bArriba = 0, opuestos = 0;
         historial.forEach(function (r) { aArriba += r.a; bArriba += r.b; opuestos += (r.a !== r.b) ? 1 : 0; });
         var ys = y0 + celda * 3.1;
-        textoHUD(ctx, 'A sale ↑ el ' + Math.round(aArriba / total * 100) + ' %  ·  B sale ↑ el ' + Math.round(bArriba / total * 100) + ' %  (cada uno, al azar)', rem * 0.6, ys, rem * 0.68, '#c9d6ee');
-        textoHUD(ctx, 'Comparando ambos: opuestos el ' + Math.round(opuestos / total * 100) + ' % de las veces', rem * 0.6, ys + rem * 1.1, rem * 0.75, '#fff', 'left', 700);
+        textoHUD(ctx, 'A sale ↑ el ' + Math.round(aArriba / total * 100) + ' %  ·  B sale ↑ el ' + Math.round(bArriba / total * 100) + ' %' + (w > rem * 30 ? '  (cada uno, al azar)' : ''), rem * 0.6, ys, rem * 0.8, C.rotulo, 'left', 600);
+        textoHUD(ctx, 'Comparando ambos: opuestos el ' + Math.round(opuestos / total * 100) + ' % de las veces', rem * 0.6, ys + rem * 1.25, rem * 0.85, '#fff', 'left', 700);
       } else {
-        textoHUD(ctx, 'Pulsa «Medir el par» para medir las dos partículas', rem * 0.6, y0 + celda * 3.1, rem * 0.7, C.tenue);
+        textoHUD(ctx, 'Pulsa «Medir el par» para medir las dos partículas', rem * 0.6, y0 + celda * 3.1, rem * 0.8, C.rotulo, 'left', 600);
       }
     }
     var bucle = Expo.bucle(cuadro);
@@ -790,16 +867,17 @@
       ctx.fillStyle = 'rgba(82,145,255,0.12)'; ctx.fillRect(mx, my, mw, mh);
       ctx.fillStyle = coherencia > 0.25 ? C.azul : C.alerta; ctx.fillRect(mx, my, mw * coherencia, mh);
       ctx.strokeStyle = 'rgba(82,145,255,0.45)'; ctx.strokeRect(mx, my, mw, mh);
-      textoHUD(ctx, 'COHERENCIA ' + Math.round(coherencia * 100) + ' %', mx, my - rem * 0.55, rem * 0.7, '#fff', 'left', 600);
+      textoHUD(ctx, 'COHERENCIA ' + Math.round(coherencia * 100) + ' %', mx, my - rem * 0.55, rem * 0.75, '#fff', 'left', 600);
       var estado = coherencia > 0.8 ? 'SUPERPOSICIÓN INTACTA' : (coherencia > 0.25 ? 'SE ESTÁ DEGRADANDO' : 'SUPERPOSICIÓN PERDIDA: YA NO SIRVE COMO QUBIT');
-      textoHUD(ctx, estado, mx + mw, my - rem * 0.55, rem * 0.7, coherencia > 0.25 ? C.azul2 : C.alerta, 'right', 600);
-      textoHUD(ctx, ruido === 0 ? 'AISLADO · CERCA DEL CERO ABSOLUTO' : 'ENTORNO: CALOR · VIBRACIONES · CAMPOS', rem * 0.8, rem * 0.8, rem * 0.6, C.tenue);
+      textoHUD(ctx, estado, mx + mw, my - rem * 0.55, rem * 0.75, coherencia > 0.25 ? C.azul2 : C.alerta, 'right', 600);
+      textoHUD(ctx, ruido === 0 ? 'AISLADO · CERCA DEL CERO ABSOLUTO' : 'ENTORNO: CALOR · VIBRACIONES · CAMPOS', rem * 0.8, rem * 0.8, rem * 0.75, C.rotulo, 'left', 600);
     }
     rango.addEventListener('input', function () {
       ruido = rango.value / 100;
       txt.textContent = rango.value + ' %';
       // Sin animación, el desgaste se muestra directamente: más ruido, menos coherencia
       if (Expo.reducido) coherencia = Math.max(0, 1 - ruido);
+      Expo.sonar('ruido', ruido);
     });
     document.getElementById('deco-reiniciar').addEventListener('click', function () { coherencia = 1; });
     var bucle = Expo.bucle(cuadro);

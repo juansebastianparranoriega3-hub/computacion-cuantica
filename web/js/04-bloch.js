@@ -8,9 +8,13 @@
   var TAU = Math.PI * 2;
 
   function texto(ctx, txt, x, y, tam, color, alinear, peso, familia) {
+    alinear = alinear || 'left';
     ctx.font = (peso || 500) + ' ' + Math.round(tam) + 'px ' + (familia || F.mono);
+    var aj = Expo.ajusteTexto(ctx, txt, x, alinear), k = aj.k;   // en pantallas chicas, que no se salga
+    x = aj.x;
+    if (k < 1) ctx.font = (peso || 500) + ' ' + Math.floor(tam * k) + 'px ' + (familia || F.mono);
     ctx.fillStyle = color;
-    ctx.textAlign = alinear || 'left';
+    ctx.textAlign = alinear;
     ctx.textBaseline = 'middle';
     ctx.fillText(txt, x, y);
   }
@@ -110,6 +114,7 @@
       var sale0 = Math.random() < p0;
       irA(sale0 ? [0, 0, 1] : [0, 0, -1]);
       destello = 1;
+      Expo.sonar('colapso', sale0);
     }
 
     function circulo(ctx, puntoEn, cx, cy, R, color, grosor) {
@@ -166,7 +171,7 @@
       var ejes = [
         { p: [0, 0, 1], t: '|0⟩', c: '#fff' }, { p: [0, 0, -1], t: '|1⟩', c: '#fff' },
         { p: [1, 0, 0], t: '|+⟩', c: C.azul2 }, { p: [-1, 0, 0], t: '|−⟩', c: C.azul2 },
-        { p: [0, 1, 0], t: '|+i⟩', c: C.tenue }, { p: [0, -1, 0], t: '|−i⟩', c: C.tenue }
+        { p: [0, 1, 0], t: '|+i⟩', c: C.rotulo }, { p: [0, -1, 0], t: '|−i⟩', c: C.rotulo }
       ];
       var centro = proyectar([0, 0, 0], cx, cy, R);
       ejes.forEach(function (e) {
@@ -174,8 +179,8 @@
         var q2 = proyectar([e.p[0] * 1.2, e.p[1] * 1.2, e.p[2] * 1.2], cx, cy, R);
         ctx.strokeStyle = 'rgba(143,193,255,0.35)'; ctx.lineWidth = 1; ctx.setLineDash([4, 5]);
         ctx.beginPath(); ctx.moveTo(centro.x, centro.y); ctx.lineTo(q.x, q.y); ctx.stroke(); ctx.setLineDash([]);
-        var tam = (e.t === '|0⟩' || e.t === '|1⟩') ? rem * 1.05 : rem * 0.72;
-        ctx.globalAlpha = q.cerca > -0.2 ? 1 : 0.5;
+        var tam = (e.t === '|0⟩' || e.t === '|1⟩') ? rem * 1.05 : rem * 0.85;
+        ctx.globalAlpha = q.cerca > -0.2 ? 1 : 0.8;   // los de atrás, apenas más suaves: legibles en proyector
         texto(ctx, e.t, q2.x, q2.y, tam, e.c, 'center', 700);
         ctx.globalAlpha = 1;
       });
@@ -256,7 +261,7 @@
     canvas.addEventListener('pointercancel', soltar);
 
     Array.prototype.forEach.call(document.querySelectorAll('[data-puerta]'), function (b) {
-      b.addEventListener('click', function () { aplicarPuerta(b.dataset.puerta); });
+      b.addEventListener('click', function () { aplicarPuerta(b.dataset.puerta); Expo.sonar('puerta', b.dataset.puerta); });
     });
     Array.prototype.forEach.call(document.querySelectorAll('#l-bloch [data-estado]'), function (b) {
       b.addEventListener('click', function () { irA(b.dataset.estado === '0' ? [0, 0, 1] : [0, 0, -1]); });
@@ -317,7 +322,7 @@
       nVisible += (n - nVisible) * Math.min(1, dt * 8);
 
       // Rejilla de amplitudes (hasta 2¹² celdas)
-      var zonaH = h - rem * 5.2;
+      var zonaH = h - rem * 6;
       var k = Math.min(n, 12);
       var celdas = Math.pow(2, k);
       var cols = Math.pow(2, Math.ceil(k / 2)), filas = Math.pow(2, Math.floor(k / 2));
@@ -359,7 +364,7 @@
       }
 
       // Regla logarítmica: dígitos de 2ⁿ frente a referencias
-      var rx = rem * 0.8, rw = w - rem * 1.6, ry = h - rem * 2.6;
+      var rx = rem * 0.8, rw = w - rem * 1.6, ry = h - rem * 2.9;
       var maxDec = 95;
       ctx.fillStyle = 'rgba(82,145,255,0.12)'; ctx.fillRect(rx, ry, rw, rem * 0.6);
       var dec = nVisible * LOG2;
@@ -370,21 +375,26 @@
         ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5;
         ctx.beginPath(); ctx.moveTo(mx, ry - rem * 0.25); ctx.lineTo(mx, ry + rem * 0.85); ctx.stroke();
         // «10» con exponente dibujado más pequeño y elevado (las fuentes mono no traen buenos superíndices)
-        var color = m[0] === 80 ? C.alerta : C.tenue;
-        var tb = rem * 0.68, te = rem * 0.48, y0 = m[0] === 80 ? ry - rem * 0.75 : ry + rem * 1.4;
+        var color = m[0] === 80 ? C.alerta : C.rotulo;
+        var tb = rem * 0.85, te = rem * 0.75, y0 = m[0] === 80 ? ry - rem * 0.85 : ry + rem * 1.6;
         ctx.font = '600 ' + Math.round(tb) + 'px ' + F.mono; var wb = ctx.measureText('10').width;
         ctx.font = '600 ' + Math.round(te) + 'px ' + F.mono; var we = ctx.measureText(String(m[0])).width;
         ctx.font = '600 ' + Math.round(tb) + 'px ' + F.mono; var ws = ctx.measureText(m[1]).width;
         var x0 = m[0] === 90 ? mx - (wb + we + ws) : mx - (wb + we) / 2;
         texto(ctx, '10', x0, y0, tb, color, 'left', 600);
-        texto(ctx, String(m[0]), x0 + wb, y0 - rem * 0.28, te, color, 'left', 600);
+        texto(ctx, String(m[0]), x0 + wb, y0 - rem * 0.32, te, color, 'left', 600);
         if (m[1]) texto(ctx, m[1], x0 + wb + we, y0, tb, color, 'left', 600);
       });
-      texto(ctx, 'ESCALA LOGARÍTMICA · CANTIDAD DE DÍGITOS', rx, ry - rem * 0.65, rem * 0.58, C.tenue, 'left', 600);
+      // Título de la regla: 0,75 rem, sin pisar el rótulo «10⁸⁰ átomos» (que va a la misma altura)
+      var titulo = 'ESCALA LOGARÍTMICA · CANTIDAD DE DÍGITOS', tt = rem * 0.75;
+      ctx.font = '600 ' + Math.round(tt) + 'px ' + F.mono;
+      var libre = rx + rw * 80 / maxDec - rem * 1.6 - rx, anchoT = ctx.measureText(titulo).width;
+      if (anchoT > libre && libre > 0) tt *= libre / anchoT;
+      texto(ctx, titulo, rx, ry - rem * 0.85, tt, C.rotulo, 'left', 600);
     }
-    rango.addEventListener('input', function () { poner(rango.value); });
+    rango.addEventListener('input', function () { poner(rango.value); Expo.sonar('potencia', n); });
     Array.prototype.forEach.call(document.querySelectorAll('[data-n]'), function (b) {
-      b.addEventListener('click', function () { poner(b.dataset.n); });
+      b.addEventListener('click', function () { poner(b.dataset.n); Expo.sonar('potencia', n); });
     });
     poner(3);
     var bucle = Expo.bucle(cuadro);
